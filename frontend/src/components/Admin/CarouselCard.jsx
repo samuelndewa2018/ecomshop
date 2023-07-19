@@ -1,0 +1,28 @@
+import React from "react";
+import { backend_url } from "../../server";
+
+const CarouselCard = ({ image, caption, handleDelete }) => {
+  console.log(image);
+  return (
+    <div className="flex flex-col mb-4">
+      <img
+        // src={image}
+        src={`${backend_url}${image}`}
+        alt={caption}
+        className="h-40 w-60 object-cover"
+        style={{ maxWidth: "100%", maxHeight: "100%" }}
+      />
+      <p className="mt-2 text-gray-600">{caption}</p>
+      <div className="flex mt-2">
+        <button
+          className="px-3 py-1 bg-red-500 text-white rounded-md shadow-sm"
+          onClick={handleDelete}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default CarouselCard;
