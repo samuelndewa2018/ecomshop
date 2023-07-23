@@ -66,6 +66,7 @@ const Header = ({ activeHeading }) => {
       );
 
     setSearchData(filteredProducts);
+    // setOpen(false);
   };
 
   const getAlloProducts = () => {

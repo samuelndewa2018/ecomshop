@@ -26,6 +26,7 @@ const CreateCategory = () => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [subCategoryName, setSubCategoryName] = useState("");
+  const [catId, setCatId] = useState("");
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -129,8 +130,23 @@ const CreateCategory = () => {
     }
   };
 
+  const setOperations = (id) => {
+    setCatId(id);
+    setModalOpen(true);
+  };
+
   return (
     <>
+      {modalOpen && (
+        <CustomModal
+          message={"Are you sure you want to delete this category?"}
+          ok={" Yes, I'm sure"}
+          cancel={"No, cancel"}
+          setModalOpen={setModalOpen}
+          performAction={() => handleDeleteCategory(catId)}
+          closeModel={() => setModalOpen(false)}
+        />
+      )}
       <div className="w-full px-5">
         {open && (
           <div className="fixed w-full h-screen bg-[#0000004b] top-0 left-0 flex items-center justify-center ">
@@ -238,16 +254,6 @@ const CreateCategory = () => {
 
         {categories.map((category) => (
           <>
-            {modalOpen && (
-              <CustomModal
-                message={"Are you sure you want to delete this category?"}
-                ok={" Yes, I'm sure"}
-                cancel={"No, cancel"}
-                setModalOpen={setModalOpen}
-                performAction={() => handleDeleteCategory(category._id)}
-                closeModel={() => setModalOpen(false)}
-              />
-            )}
             <div
               className="w-full bg-white h-min 800px:h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10 mb-5"
               key={category._id}
@@ -341,7 +347,7 @@ const CreateCategory = () => {
                 <AiOutlineDelete
                   size={25}
                   className="cursor-pointer"
-                  onClick={() => setModalOpen(true)}
+                  onClick={() => setOperations(category._id)}
                 />
               </div>
             </div>

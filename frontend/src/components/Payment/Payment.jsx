@@ -553,12 +553,19 @@ const PaymentInfo = ({
               className="w-full appear__smoothly"
               onSubmit={cashOnDeliveryHandler}
             >
-              <input
+              <button
                 type="submit"
                 disabled={loading1}
-                value={loading1 ? "loading..." : "Confirm"}
                 className={`${styles.button} !bg-[#f63b60] text-[#fff] h-[45px] rounded-[5px] cursor-pointer text-[18px] font-[600]`}
-              />
+              >
+                {loading1 ? (
+                  <p className="flex mx-3">
+                    <Spinner /> Processing...
+                  </p>
+                ) : (
+                  <p className="">Confirm</p>
+                )}
+              </button>
             </form>
           </div>
         ) : null}

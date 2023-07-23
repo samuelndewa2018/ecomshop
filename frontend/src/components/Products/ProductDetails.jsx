@@ -171,7 +171,7 @@ const ProductDetails = ({ data }) => {
                 <img
                   src={`${backend_url}${data && data.images[select]}`}
                   alt=""
-                  className="w-[370px] lg:w-[80%] h-[370px] lg:h-fit"
+                  className="w-[370px] lg:w-[80%] h-[370px] lg:h-fit object-contain"
                 />
                 <div className="w-full flex justify-center items-center gap-1">
                   {data &&
@@ -292,16 +292,18 @@ const ProductDetails = ({ data }) => {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center my-3 text-sm">
-                  <h3 className="product-heading mr-1">Product Link:</h3>
+                <div className="flex items-center my-3 text-szm">
+                  <h3 className="product-heading mr-1 text-[13px]">
+                    Product Link:
+                  </h3>
                   <a
                     href="javascript:void(0);"
                     onClick={() => {
                       copyToClipboard(window.location.href);
                     }}
                   >
-                    <div className="flex items-center">
-                      <FiCopy size={25} className="fs-5 me-2" />
+                    <div className="flex items-center text-[13px]">
+                      <FiCopy size={20} className="fs-5 me-2" />
                       <Typed
                         strings={["Click Here To Copy The Product Link"]}
                         typeSpeed={40}
@@ -325,9 +327,7 @@ const ProductDetails = ({ data }) => {
                         {data.shop.name}
                       </h3>
                     </Link>
-                    <h5 className="pb-3 text-[15px]">
-                      ({averageRating}/5) Ratings
-                    </h5>
+                    <h5 className="pb-3">({averageRating}/5) Ratings</h5>
                   </div>
                   <div
                     className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
@@ -369,7 +369,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              "text-[#000] text-[14px] lg:text-[16px] px-1 leading-5 font-[600] cursor-pointer"
             }
             onClick={() => setActive(1)}
           >
@@ -382,7 +382,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              "text-[#000] text-[14px] lg:text-[16px] px-1 leading-5 font-[600] cursor-pointer"
             }
             onClick={() => setActive(2)}
           >
@@ -395,7 +395,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              "text-[#000] text-[14px] lg:text-[16px] px-1 leading-5 font-[600] cursor-pointer"
             }
             onClick={() => setActive(3)}
           >
@@ -409,7 +409,7 @@ const ProductDetailsInfo = ({
       {active === 1 ? (
         <>
           <p
-            className="py-2 text-[18px] leading-8 pb-10 whitespace-pre-line disableStyles"
+            className="py-2 leading-8 pb-10 whitespace-pre-line disableStyles"
             dangerouslySetInnerHTML={{
               __html: data.description,
             }}
@@ -467,9 +467,7 @@ const ProductDetailsInfo = ({
                 />
                 <div className="pl-3">
                   <h3 className={`${styles.shop_name}`}>{data.shop.name}</h3>
-                  <h5 className="pb-2 text-[15px]">
-                    ({averageRating}/5) Ratings
-                  </h5>
+                  <h5 className="pb-2">({averageRating}/5) Ratings</h5>
                 </div>
               </div>
             </Link>

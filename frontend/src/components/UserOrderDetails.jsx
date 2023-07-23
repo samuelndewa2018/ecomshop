@@ -173,13 +173,13 @@ const UserOrderDetails = () => {
                             ) : null}
                           </div>
                         </div>
-                        <div className="flex justify-between items-start w-full ">
+                        <div className="flex justify-center lg:justify-between gap-4 lg:gap-0 items-start w-full ">
                           <p className="text-base dark:text-white xl:text-lg leading-6">
                             <NumericFormat
                               value={item.discountPrice}
                               displayType={"text"}
                               thousandSeparator={true}
-                              prefix={"Ksh. "}
+                              prefix={""}
                               suffix={" "}
                             />{" "}
                           </p>

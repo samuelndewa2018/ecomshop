@@ -16,6 +16,7 @@ const CreateCarouselPage = () => {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [carouselId, setCarouselId] = useState("");
 
   useEffect(() => {
     fetchCarouselData();
@@ -71,8 +72,23 @@ const CreateCarouselPage = () => {
     }
   };
 
+  const setOperations = (id) => {
+    setCarouselId(id);
+    setModalOpen(true);
+  };
+
   return (
     <>
+      {modalOpen && (
+        <CustomModal
+          message={"Are you sure you want to delete this product?"}
+          ok={" Yes, I'm sure"}
+          cancel={"No, cancel"}
+          setModalOpen={setModalOpen}
+          performAction={() => handleDelete(carouselId)}
+          closeModel={() => setModalOpen(false)}
+        />
+      )}
       <div className="w-full px-5">
         {open && (
           <div className="fixed w-full h-screen bg-[#0000004b] top-0 left-0 flex items-center justify-center ">
@@ -165,22 +181,10 @@ const CreateCarouselPage = () => {
               <div className="flex flex-nowrap">
                 {carouselData.map((i) => (
                   <div key={i._id} className="mr-4 mb-4">
-                    {modalOpen && (
-                      <CustomModal
-                        message={
-                          "Are you sure you want to delete this product?"
-                        }
-                        ok={" Yes, I'm sure"}
-                        cancel={"No, cancel"}
-                        setModalOpen={setModalOpen}
-                        performAction={() => handleDelete(i._id)}
-                        closeModel={() => setModalOpen(false)}
-                      />
-                    )}
                     <CarouselCard
                       image={i.image}
                       caption={i.caption}
-                      handleDelete={() => setModalOpen(true)}
+                      handleDelete={() => setOperations(i._id)}
                     />
                   </div>
                 ))}

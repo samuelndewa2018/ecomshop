@@ -309,7 +309,7 @@ const AllOrders = () => {
 
   return (
     <div>
-      <h3 className="pb-4 font-bold">{user.name}'s Orders</h3>
+      <h3 className="pb-4 ml-2 font-bold">{user.name}'s Orders</h3>
       <div className="grid grid-cols-1">
         {rows?.map((row) => (
           <div
@@ -408,7 +408,7 @@ const TrackOrder = () => {
   console.log(rows);
   return (
     <div>
-      <h3 className="pb-4 font-bold">{user.name}'s Orders</h3>
+      <h3 className="pb-4 ml-2 font-bold">Track Orders</h3>
       <div className="grid grid-cols-1">
         {rows?.map((row) => (
           <div
@@ -476,78 +476,93 @@ const AllRefundOrders = () => {
   const eligibleOrders =
     orders && orders.filter((item) => item.status === "Processing refund");
 
-  const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "KES",
+    }).format(value);
+  };
 
-    {
-      field: "status",
-      headerName: "Status",
-      minWidth: 130,
-      flex: 0.7,
-      cellClassName: (params) => {
-        return params.getValue(params.id, "status") === "Delivered"
-          ? "greenColor"
-          : "redColor";
-      },
-    },
-    {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
-      minWidth: 130,
-      flex: 0.7,
-    },
+  const getOrderStatusColor = (status) => {
+    return status === "Delivered" ? "text-green-500" : "text-red-500";
+  };
 
-    {
-      field: "total",
-      headerName: "Total",
-      type: "number",
-      minWidth: 130,
-      flex: 0.8,
-    },
+  const renderOrderButton = (orderId) => {
+    return (
+      <Link to={`/user/order/${orderId}`}>
+        <button className="bg-blue-500 text-white rounded-lg py-2 px-4 flex items-center">
+          See Order
+        </button>
+      </Link>
+    );
+  };
 
-    {
-      field: " ",
-      flex: 1,
-      minWidth: 150,
-      headerName: "",
-      type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <>
-            <Link to={`/user/order/${params.id}`}>
-              <Button>
-                <AiOutlineArrowRight size={20} />
-              </Button>
-            </Link>
-          </>
-        );
-      },
-    },
-  ];
-
-  const row = [];
-
-  eligibleOrders &&
-    eligibleOrders.forEach((item) => {
-      row.push({
-        id: item._id,
-        itemsQty: item.cart.length,
-        total: "US$ " + item.totalPrice,
-        status: item.status,
-      });
-    });
-
+  const rows = eligibleOrders?.map((item) => ({
+    id: item._id,
+    no: item._id.replace(/\D/g, "").slice(0, 10),
+    createdAt: item.createdAt.slice(0, 10),
+    items: item.cart.map((i) => i.name).join(","),
+    image: item.cart.map((i) => i.images[0]),
+    itemsQty: item.cart.length,
+    total: formatCurrency(item.totalPrice),
+    status: item.status,
+    orderButton: renderOrderButton(item._id),
+  }));
+  console.log(rows);
   return (
-    <div className="pl-8 pt-1">
-      <DataGrid
-        rows={row}
-        columns={columns}
-        pageSize={10}
-        autoHeight
-        disableSelectionOnClick
-      />
+    <div>
+      <h3 className="pb-4 ml-2 font-bold">Refunds page</h3>
+      <div className="grid grid-cols-1">
+        {rows?.map((row) => (
+          <div
+            key={row.id}
+            className="p-4 border m-2 border-indigo-500  rounded-lg"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-lg font-medium">Order No. {row.no}</h4>
+              <span
+                className={`font-medium ${getOrderStatusColor(row.status)}`}
+              >
+                {row.status}
+              </span>
+            </div>
+            <p className="mb-2">Ordered On: {row.createdAt}</p>
+            <div className="block lg:flex">
+              <div className="flex">
+                <div className="mb-4 flex mr-1 w-full lg:w-24">
+                  <img
+                    src={`${backend_url}/${row.image[0]}`}
+                    alt="Order"
+                    className="w-fit lg:w-24 h-24 ml-[20%] lg:ml-0 rounded-lg object-contain"
+                  />
+                </div>
+              </div>
+              <div className="ml-1 block lg:flex space-x-0 lg:space-x-8">
+                <div>
+                  <div className="mb-2">
+                    <p className="font-bold">Items:</p>
+                    {row.items.slice(0, 70) + "..."}
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="mb-2 block">
+                    <p className="font-bold">Items Qty:</p>{" "}
+                    <p>{row.itemsQty}</p>
+                  </div>
+                  <div className="mb-2 ml-6 lg:ml-2">
+                    <p className="font-bold">Total:</p>
+                    <p>{row.total}</p>
+                  </div>
+                </div>
+                <div className="block">
+                  <p className="font-bold mb-3">Actions</p>
+                  {row.orderButton}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -564,9 +579,6 @@ const updatePasswordSchema = yup.object({
 });
 
 const ChangePassword = () => {
-  // const [oldPassword, setOldPassword] = useState("");
-  // const [newPassword, setNewPassword] = useState("");
-  // const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [visible2, setVisible2] = useState(false);
@@ -776,14 +788,26 @@ const ChangePassword = () => {
 
 const Address = () => {
   const [open, setOpen] = useState(false);
-  const [country, setCountry] = useState("");
+  const [country, setCountry] = useState("Kenya");
   const [city, setCity] = useState("");
-  const [zipCode, setZipCode] = useState();
+  const [zipCode, setZipCode] = useState("");
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
   const [addressType, setAddressType] = useState("");
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
+  const myClickHandler = (e, props) => {
+    setOpen(props);
+
+    if (!e) {
+      var e = window.event;
+      e.cancelBubble = true;
+    }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  };
 
   const addressTypeData = [
     {
@@ -818,7 +842,7 @@ const Address = () => {
       setCity("");
       setAddress1("");
       setAddress2("");
-      setZipCode(null);
+      setZipCode("");
       setAddressType("");
     }
   };
@@ -834,13 +858,19 @@ const Address = () => {
     <>
       <div className="w-full px-5">
         {open && (
-          <div className="fixed w-full h-screen bg-[#0000004b] top-0 left-0 flex items-center justify-center ">
-            <div className="w-[35%] h-[80vh] bg-white rounded shadow relative overflow-y-scroll">
+          <div
+            onClick={(e) => myClickHandler(e, false)}
+            className="fixed w-full h-screen bg-[#0000004b] top-0 left-0 flex items-center justify-center "
+          >
+            <div
+              onClick={(e) => myClickHandler(e, true)}
+              className="w-[35%] h-[80vh] bg-white rounded shadow relative overflow-y-scroll appear__smoothly"
+            >
               <div className="w-full flex justify-end p-3">
                 <RxCross1
                   size={30}
                   className="cursor-pointer"
-                  onClick={() => setOpen(false)}
+                  onClick={(e) => myClickHandler(e, false)}
                 />
               </div>
               <h1 className="text-center text-[25px] font-Poppins">
@@ -858,44 +888,69 @@ const Address = () => {
                         onChange={(e) => setCountry(e.target.value)}
                         className="w-[95%] border h-[40px] rounded-[5px]"
                       >
-                        <option value="" className="block border pb-2">
-                          choose your country
-                        </option>
-                        {Country &&
-                          Country.getAllCountries().map((item) => (
-                            <option
-                              className="block pb-2"
-                              key={item.isoCode}
-                              value={item.isoCode}
-                            >
-                              {item.name}
-                            </option>
-                          ))}
+                        <option value="Kenya">Kenya</option>
                       </select>
                     </div>
 
                     <div className="w-full pb-2">
-                      <label className="block pb-2">Choose your City</label>
+                      <label className="block pb-2">Choose your County</label>
+
                       <select
-                        name=""
-                        id=""
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
+                        name="county"
                         className="w-[95%] border h-[40px] rounded-[5px]"
+                        onChange={(e) => setCity(e.target.value)}
+                        value={city}
                       >
-                        <option value="" className="block border pb-2">
-                          choose your city
+                        <option value="" selected disabled>
+                          Select County
                         </option>
-                        {State &&
-                          State.getStatesOfCountry(country).map((item) => (
-                            <option
-                              className="block pb-2"
-                              key={item.isoCode}
-                              value={item.isoCode}
-                            >
-                              {item.name}
-                            </option>
-                          ))}
+                        <option value="Nairobi">Nairobi</option>
+                        <option value="Mombasa">Mombasa</option>
+                        <option value="Kwale">Kwale</option>
+                        <option value="Kilifi">Kilifi</option>
+                        <option value="Tana River">Tana River</option>
+                        <option value="Lamu">Lamu</option>
+                        <option value="Taita Taveta">Taita Taveta</option>
+                        <option value="Garissa">Garissa</option>
+                        <option value="Wajir">Wajir</option>
+                        <option value="Mandera">Mandera</option>
+                        <option value="Marsabit">Marsabit</option>
+                        <option value="Isiolo">Isiolo</option>
+                        <option value="Meru">Meru</option>
+                        <option value="Tharaka-Nithi">Tharaka-Nithi</option>
+                        <option value="Embu">Embu</option>
+                        <option value="Kitui">Kitui</option>
+                        <option value="Machakos">Machakos</option>
+                        <option value="Makueni">Makueni</option>
+                        <option value="Nyandarua">Nyandarua</option>
+                        <option value="Nyeri">Nyeri</option>
+                        <option value="Kirinyaga">Kirinyaga</option>
+                        <option value="Murang'a">Murang'a</option>
+                        <option value="Kiambu">Kiambu</option>
+                        <option value="Turkana">Turkana</option>
+                        <option value="West Pokot">West Pokot</option>
+                        <option value="Samburu">Samburu</option>
+                        <option value="Trans-Nzoia">Trans-Nzoia</option>
+                        <option value="Uasin Gishu">Uasin Gishu</option>
+                        <option value="Elgeyo-Marakwe">Elgeyo-Marakwet</option>
+                        <option value="Nandi">Nandi</option>
+                        <option value="Baringo">Baringo</option>
+                        <option value="Laikipia">Laikipia</option>
+                        <option value="Nakuru">Nakuru</option>
+                        <option value="Narok">Narok</option>
+                        <option value="Kajiado">Kajiado</option>
+                        <option value="Kericho">Kericho</option>
+                        <option value="Bomet">Bomet</option>
+                        <option value="Kakamega">Kakamega</option>
+                        <option value="Vihiga">Vihiga</option>
+                        <option value="Bungoma">Bungoma</option>
+                        <option value="Busia">Busia</option>
+                        <option value="Siaya">Siaya</option>
+                        <option value="Kisumu">Kisumu</option>
+                        <option value="Homa Bay">Homa Bay</option>
+                        <option value="Migori">Migori</option>
+                        <option value="Kisii">Kisii</option>
+                        <option value="Nyamira">Nyamira</option>
                       </select>
                     </div>
 
@@ -923,7 +978,7 @@ const Address = () => {
                     <div className="w-full pb-2">
                       <label className="block pb-2">Zip Code</label>
                       <input
-                        type="number"
+                        type="text"
                         className={`${styles.input}`}
                         required
                         value={zipCode}
@@ -977,7 +1032,7 @@ const Address = () => {
           </h1>
           <div
             className={`${styles.button} !rounded-md`}
-            onClick={() => setOpen(true)}
+            onClick={(e) => myClickHandler(e, true)}
           >
             <span className="text-[#fff]">Add New</span>
           </div>

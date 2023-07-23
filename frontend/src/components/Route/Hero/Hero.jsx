@@ -125,8 +125,8 @@ const Hero = () => {
                           className="bg-zinc-400 text-white py-1 px-2 text-xs rounded-full"
                           style={{ transform: "rotate(45deg)" }}
                         >
-                          {i.name.length > 14
-                            ? i.name.slice(0, 14) + "..."
+                          {i.name.length > 10
+                            ? i.name.slice(0, 10) + "..."
                             : i.name}
                         </span>
                       </div>
@@ -163,8 +163,8 @@ const Hero = () => {
                           className="bg-zinc-400 text-white py-1 px-2 text-xs rounded-full"
                           style={{ transform: "rotate(45deg)" }}
                         >
-                          {i.name.length > 14
-                            ? i.name.slice(0, 14) + "..."
+                          {i.name.length > 10
+                            ? i.name.slice(0, 10) + "..."
                             : i.name}
                         </span>
                       </div>
@@ -203,8 +203,8 @@ const Hero = () => {
                           className="bg-zinc-400 text-white py-1 px-2 text-xs rounded-full"
                           style={{ transform: "rotate(45deg)" }}
                         >
-                          {i.promotionDetails.length > 8
-                            ? i.promotionDetails.slice(0, 8) + "..."
+                          {i.promotionDetails.length > 10
+                            ? i.promotionDetails.slice(0, 10) + "..."
                             : i.promotionDetails}
                         </span>
                       </div>

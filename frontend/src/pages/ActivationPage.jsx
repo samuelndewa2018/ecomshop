@@ -46,7 +46,14 @@ const ActivationPage = () => {
 
         {error ? (
           <div>
-            <p>Your token is expired!</p>
+            <p>Your token has already expired!</p>
+            <br />
+            <Link
+              to="/sign-up"
+              className="group mt-2 relative h-[40px] flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              Back to Create Account
+            </Link>
           </div>
         ) : (
           <>

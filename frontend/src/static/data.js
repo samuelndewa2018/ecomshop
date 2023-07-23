@@ -667,5 +667,6 @@ export const footerSupportLinks = [
   },
   {
     name: "Live chat",
+    link: "/inbox",
   },
 ];

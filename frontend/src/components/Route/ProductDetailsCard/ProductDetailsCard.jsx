@@ -111,8 +111,12 @@ const ProductDetailsCard = ({ setOpen, data }) => {
     }
   };
 
+  const maximum = () => {
+    toast.error("Maximun Stock reached");
+  };
+
   return (
-    <div className="bg-[#fff]">
+    <div className="bg-[#fff] ">
       {data ? (
         <div
           onClick={(e) => myClickHandler(e, false)}
@@ -120,7 +124,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
         >
           <div
             onClick={(e) => myClickHandler(e, true)}
-            className="w-[90%] 800px:w-[60%] h-[90vh] overflow-y-scroll 800px:h-[75vh] bg-white rounded-md shadow-sm relative p-4 scroll__bar"
+            className="w-[90%] 800px:w-[60%] h-[75vh] lg:h-[90vh] my-14 overflow-y-scroll 800px:h-[75vh] bg-white rounded-md shadow-sm relative p-4 scroll__bar"
           >
             <RxCross1
               size={30}
@@ -134,39 +138,10 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                   src={`${backend_url}${data.images && data.images[0]}`}
                   alt=""
                 />
-                <div className="flex">
-                  <Link to={`/shop/preview/${data.shop._id}`} className="flex">
-                    <img
-                      src={`${backend_url}${data?.shop?.avatar}`}
-                      alt=""
-                      // className="w-[50px] h-[50px] rounded-full mr-2"
-                      className="h-[100px] w-[100px] object-cover mr-3 mt-3"
-                    />
-                    <div>
-                      <h3 className={`${styles.shop_name}`}>
-                        {data.shop.name}
-                      </h3>
-                      <h5 className="pb-3 text-[15px]">(4.5) Ratings</h5>
-                    </div>
-                  </Link>
-                </div>
-                <div
-                  className={`${styles.button} bg-[#000] mt-4 rounded-[4px] h-11`}
-                  onClick={handleMessageSubmit}
-                >
-                  <span className="text-[#fff] flex items-center">
-                    Send Message <AiOutlineMessage className="ml-1" />
-                  </span>
-                </div>
-                <h5 className="text-[16px] text-[#68d284] mt-5 ml-4">
-                  {data?.sold_out !== 0 && <span>({data?.sold_out}) sold</span>}
-                </h5>
               </div>
 
               <div className="w-full 800px:w-[50%] pt-5 pl-[5px] pr-[5px]">
-                <h1 className={`${styles.productTitle} text-[20px]`}>
-                  {data.name}
-                </h1>
+                <h1 className="text-[#333] font-[600]">{data.name}</h1>
                 <div className="disableStyles">
                   <p dangerouslySetInnerHTML={{ __html: getDescription() }}></p>
                   {data.description.length > 450 && (
@@ -198,23 +173,38 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                     ) : null}
                   </h3>
                 </div>
-                <div className="flex items-center mt-12 justify-between pr-3">
-                  <div>
-                    <button
-                      className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
-                      onClick={decrementCount}
-                    >
-                      -
-                    </button>
-                    <span className="bg-gray-200 text-gray-800 font-medium px-4 py-[11px]">
-                      {count}
-                    </span>
-                    <button
-                      className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 py-2 shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
-                      onClick={incrementCount}
-                    >
-                      +
-                    </button>
+                <div className="flex items-center justify-between pr-3">
+                  <div className="w-full">
+                    <div className="w-full flex">
+                      <div className="w-1/2">
+                        <div className="text-lg font-bold">Qty:</div>
+                        <div className="flex items-center mt-2">
+                          <div
+                            className={`${
+                              count <= 1
+                                ? "bg-gray-300 cursor-not-allowed"
+                                : "bg-gray-300 cursor-pointer"
+                            } w-10 h-10 flex items-center justify-center rounded-full`}
+                            onClick={decrementCount}
+                          >
+                            <span className="text-xl">-</span>
+                          </div>
+                          <div className="mx-4">{count}</div>
+                          <div
+                            className={`${
+                              count >= data.stock
+                                ? "bg-gray-300 cursor-not-allowed"
+                                : "bg-gray-300 cursor-pointer"
+                            } w-10 h-10 flex items-center justify-center rounded-full`}
+                            onClick={
+                              count >= data.stock ? maximum : incrementCount
+                            }
+                          >
+                            <span className="text-xl">+</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     {click ? (
@@ -252,6 +242,33 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                       Add to compare <TbArrowsShuffle2 className="ml-1" />
                     </span>
                   </div>
+                </div>
+                <h5 className="text-[16px] text-[#68d284] mt-5 ml-4">
+                  {data?.sold_out !== 0 && <span>({data?.sold_out}) sold</span>}
+                </h5>
+                <div className="flex">
+                  <Link to={`/shop/preview/${data.shop._id}`} className="flex">
+                    <img
+                      src={`${backend_url}${data?.shop?.avatar}`}
+                      alt=""
+                      // className="w-[50px] h-[50px] rounded-full mr-2"
+                      className="h-[100px] w-[100px] object-cover mr-3 mt-3"
+                    />
+                    <div>
+                      <h3 className={`${styles.shop_name}`}>
+                        {data.shop.name}
+                      </h3>
+                      <h5 className="pb-3 text-[15px]">(4.5) Ratings</h5>
+                    </div>
+                  </Link>
+                </div>
+                <div
+                  className={`${styles.button} bg-[#000] mt-4 rounded-[4px] h-11`}
+                  onClick={handleMessageSubmit}
+                >
+                  <span className="text-[#fff] flex items-center">
+                    Send Message <AiOutlineMessage className="ml-1" />
+                  </span>
                 </div>
               </div>
             </div>

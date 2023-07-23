@@ -78,6 +78,9 @@ import AdminEditProduct from "./components/Admin/UpdateProduct";
 
 import AdminStatements from "./pages/AdminStatements";
 import NotFound from "./pages/NotFound";
+import Unsubscribe from "./pages/Unsubscribe";
+import SendEmailsPage from "./pages/SendEmailsPage";
+import Location from "./Trial/Location";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
@@ -133,6 +136,15 @@ const App = () => {
         <Route path="/events" element={<EventsPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route
+          path="/unsubscribe"
+          element={
+            <ProtectedRoute>
+              <Unsubscribe />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/login/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/shop-login/forgot-password"
@@ -247,6 +259,8 @@ const App = () => {
         />
         {/* to be removed in production */}
         <Route path="/trial" element={<TrialPage />} />
+        <Route path="/location" element={<Location />} />
+
         {/* /// */}
 
         <Route
@@ -403,6 +417,15 @@ const App = () => {
             </ProtectedAdminRoute>
           }
         />
+        <Route
+          path="/admin-sendemails"
+          element={
+            <ProtectedAdminRoute>
+              <SendEmailsPage />
+            </ProtectedAdminRoute>
+          }
+        />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
       <ToastContainer

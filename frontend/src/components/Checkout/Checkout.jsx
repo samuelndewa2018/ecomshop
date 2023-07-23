@@ -181,7 +181,7 @@ const ShippingInfo = ({
               type="text"
               value={user && user.name}
               required
-              className={`${styles.input} !w-[95%]`}
+              className={`${styles.input} lg:!w-[95%]`}
             />
           </div>
           <div className="w-full lg:w-[50%]">
@@ -235,7 +235,7 @@ const ShippingInfo = ({
             </select>
           </div>
           <div className="w-[50%]">
-            <label className="block pb-2 font-bold">City</label>
+            <label className="block pb-2 font-bold">County</label>
             <select
               name="county"
               className="w-[95%] border h-[40px] rounded-[5px]"
@@ -296,18 +296,18 @@ const ShippingInfo = ({
           </div>
         </div>
 
-        <div className="w-full flex pb-3">
-          <div className="w-[50%]">
+        <div className="w-full block lg:flex pb-3">
+          <div className="w-full lg:w-[50%]">
             <label className="block pb-2 font-[500]">Address1</label>
             <input
               type="address"
               required
               value={address1}
               onChange={(e) => setAddress1(e.target.value)}
-              className={`${styles.input} !w-[95%]`}
+              className={`${styles.input} lg:!w-[95%]`}
             />
           </div>
-          <div className="w-[50%]">
+          <div className="w-full lg:w-[50%]">
             <label className="block pb-2 font-[500]">Address2</label>
             <input
               type="address"

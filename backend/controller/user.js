@@ -497,7 +497,7 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
                             align="center"
                           >
                             <a
-                              href="http://htmlemail.io"
+                              href=""
                               style="
                                 color: #999999;
                                 font-size: 12px;
@@ -589,12 +589,11 @@ router.post(
       await sendMail({
         email: "samuelndewa2018@gmail.com",
         subject: `Subscription`,
-        message: `Hello eShop,\nYou have a new subscription. Email: ${email}\n*******************************\n@Quality is our middle name.`,
+        html: `Hello eShop,\nYou have a new subscription. Email: ${email}\n*******************************\n@Quality is our middle name.`,
       });
       await sendMail({
         email: email,
         subject: `Subscription`,
-        // message: `\n*******************************\n@Quality is our middle name.`,
         html: `<!DOCTYPE html>
         <html>
           <head>
@@ -1019,7 +1018,7 @@ router.post(
                             align="center"
                           >
                             <a
-                              href="http://htmlemail.io"
+                              href=""
                               style="
                                 color: #999999;
                                 font-size: 12px;
@@ -1901,7 +1900,7 @@ router.post(
                             align="center"
                           >
                             <a
-                              href="http://htmlemail.io"
+                              href=""
                               style="
                                 color: #999999;
                                 font-size: 12px;
@@ -2386,7 +2385,7 @@ router.post(
                             align="center"
                           >
                             <a
-                              href="http://htmlemail.io"
+                              href=""
                               style="
                                 color: #999999;
                                 font-size: 12px;

@@ -125,7 +125,7 @@ const Cart = ({ setOpenCart }) => {
                   className={`h-[45px] mb-12 mt-1 lg:mb-0 flex items-center justify-center w-[100%] bg-[#e44343] rounded-[5px]`}
                   onClick={(e) => CheckoutClose(e, false)}
                 >
-                  <h1 className="text-[#fff] text-[18px] font-[600]">
+                  <h1 className="text-[#fff] font-[600]">
                     Checkout Now (
                     <NumericFormat
                       value={totalPrice}
