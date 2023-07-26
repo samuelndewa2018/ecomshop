@@ -410,7 +410,7 @@ router.post("/subscribe", async (req, res) => {
         {
           filename: "logo.png",
           path: __dirname + "/logo.png",
-          cid: "logo", //same cid value as in the html img src
+          cid: "logo",
         },
       ],
     });
@@ -899,16 +899,14 @@ router.post("/subscribe", async (req, res) => {
       message: "Subscribed successfully.",
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "Failed to subscribe." });
   }
 });
 
+//get all subscribers
 router.get("/get-subscribers", async (req, res) => {
   try {
-    // Find all subscribers in the database
     const subscribers = await Subscriber.find();
-
     res.status(200).json({
       sucess: true,
       subscribers,
@@ -1421,6 +1419,7 @@ router.post("/send-emails", async (req, res) => {
   }
 });
 
+//delete/unsubscribe subscriber
 router.delete("/delete-subscribe", async (req, res) => {
   const { email } = req.query;
 
@@ -1901,7 +1900,7 @@ router.delete("/delete-subscribe", async (req, res) => {
         {
           filename: "logo.png",
           path: __dirname + "/logo.png",
-          cid: "logo", //same cid value as in the html img src
+          cid: "logo",
         },
       ],
     });

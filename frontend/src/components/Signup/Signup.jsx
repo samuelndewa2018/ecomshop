@@ -8,7 +8,6 @@ import { server } from "../../server";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import defaultavatar from "../../Assests/defaultavatar.png";
 import Spinner from "../Spinner";
 import Header from "../Layout/Header";
 import Footer from "../Layout/Footer";
@@ -30,7 +29,9 @@ const signupSchema = yup.object({
 
 const Singup = () => {
   const [visible, setVisible] = useState(false);
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState(
+    "https://res.cloudinary.com/bramuels/image/upload/v1690231799/avatars/defaultavatar_xl1nel.png"
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -40,8 +41,15 @@ const Singup = () => {
   const [checked, setChecked] = useState(false);
 
   const handleFileInputChange = (e) => {
-    const file = e.target.files[0];
-    setAvatar(file);
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setAvatar(reader.result);
+      }
+    };
+
+    reader.readAsDataURL(e.target.files[0]);
   };
 
   const formik = useFormik({
@@ -50,25 +58,18 @@ const Singup = () => {
       email: "",
       password: "",
       termsAndConditions: false,
+      avatar: "",
     },
     validationSchema: signupSchema,
     onSubmit: async (values) => {
       const name = values.name;
       const email = values.email;
       const password = values.password;
-      const avatari = avatar;
 
       await setLoading(true);
-      const config = { headers: { "Content-Type": "multipart/form-data" } };
 
-      const newForm = new FormData();
-
-      newForm.append("file", avatari);
-      newForm.append("name", name);
-      newForm.append("email", email);
-      newForm.append("password", password);
-      axios
-        .post(`${server}/user/create-user`, newForm, config)
+      await axios
+        .post(`${server}/user/create-user`, { name, email, password, avatar })
         .then((res) => {
           toast.success(res.data.message);
           setAvatar();
@@ -104,7 +105,7 @@ const Singup = () => {
         style={{ margin: "0 20px" }}
       >
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-[14px] lg:text-[18px] font-extrabold text-gray-900">
             Register as a new user
           </h2>
         </div>
@@ -219,10 +220,10 @@ const Singup = () => {
                   className="block text-sm font-medium text-gray-700"
                 ></label>
                 <div className="mt-2 flex items-center">
-                  <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
+                  <span className="inline-block h-10 w-10 rounded-full overflow-hidden">
                     {avatar ? (
                       <img
-                        src={URL.createObjectURL(avatar)}
+                        src={avatar}
                         alt="avatar"
                         className="h-full w-full object-cover rounded-full"
                       />

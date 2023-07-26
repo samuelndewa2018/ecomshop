@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { createProduct } from "../../redux/actions/product";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { categoriesData } from "../../static/data";
 import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -33,7 +32,8 @@ const CreateProduct = () => {
   const dispatch = useDispatch();
 
   const [images, setImages] = useState([]);
-  const [categories, setCategories] = useState([]); // state for storing categories
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -46,11 +46,10 @@ const CreateProduct = () => {
     }
   }, [dispatch, error, success]);
   useEffect(() => {
-    // Fetch categories from the backend when the component mounts
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${server}/category/categories`); // Replace "/api/categories" with the actual API endpoint for retrieving categories
-        setCategories(response.data); // Update the categories state with the fetched data
+        const response = await axios.get(`${server}/category/categories`);
+        setCategories(response.data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       }
@@ -60,13 +59,16 @@ const CreateProduct = () => {
   }, []);
 
   const handleImageChange = (e) => {
-    e.preventDefault();
+    const files = Array.from(e.target.files);
 
-    let files = Array.from(e.target.files);
-    setImages((prevImages) => [...prevImages, ...files]);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImages((old) => [...old, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
   };
-
-  console.log(images);
 
   const formik = useFormik({
     initialValues: {
@@ -77,9 +79,11 @@ const CreateProduct = () => {
       originalPrice: "",
       discountPrice: "",
       stock: "",
+      images: "",
     },
     validationSchema: createProductSchema,
     onSubmit: async (values) => {
+      setLoading(true);
       const name = values.name;
       const description = values.description;
       const category = values.category;
@@ -87,11 +91,10 @@ const CreateProduct = () => {
       const originalPrice = values.originalPrice;
       const discountPrice = values.discountPrice;
       const stock = values.stock;
-      const imagesi = images;
 
       const newForm = new FormData();
 
-      imagesi.forEach((image) => {
+      images.forEach((image) => {
         newForm.append("images", image);
       });
       newForm.append("name", name);
@@ -102,14 +105,50 @@ const CreateProduct = () => {
       newForm.append("discountPrice", discountPrice);
       newForm.append("stock", stock);
       newForm.append("shopId", seller._id);
-      dispatch(createProduct(newForm));
+      setLoading(true);
+      dispatch(
+        createProduct({
+          name,
+          description,
+          category,
+          tags,
+          originalPrice,
+          discountPrice,
+          stock,
+          shopId: seller._id,
+          images,
+        })
+      );
+      setLoading(false);
     },
   });
   const deleteImage = (index) => {
     const updatedImages = [...images];
-    updatedImages.splice(index, 1); // Remove the image at the specified index
+    updatedImages.splice(index, 1);
     setImages(updatedImages);
   };
+
+  const quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "image"],
+      ["clean"],
+    ],
+  };
+
+  const quillFormats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "link",
+    "image",
+  ];
 
   return (
     <div className="w-[90%] 800px:w-[50%] bg-white  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
@@ -141,11 +180,11 @@ const CreateProduct = () => {
           </label>
           <ReactQuill
             theme="snow"
-            // required
-            // type="text"
             name="description"
             onChange={formik.handleChange("description")}
             // onBlur={formik.handleBlur("description")}
+            modules={quillModules}
+            formats={quillFormats}
             value={formik.values.description}
             placeholder="Enter your product description..."
           />
@@ -264,7 +303,7 @@ const CreateProduct = () => {
               images.map((image, index) => (
                 <div className="relative" key={index}>
                   <img
-                    src={URL.createObjectURL(image)}
+                    src={image}
                     alt=""
                     className="h-[120px] w-[120px] object-cover m-2"
                   />
@@ -279,11 +318,13 @@ const CreateProduct = () => {
           </div>
           <br />
           <div>
-            <input
+            <button
               type="submit"
-              value="Create"
+              disabled={loading}
               className="mt-2 cursor-pointer appearance-none text-center block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
+            >
+              {loading ? "Creating..." : "Create"}
+            </button>
           </div>
         </div>
       </form>

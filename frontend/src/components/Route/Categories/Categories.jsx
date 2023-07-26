@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "../../../styles/styles";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import axios from "axios";
-import { backend_url, server } from "../../../server";
+import { server } from "../../../server";
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -102,7 +102,7 @@ const Categories = () => {
                   >
                     <p className="text-sm">{category.name}</p>
                     <img
-                      src={`${backend_url}${category?.image}`}
+                      src={`${category.image[0]?.url}`}
                       className="lg:w-[170px] sm:w-[100px] object-cover h-[60px] lg:h-[80px]"
                       alt=""
                     />

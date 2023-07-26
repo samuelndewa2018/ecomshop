@@ -16,11 +16,10 @@ const ProductsPage = () => {
   const { allProducts, isLoading } = useSelector((state) => state.products);
   const [data, setData] = useState([]);
   const [categoriesData, setCategoriesData] = useState([]);
-  const [sortBy, setSortBy] = useState(""); // State for sorting option
-  const [selectedCategory, setSelectedCategory] = useState(""); // State for selected category
+  const [sortBy, setSortBy] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
-    // Fetch categoriesData from the server
     fetchCategoriesData();
   }, []);
 

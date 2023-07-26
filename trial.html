@@ -1,383 +1,206 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Simple Transactional Email</title>
-    <style>
-      /* Add your CSS styles here */
-    </style>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+    />
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css" />
+
+    <title>Invoice..!</title>
   </head>
-  <body
-    style="
-      background-color: #f6f6f6;
-      font-family: sans-serif;
-      -webkit-font-smoothing: antialiased;
-      font-size: 14px;
-      line-height: 1.4;
-      margin: 0;
-      padding: 0;
-      -ms-text-size-adjust: 100%;
-      -webkit-text-size-adjust: 100%;
-    "
-  >
-    <span
-      class="preheader"
-      style="
-        color: transparent;
-        display: none;
-        height: 0;
-        max-height: 0;
-        max-width: 0;
-        opacity: 0;
-        overflow: hidden;
-        mso-hide: all;
-        visibility: hidden;
-        width: 0;
-      "
-      >eShop</span
-    >
-    <table
-      role="presentation"
-      border="0"
-      cellpadding="0"
-      cellspacing="0"
-      class="body"
-      style="
-        border-collapse: separate;
-        mso-table-lspace: 0pt;
-        mso-table-rspace: 0pt;
-        background-color: #f6f6f6;
-        width: 100%;
-      "
-      width="100%"
-      bgcolor="#f6f6f6"
-    >
-      <tr>
-        <td
-          style="font-family: sans-serif; font-size: 14px; vertical-align: top"
-          valign="top"
-        >
-          &nbsp;
-        </td>
-        <td
-          class="container"
-          style="
-            font-family: sans-serif;
-            font-size: 14px;
-            vertical-align: top;
-            display: block;
-            max-width: 580px;
-            padding: 10px;
-            width: 580px;
-            margin: 0 auto;
-          "
-          width="580"
-          valign="top"
-        >
-          <div
-            class="content"
-            style="
-              box-sizing: border-box;
-              display: block;
-              margin: 0 auto;
-              max-width: 580px;
-              padding: 10px;
-            "
-          >
-            <!-- START CENTERED WHITE CONTAINER -->
-            <table
-              role="presentation"
-              class="main"
-              style="
-                border-collapse: separate;
-                mso-table-lspace: 0pt;
-                mso-table-rspace: 0pt;
-                background: #ffffff;
-                border-radius: 3px;
-                width: 100%;
-              "
-              width="100%"
-            >
-              <div
-                style="
-                  clear: both;
-                  margin-top: 10px;
-                  text-align: center;
-                  width: 100%;
-                "
-              >
-                <img
-                  src="cid:logo"
-                  alt="eShoplogo"
-                  style="height: 50px; width: 50px"
-                />
-                <p style="color: #999999; font-size: 12px; text-align: center">
-                  We are here to serve
-                </p>
-              </div>
-              <!-- START MAIN CONTENT AREA -->
-              <tr>
-                <td
-                  class="wrapper"
-                  style="
-                    font-family: sans-serif;
-                    font-size: 14px;
-                    vertical-align: top;
-                    box-sizing: border-box;
-                    padding: 20px;
-                  "
-                  valign="top"
-                >
-                  <table
-                    role="presentation"
-                    border="0"
-                    cellpadding="0"
-                    cellspacing="0"
-                    style="
-                      border-collapse: separate;
-                      mso-table-lspace: 0pt;
-                      mso-table-rspace: 0pt;
-                      width: 100%;
-                    "
-                    width="100%"
-                  >
-                    <tr>
-                      <td
-                        style="
-                          font-family: sans-serif;
-                          font-size: 14px;
-                          vertical-align: top;
-                        "
-                        valign="top"
-                      >
-                        <div
-                          style="
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            margin-bottom: 25px;
-                          "
-                        ></div>
 
-                        <p
-                          style="
-                            font-family: sans-serif;
-                            font-size: 14px;
-                            font-weight: normal;
-                            margin: 0;
-                            margin-bottom: 15px;
-                          "
-                        >
-                          Hello Admin,
-                        </p>
-                        <p
-                          style="
-                            font-family: sans-serif;
-                            font-size: 14px;
-                            font-weight: normal;
-                            margin: 0;
-                            margin-bottom: 15px;
-                          "
-                        >
-                          You have a new subscriber<br />
-                          Email: samuelndewa2018@gmail.com
-                          <br />
-                        </p>
-                        <table
-                          role="presentation"
-                          border="0"
-                          cellpadding="0"
-                          cellspacing="0"
-                          class="btn btn-primary"
-                          style="
-                            border-collapse: separate;
-                            mso-table-lspace: 0pt;
-                            mso-table-rspace: 0pt;
-                            box-sizing: border-box;
-                            width: 100%;
-                          "
-                          width="100%"
-                        >
-                          <tbody>
-                            <tr>
-                              <td
-                                align="left"
-                                style="
-                                  font-family: sans-serif;
-                                  font-size: 14px;
-                                  vertical-align: top;
-                                  padding-bottom: 15px;
-                                "
-                                valign="top"
-                              >
-                                <table
-                                  role="presentation"
-                                  border="0"
-                                  cellpadding="0"
-                                  cellspacing="0"
-                                  style="
-                                    border-collapse: separate;
-                                    mso-table-lspace: 0pt;
-                                    mso-table-rspace: 0pt;
-                                    width: auto;
-                                  "
-                                >
-                                  <tbody>
-                                    <tr>
-                                      <td
-                                        style="
-                                          font-family: sans-serif;
-                                          font-size: 14px;
-                                          vertical-align: top;
-                                          border-radius: 5px;
-                                          text-align: center;
-                                          background-color: #3498db;
-                                        "
-                                        valign="top"
-                                        align="center"
-                                        bgcolor="#3498db"
-                                      ></td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <p
-                          style="
-                            font-family: sans-serif;
-                            font-size: 14px;
-                            font-weight: normal;
-                            margin: 0;
-                            margin-bottom: 15px;
-                          "
-                        >
-                          <b>eShop</b> Quality is our middle name
-                        </p>
-                        <p
-                          style="
-                            font-family: sans-serif;
-                            font-size: 14px;
-                            font-weight: normal;
-                            margin: 0;
-                            margin-bottom: 15px;
-                          "
-                        >
-                          Asante Sana! Karibu Tena.
-                        </p>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-
-              <!-- END MAIN CONTENT AREA -->
-            </table>
-            <!-- END CENTERED WHITE CONTAINER -->
-
-            <!-- START FOOTER -->
-            <div
-              class="footer"
-              style="
-                clear: both;
-                margin-top: 10px;
-                text-align: center;
-                width: 100%;
-              "
-            >
-              <table
-                role="presentation"
-                border="0"
-                cellpadding="0"
-                cellspacing="0"
-                style="
-                  border-collapse: separate;
-                  mso-table-lspace: 0pt;
-                  mso-table-rspace: 0pt;
-                  width: 100%;
-                "
-                width="100%"
-              >
-                <tr>
-                  <td
-                    class="content-block"
-                    style="
-                      font-family: sans-serif;
-                      vertical-align: top;
-                      padding-bottom: 10px;
-                      padding-top: 10px;
-                      color: #999999;
-                      font-size: 12px;
-                      text-align: center;
-                    "
-                    valign="top"
-                    align="center"
-                  >
-                    <span
-                      class="apple-link"
-                      style="
-                        color: #999999;
-                        font-size: 12px;
-                        text-align: center;
-                      "
-                      >eShop Online Shop, Kahawa Shukari, Baringo Road</span
-                    >
-                    <br />
-                    Don't like receiving <b>eShop</b> emails?
-                    <a
-                      href="http://localhost:3000/unsubscribe"
-                      style="
-                        text-decoration: underline;
-                        color: #999999;
-                        font-size: 12px;
-                        text-align: center;
-                      "
-                      >Unsubscribe</a
-                    >.
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    class="content-block powered-by"
-                    style="
-                      font-family: sans-serif;
-                      vertical-align: top;
-                      padding-bottom: 10px;
-                      padding-top: 10px;
-                      color: #999999;
-                      font-size: 12px;
-                      text-align: center;
-                    "
-                    valign="top"
-                    align="center"
-                  >
-                    <a
-                      href=""
-                      style="
-                        color: #999999;
-                        font-size: 12px;
-                        text-align: center;
-                        text-decoration: none;
-                      "
-                      >&copy; ${new Date().getFullYear()} eShop. All rights
-                      reserved.</a
-                    >.
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <!-- END FOOTER -->
+  <body>
+    <div class="my-5 page" size="A4">
+      <div class="p-5">
+        <section class="top-content bb d-flex justify-content-between">
+          <div class="logo">
+            <img src="logo.png" alt="" class="img-fluid" />
           </div>
-        </td>
-        <td
-          style="font-family: sans-serif; font-size: 14px; vertical-align: top"
-          valign="top"
-        >
-          &nbsp;
-        </td>
-      </tr>
-    </table>
+          <div class="top-left">
+            <div class="graphic-path">
+              <p>Invoice</p>
+            </div>
+            <div class="position-relative">
+              <p>Invoice No. <span>XXXX</span></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="store-user mt-5">
+          <div class="col-10">
+            <div class="row bb pb-3">
+              <div class="col-7">
+                <p>Supplier,</p>
+                <h2>Your Store Name</h2>
+                <p class="address">
+                  777 Brockton Avenue, <br />
+                  Abington MA 2351, <br />Vestavia Hills AL
+                </p>
+                <div class="txn mt-2">TXN: XXXXXXX</div>
+              </div>
+              <div class="col-5">
+                <p>Client,</p>
+                <h2>Sabur Ali</h2>
+                <p class="address">
+                  777 Brockton Avenue, <br />
+                  Abington MA 2351, <br />Vestavia Hills AL
+                </p>
+                <div class="txn mt-2">TXN: XXXXXXX</div>
+              </div>
+            </div>
+            <div class="row extra-info pt-3">
+              <div class="col-7">
+                <p>Payment Method: <span>bKash</span></p>
+                <p>Order Number: <span>#868</span></p>
+              </div>
+              <div class="col-5">
+                <p>Deliver Date: <span>10-04.2021</span></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="product-area mt-4">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <td>Item Description</td>
+                <td>Price</td>
+                <td>Quantity</td>
+                <td>Total</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="media">
+                    <img
+                      class="mr-3 img-fluid"
+                      src="mobile.jpg"
+                      alt="Product 01"
+                    />
+                    <div class="media-body">
+                      <p class="mt-0 title">Media heading</p>
+                      Cras sit amet nibh libero, in gravida nulla.
+                    </div>
+                  </div>
+                </td>
+                <td>200$</td>
+                <td>1</td>
+                <td>200$</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="media">
+                    <img
+                      class="mr-3 img-fluid"
+                      src="mobile-2.jpg"
+                      alt="Product 01"
+                    />
+                    <div class="media-body">
+                      <p class="mt-0 title">Media heading</p>
+                      Cras sit amet nibh libero, in gravida nulla.
+                    </div>
+                  </div>
+                </td>
+                <td>300$</td>
+                <td>2</td>
+                <td>600$</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="balance-info">
+          <div class="row">
+            <div class="col-8">
+              <p class="m-0 font-weight-bold">Note:</p>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. In
+                delectus, adipisci vero est dolore praesentium.
+              </p>
+            </div>
+            <div class="col-4">
+              <table class="table border-0 table-hover">
+                <tr>
+                  <td>Sub Total:</td>
+                  <td>800$</td>
+                </tr>
+                <tr>
+                  <td>Tax:</td>
+                  <td>15$</td>
+                </tr>
+                <tr>
+                  <td>Deliver:</td>
+                  <td>10$</td>
+                </tr>
+                <tfoot>
+                  <tr>
+                    <td>Total:</td>
+                    <td>825$</td>
+                  </tr>
+                </tfoot>
+              </table>
+
+              <!-- Signature -->
+              <div class="col-12">
+                <img src="signature.png" class="img-fluid" alt="" />
+                <p class="text-center m-0">Director Signature</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cart BG -->
+        <img src="cart.jpg" class="img-fluid cart-bg" alt="" />
+
+        <footer>
+          <hr />
+          <p class="m-0 text-center">
+            View THis Invoice Online At -
+            <a href="#!"> invoice/saburbd.com/#868 </a>
+          </p>
+          <div class="social pt-3">
+            <span class="pr-2">
+              <i class="fas fa-mobile-alt"></i>
+              <span>0123456789</span>
+            </span>
+            <span class="pr-2">
+              <i class="fas fa-envelope"></i>
+              <span>me@saburali.com</span>
+            </span>
+            <span class="pr-2">
+              <i class="fab fa-facebook-f"></i>
+              <span>/sabur.7264</span>
+            </span>
+            <span class="pr-2">
+              <i class="fab fa-youtube"></i>
+              <span>/abdussabur</span>
+            </span>
+            <span class="pr-2">
+              <i class="fab fa-github"></i>
+              <span>/example</span>
+            </span>
+          </div>
+        </footer>
+      </div>
+    </div>
   </body>
 </html>

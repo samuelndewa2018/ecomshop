@@ -52,7 +52,6 @@ router.post(
 );
 
 // get all withdraws --- admnin
-
 router.get(
   "/get-all-withdraw-request",
   isAuthenticated,
@@ -71,7 +70,7 @@ router.get(
   })
 );
 
-// update withdraw request ---- admin
+// update withdraw request --- admin
 router.put(
   "/update-withdraw-request/:id",
   isAuthenticated,

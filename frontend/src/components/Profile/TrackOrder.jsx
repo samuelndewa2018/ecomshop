@@ -7,7 +7,6 @@ import {
   FaTruck,
   FaCheck,
   FaInfoCircle,
-  FaCreditCard,
   FaHourglass,
   FaHandshake,
 } from "react-icons/fa";
@@ -47,7 +46,6 @@ const TrackOrder = () => {
       label: "Give us Rating",
       icon: <AiOutlineLike />,
     },
-    // { status: "Refund Success", label: "Refund Success", icon: <FaCheck /> },
   ];
 
   const getStatusIndex = (status) => {
@@ -61,34 +59,6 @@ const TrackOrder = () => {
 
   return (
     <>
-      {/* <div className="">
-        {data && (
-          <div className="w-3/4">
-            <h1 className="text-3xl font-bold mb-8">Track Your Order</h1>
-            <ol className="flex items-center w-full">
-              {progressSteps.map((step, index) => (
-                <li
-                  key={index}
-                  className={`flex w-full items-center ${
-                    index <= getCurrentStep()
-                      ? "text-blue-600 dark:text-blue-500"
-                      : ""
-                  } after:content-[''] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block dark:after:border-blue-800`}
-                >
-                  <span className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 dark:bg-blue-800 shrink-0">
-                    {step.icon ? (
-                      <span className="text-blue-600 dark:text-blue-300">
-                        {step.icon}
-                      </span>
-                    ) : null}
-                  </span>
-                  <span className="ml-4 text-lg">{step.label}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-      </div> */}
       {data && (
         <div className="hidden lg:block m-5 mb-10">
           <h1 className="text-3xl font-bold mb-8 text-center">
@@ -179,7 +149,6 @@ const TrackOrder = () => {
                     </span>
                     <h3 className="font-medium align-center">{step.label}</h3>
                   </Link>
-                  {/* <p className="text-sm">{data?.updatedAt?.slice(0, 10)}</p> */}
                 </li>
               ))}
           </ol>

@@ -48,10 +48,14 @@ const userSchema = new mongoose.Schema({
     default: "user",
   },
   avatar: {
-    type: String,
-    required: true,
-    default:
-      "https://res.cloudinary.com/bramuels/image/upload/v1656165811/avatar/Profile_sdltwi.png",
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
   },
   createdAt: {
     type: Date,

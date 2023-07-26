@@ -2,46 +2,37 @@ const express = require("express");
 const path = require("path");
 const User = require("../model/user");
 const router = express.Router();
-const { upload } = require("../multer");
 const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const fs = require("fs");
+const cloudinary = require("cloudinary");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
 const sendToken = require("../utils/jwtToken");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
-const user = require("../model/user");
 const crypto = require("crypto");
 
-router.post("/create-user", upload.single("file"), async (req, res, next) => {
+//create user
+router.post("/create-user", async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, avatar } = req.body;
     const userEmail = await User.findOne({ email });
 
     if (userEmail) {
-      const filename = req?.file?.filename
-        ? req.file.filename
-        : "defaultavatar.png";
-      const filePath = `../uploads/${filename}`;
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({ message: "Error deleting file" });
-        }
-      });
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    const filename = req?.file?.filename
-      ? req.file.filename
-      : "defaultavatar.png";
-    const fileUrl = path.join(filename);
+    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+      folder: "avatars",
+    });
 
     const user = {
       name: name,
       email: email,
       password: password,
-      avatar: fileUrl,
+      avatar: {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      },
     };
 
     const activationToken = createActivationToken(user);
@@ -279,9 +270,23 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
                                 "
                                 valign="top"
                               >
-                              <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 25px;">
-                              <img src="https://res.cloudinary.com/bramuels/image/upload/v1686982779/logo_kp04bo.svg" alt="eShoplogo"/>
-                            </div>
+                              <div
+                    class="logo-container"
+                    style="
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      height: 100px;
+                      width: 100px;
+                      margin: 0 auto;
+                    "
+                  >
+                    <img
+                      src="cid:logo"
+                      alt="3 dolts logo"
+                      style="height: 80px; width: 80px;"
+                    />
+                  </div>
                                 <p
                                   style="
                                     font-family: sans-serif;
@@ -524,6 +529,13 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
           </body>
         </html>
         `,
+        attachments: [
+          {
+            filename: "logo.png",
+            path: "logo.png",
+            cid: "logo",
+          },
+        ],
       });
       res.status(201).json({
         success: true,
@@ -1171,27 +1183,38 @@ router.put(
 router.put(
   "/update-avatar",
   isAuthenticated,
-  upload.single("image"),
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const existsUser = await User.findById(req.user.id);
+      let existsUser = await User.findById(req.user.id);
 
-      const existAvatarPath = `../uploads/${existsUser.avatar}`;
-      const avatartoDelete = existAvatarPath ? existAvatarPath : "";
+      if (!existsUser) {
+        return next(new ErrorHandler("User avatar not found!", 404));
+      }
 
-      const fileUrl = path.join(req.file.filename);
+      // Check if the user has an existing avatar
+      if (existsUser.avatar && existsUser.avatar.public_id) {
+        // Delete the existing avatar from Cloudinary
+        await cloudinary.v2.uploader.destroy(existsUser.avatar.public_id);
+      }
 
-      const user = await User.findByIdAndUpdate(req.user.id, {
-        avatar: fileUrl,
+      const { avatar } = req.body;
+
+      // Upload the new avatar to Cloudinary
+      const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+        folder: "avatars",
       });
 
-      if (avatartoDelete && avatartoDelete !== "../uploads/defaultavatar.png") {
-        fs.unlinkSync(avatartoDelete);
-      }
+      // Update the user's avatar field with the new details
+      existsUser.avatar = {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      };
+
+      await existsUser.save();
 
       res.status(200).json({
         success: true,
-        user,
+        user: existsUser,
       });
     } catch (error) {
       console.log(error);
@@ -1200,35 +1223,37 @@ router.put(
   })
 );
 
-// remove user avater
-router.put(
-  "/remove-avatar",
-  isAuthenticated,
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const existsUser = await User.findById(req.user.id);
-      const existAvatarPath = `../uploads/${existsUser.avatar}`;
-      if (
-        existAvatarPath &&
-        existAvatarPath !== "../uploads/defaultavatar.png"
-      ) {
-        fs.unlinkSync(existAvatarPath);
-      }
+// // remove user avater
+// router.put(
+//   "/remove-avatar",
+//   isAuthenticated,
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       const existsUser = await User.findById(req.user.id);
+//       const existAvatarPath = `../uploads/${existsUser.avatar}`;
+//       if (
+//         existAvatarPath &&
+//         existAvatarPath !== "../uploads/defaultavatar.png"
+//       ) {
+//         fs.unlinkSync(existAvatarPath);
+//       }
 
-      const user = await User.findByIdAndUpdate(req.user.id, {
-        avatar: "defaultavatar.png",
-      });
-      res.status(201).json({
-        success: true,
-        user,
-      });
-    } catch (error) {
-      console.log(error);
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
+//       const user = await User.findByIdAndUpdate(req.user.id, {
+//         avatar: "defaultavatar.png",
+//       });
+//       res.status(201).json({
+//         success: true,
+//         user,
+//       });
+//     } catch (error) {
+//       console.log(error);
+//       return next(new ErrorHandler(error.message, 500));
+//     }
+//   })
+// );
+
 // update user addresses
+
 router.put(
   "/update-user-addresses",
   isAuthenticated,
@@ -1379,7 +1404,7 @@ router.put(
   })
 );
 
-// find user infoormation with the userId
+// find user information with the userId
 router.get(
   "/user-info/:id",
   catchAsyncErrors(async (req, res, next) => {
@@ -1430,6 +1455,9 @@ router.delete(
           new ErrorHandler("User is not available with this id", 400)
         );
       }
+      const imageId = user.avatar.public_id;
+
+      await cloudinary.v2.uploader.destroy(imageId);
 
       await User.findByIdAndDelete(req.params.id);
 
@@ -1452,7 +1480,6 @@ router.post(
       await sendMail({
         email: "samuelndewa2018@gmail.com",
         subject: "Contact Us",
-        // message: `Hello eShop,\nYou have a new contact us message.\n\nName:      ${name}\nEmail:       ${email}\nNumber:   ${mobile}\nMessage:  ${comment} \n\n*******************************\n@Quality is our middle name.`,
         html: `<!DOCTYPE html>
         <html>
           <head>
@@ -1931,13 +1958,6 @@ router.post(
       await sendMail({
         email: email,
         subject: `Contact Us`,
-        // message: `
-        // Hello ${name},
-        // eShop has received your email. We will reply as soon as we can.
-        // Thanks for contacting us. \n
-        // *******************************\n
-        // @Quality is our middle name.
-        // `,
         html: `<!DOCTYPE html>
         <html>
           <head>

@@ -35,7 +35,7 @@ const Unsubscribe = () => {
         setLoading(false);
         navigate("/");
       });
-    // navigate("/");
+    navigate("/");
     setLoading(false);
   };
 

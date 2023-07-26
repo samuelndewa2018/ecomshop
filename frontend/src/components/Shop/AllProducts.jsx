@@ -30,7 +30,6 @@ const AllProducts = () => {
     toast.success("Product deleted!");
     dispatch(getAllProductsShop(seller._id));
     navigate("/dashboard");
-    // window.location.reload();
   };
 
   const setOperations = async (productId) => {

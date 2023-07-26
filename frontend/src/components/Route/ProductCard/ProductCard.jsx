@@ -6,7 +6,6 @@ import {
   AiOutlineShoppingCart,
 } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import { backend_url } from "../../../server";
 import styles from "../../../styles/styles";
 import { useDispatch, useSelector } from "react-redux";
 import ProductDetailsCard from "../ProductDetailsCard/ProductDetailsCard";
@@ -22,7 +21,6 @@ import { NumericFormat } from "react-number-format";
 import { TbArrowsShuffle2 } from "react-icons/tb";
 import { addTocompare } from "../../../redux/actions/compare";
 import { IoIosShareAlt } from "react-icons/io";
-// import Ratings from "../../Products/Ratings";
 
 const ProductCard = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -114,7 +112,7 @@ const ProductCard = ({ data, isEvent }) => {
             }`}
           >
             <img
-              src={`${backend_url}${data.images && data.images[0]}`}
+              src={`${data.images && data.images[0]?.url}`}
               alt=""
               className="w-full h-[170px] object-contain"
             />
@@ -122,7 +120,6 @@ const ProductCard = ({ data, isEvent }) => {
           <Link to={`/shop/preview/${data?.shop._id}`}>
             <h5 className={`${styles.shop_name}`}>{data.shop.name}</h5>
           </Link>
-
           <Link
             to={`${
               isEvent === true

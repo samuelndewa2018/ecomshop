@@ -18,10 +18,6 @@ router.post("/send-sms", async (req, res) => {
       })
       .then((message) => console.log(message))
       .catch((err) => console.log(err));
-    // res.status(200).json({
-    //   success: true,
-    //   message: "Statement deleted successfully.",
-    // });
   } catch (error) {
     res.status(500).json({ error: "Failed to send sms." });
   }

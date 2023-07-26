@@ -9,14 +9,19 @@ const path = require("path");
 app.use(
   cors({
     origin: "http://localhost:3000",
+    // origin: ['https://eshop-tutorial-cefl.vercel.app','http://localhost:3000'],
     credentials: true,
   })
 );
 
-app.use(express.json());
+app.use(
+  express.json({
+    limit: "50mb",
+  })
+);
 app.use(cookieParser());
 // app.use("/", express.static(path.join(__dirname, "./tmp")));
-app.use("/", express.static(path.join(__dirname, "../uploads")));
+// app.use("/", express.static(path.join(__dirname, "../uploads")));
 app.use("/test", (req, res) => {
   res.send("Hello world!");
 });

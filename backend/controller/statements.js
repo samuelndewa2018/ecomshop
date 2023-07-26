@@ -49,7 +49,7 @@ router.get("/get-statements", async (req, res) => {
   }
 });
 
-// Update a statement by ID
+// Update a statement
 router.put("/update-statement/:id", async (req, res) => {
   try {
     const {
@@ -87,7 +87,7 @@ router.put("/update-statement/:id", async (req, res) => {
   }
 });
 
-// Delete a statement by ID
+// Delete a statement
 router.delete("/delete-statement/:id", async (req, res) => {
   try {
     const statement = await Statements.findByIdAndDelete(req.params.id);

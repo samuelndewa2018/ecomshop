@@ -19,7 +19,6 @@ const statementsSchema = new mongoose.Schema({
   },
   promotionImage: {
     type: String,
-    default: "https://shopo.quomodothemes.website/assets/images/logo.svg",
   },
   promotionDetails: {
     type: String,

@@ -1,16 +1,9 @@
 import React, { useState } from "react";
-import {
-  AiOutlineArrowRight,
-  AiOutlineCamera,
-  AiOutlineDelete,
-} from "react-icons/ai";
+import { AiOutlineCamera, AiOutlineDelete } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { backend_url, server } from "../../server";
+import { server } from "../../server";
 import styles from "../../styles/styles";
-import { DataGrid } from "@material-ui/data-grid";
-import { Button } from "@material-ui/core";
-import { Link, useParams } from "react-router-dom";
-import { MdTrackChanges } from "react-icons/md";
+import { Link } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
 import Typed from "react-typed";
 import {
@@ -19,29 +12,24 @@ import {
   updatUserAddress,
   updateUserInformation,
 } from "../../redux/actions/user";
-import { Country, State } from "country-state-city";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { getAllOrdersOfUser } from "../../redux/actions/order";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { HiUserRemove } from "react-icons/hi";
 import Spinner from "../Spinner";
-import { NumericFormat } from "react-number-format";
 import CustomModal from "../CustomModal";
-import { Card } from "@material-ui/core";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
-  console.log("user", user);
   const [name, setName] = useState(user && user.name);
   const [email, setEmail] = useState(user && user.email);
   const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
   const [password, setPassword] = useState("");
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState();
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -64,47 +52,56 @@ const ProfileContent = ({ active }) => {
   };
 
   const handleImage = async (e) => {
-    const file = e.target.files[0];
-    setAvatar(file);
-
-    const formData = new FormData();
-
-    formData.append("image", e.target.files[0]);
-
-    await axios
-      .put(`${server}/user/update-avatar`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      })
-      .then((response) => {
-        dispatch(loadUser());
-        toast.success("avatar updated successfully!");
-      })
-      .catch((error) => {
-        toast.error(error);
-      });
+    const files = Array.from(e.target.files);
+    const imageBase64List = [];
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        imageBase64List.push(reader.result);
+        if (imageBase64List.length === files.length) {
+          uploadImages(imageBase64List);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
+
+  const uploadImages = async (imageBase64List) => {
+    try {
+      for (const imageBase64 of imageBase64List) {
+        await axios.put(
+          `${server}/user/update-avatar`,
+          { avatar: imageBase64 },
+          {
+            withCredentials: true,
+          }
+        );
+      }
+      dispatch(loadUser());
+      toast.success("Avatar(s) updated successfully!");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   const removeImage = async (e) => {
-    await axios
-      .put(
-        `${server}/user/remove-avatar`,
-        {},
+    try {
+      await axios.put(
+        `${server}/user/update-avatar`,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          avatar:
+            "https://res.cloudinary.com/bramuels/image/upload/v1690231799/avatars/defaultavatar_xl1nel.png",
+        },
+        {
           withCredentials: true,
         }
-      )
-      .then((response) => {
-        dispatch(loadUser());
-        toast.success("avatar removed successfully!");
-      })
-      .catch((error) => {
-        toast.error(error);
-      });
+      );
+
+      dispatch(loadUser());
+      toast.success("Avatar(s) updated successfully!");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -125,16 +122,13 @@ const ProfileContent = ({ active }) => {
           <div className="flex justify-center w-full">
             <div className="">
               <img
-                src={`${backend_url}${user?.avatar}`}
+                src={`${user?.avatar?.url}`}
                 className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#3ad132]"
                 alt=""
               />
               <div className="flex">
                 <div className="flex mx-5">
-                  <div
-                    onClick={(e) => handleImage(e)}
-                    className="w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer bottom-[2px] right-[2px]"
-                  >
+                  <div className="w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer bottom-[2px] right-[2px]">
                     <input
                       type="file"
                       id="image"
@@ -200,7 +194,6 @@ const ProfileContent = ({ active }) => {
                   <label className="block pb-2">
                     {/* Enter your password to Update */}
                     <Typed
-                      // className="text-white lg:ml-20 sm:ml-0"
                       strings={["Enter your password to Update"]}
                       typeSpeed={40}
                       backSpeed={50}
@@ -329,7 +322,7 @@ const AllOrders = () => {
               <div className="flex">
                 <div className="mb-4 flex mr-1 w-full lg:w-24">
                   <img
-                    src={`${backend_url}/${row.image[0]}`}
+                    src={`${row.image[0]?.url}`}
                     alt="Order"
                     className="w-fit lg:w-24 h-24 ml-[20%] lg:ml-0 rounded-lg object-contain"
                   />
@@ -405,7 +398,6 @@ const TrackOrder = () => {
     status: item.status,
     orderButton: renderOrderButton(item._id),
   }));
-  console.log(rows);
   return (
     <div>
       <h3 className="pb-4 ml-2 font-bold">Track Orders</h3>
@@ -428,7 +420,7 @@ const TrackOrder = () => {
               <div className="flex">
                 <div className="mb-4 flex mr-1 w-full lg:w-24">
                   <img
-                    src={`${backend_url}/${row.image[0]}`}
+                    src={`${row.image[0]?.url}`}
                     alt="Order"
                     className="w-fit lg:w-24 h-24 ml-[20%] lg:ml-0 rounded-lg object-contain"
                   />
@@ -508,7 +500,6 @@ const AllRefundOrders = () => {
     status: item.status,
     orderButton: renderOrderButton(item._id),
   }));
-  console.log(rows);
   return (
     <div>
       <h3 className="pb-4 ml-2 font-bold">Refunds page</h3>
@@ -531,7 +522,7 @@ const AllRefundOrders = () => {
               <div className="flex">
                 <div className="mb-4 flex mr-1 w-full lg:w-24">
                   <img
-                    src={`${backend_url}/${row.image[0]}`}
+                    src={`${row.image[0]?.url}`}
                     alt="Order"
                     className="w-fit lg:w-24 h-24 ml-[20%] lg:ml-0 rounded-lg object-contain"
                   />

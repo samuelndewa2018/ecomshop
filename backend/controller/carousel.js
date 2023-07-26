@@ -1,35 +1,22 @@
 const express = require("express");
 const Carousel = require("../model/carousel");
-const router = express.Router(); //
-const multer = require("multer");
+const router = express.Router();
+const cloudinary = require("cloudinary");
 
-router.get("/get-carousel", async (req, res) => {
-  try {
-    const carouselData = await Carousel.find();
-    res.json(carouselData);
-  } catch (error) {
-    console.error("Error fetching carousel data:", error);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-const storage = multer.diskStorage({
-  destination: function (req, res, cb) {
-    cb(null, "../uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const filename = file.originalname.split(".")[0];
-    cb(null, filename + "-" + uniqueSuffix + ".png");
-  },
-});
-
-const upload = multer({ storage }).single("image");
-
-router.post("/carousel", upload, (req, res) => {
+//create carousel
+router.post("/carousel", async (req, res) => {
   const { caption } = req.body;
-  const image = req.file ? `${req.file.filename}` : "";
+  let image = [];
 
+  if (req.body.image) {
+    const result = await cloudinary.v2.uploader.upload(req.body.image, {
+      folder: "carousel",
+    });
+    image.push({
+      public_id: result.public_id,
+      url: result.secure_url,
+    });
+  }
   const newCarouselItem = new Carousel({ caption, image });
 
   newCarouselItem
@@ -42,14 +29,36 @@ router.post("/carousel", upload, (req, res) => {
     });
 });
 
+//get carousels
+router.get("/get-carousel", async (req, res) => {
+  try {
+    const carouselData = await Carousel.find();
+    res.json(carouselData);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+//delete carousel
 router.delete("/carousel/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Find the carousel item by ID and remove it
-    await Carousel.findByIdAndDelete(id);
+    const carousel = await Carousel.findById(req.params.id);
 
-    res.status(200).json({ message: "Carousel item deleted successfully" });
+    if (!carousel) {
+      return next(new ErrorHandler("carousel is not found with this id", 404));
+    }
+
+    for (const image of carousel.image) {
+      const result = await cloudinary.v2.uploader.destroy(image.public_id);
+    }
+
+    await Carousel.deleteOne({ _id: req.params.id });
+    res.status(201).json({
+      success: true,
+      message: "carousel Deleted successfully!",
+    });
   } catch (error) {
     res.status(500).json({ error: "Failed to delete carousel item" });
   }

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { backend_url, server } from "../../server";
+import { server } from "../../server";
 import { AiOutlineCamera } from "react-icons/ai";
 import styles from "../../styles/styles";
 import axios from "axios";
@@ -14,35 +14,35 @@ const ShopSettings = () => {
   const [description, setDescription] = useState(
     seller && seller.description ? seller.description : ""
   );
-  // const [address, setAddress] = useState(seller && seller.address);
-  // const [phoneNumber, setPhoneNumber] = useState(seller && seller.phoneNumber);
   const [instaShop, setInstaShop] = useState(seller && seller.instaShop);
 
   const dispatch = useDispatch();
 
   const handleImage = async (e) => {
-    e.preventDefault();
-    const file = e.target.files[0];
-    setAvatar(file);
+    const reader = new FileReader();
 
-    const formData = new FormData();
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setAvatar(reader.result);
+        axios
+          .put(
+            `${server}/shop/update-shop-avatar`,
+            { avatar: reader.result },
+            {
+              withCredentials: true,
+            }
+          )
+          .then((res) => {
+            dispatch(loadSeller());
+            toast.success("Avatar updated successfully!");
+          })
+          .catch((error) => {
+            toast.error(error.response.data.message);
+          });
+      }
+    };
 
-    formData.append("image", e.target.files[0]);
-
-    await axios
-      .put(`${server}/shop/update-shop-avatar`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      })
-      .then((res) => {
-        dispatch(loadSeller());
-        toast.success("Avatar updated successfully!");
-      })
-      .catch((error) => {
-        toast.error(error.response.data.message);
-      });
+    reader.readAsDataURL(e.target.files[0]);
   };
 
   const updateHandler = async (e) => {
@@ -53,9 +53,6 @@ const ShopSettings = () => {
         `${server}/shop/update-seller-info`,
         {
           name,
-          // address,
-          // zipCode,
-          instaShop,
           description,
         },
         { withCredentials: true }
@@ -75,11 +72,7 @@ const ShopSettings = () => {
         <div className="w-full flex items-center justify-center">
           <div className="relative">
             <img
-              src={
-                avatar
-                  ? URL.createObjectURL(avatar)
-                  : `${backend_url}/${seller.avatar}`
-              }
+              src={avatar ? avatar : `${seller.avatar?.url}`}
               alt=""
               className="w-[200px] h-[200px] rounded-full cursor-pointer"
             />
@@ -145,35 +138,6 @@ const ShopSettings = () => {
               required
             />
           </div>
-
-          {/* <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
-            <div className="w-full pl-[3%]">
-              <label className="block pb-2">Shop Phone Number</label>
-            </div>
-            <input
-              type="number"
-              placeholder={seller?.phoneNumber}
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
-              required
-            />
-          </div> */}
-
-          {/* <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
-            <div className="w-full pl-[3%]">
-              <label className="block pb-2">Shop Zip Code</label>
-            </div>
-            <input
-              type="number"
-              placeholder={seller?.zipCode}
-              value={zipCode}
-              onChange={(e) => setZipcode(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
-              required
-            />
-          </div> */}
-
           <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
             <input
               type="submit"

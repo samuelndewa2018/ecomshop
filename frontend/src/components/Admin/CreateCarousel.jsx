@@ -36,13 +36,10 @@ const CreateCarouselPage = () => {
       const formData = new FormData();
       formData.append("caption", caption);
       formData.append("image", image);
-      const response = await axios.post(
-        `${server}/carousel/carousel`,
-        formData
-      );
-
-      // Get the ID of the created category
-      const categoryId = response.data._id;
+      await axios.post(`${server}/carousel/carousel`, {
+        caption,
+        image,
+      });
 
       toast.success("Carousel created!");
       window.location.reload();
@@ -52,21 +49,23 @@ const CreateCarouselPage = () => {
   };
 
   const handleImageChange = (e) => {
-    const selectedImage = e.target.files[0];
-    setImage(selectedImage);
-    // Create a preview of the selected image
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(selectedImage);
+    const files = Array.from(e.target.files);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result);
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleDelete = async (itemId) => {
     try {
       await axios.delete(`${server}/carousel/carousel/${itemId}`);
       toast.success("Carousel item deleted successfully");
-      fetchCarouselData(); // Fetch the updated carousel data
+      fetchCarouselData();
     } catch (error) {
       toast.error("Failed to delete carousel item");
     }
@@ -104,11 +103,7 @@ const CreateCarouselPage = () => {
                 Add Image To Carousel
               </h1>
               <div className="w-full">
-                <form
-                  aria-required
-                  onSubmit={handleCreateCarousel}
-                  className="w-full"
-                >
+                <form onSubmit={handleCreateCarousel} className="w-full">
                   <div className="w-full block p-4">
                     <div className="w-full pb-2">
                       <label className="pb-2">Name:</label>
@@ -182,7 +177,7 @@ const CreateCarouselPage = () => {
                 {carouselData.map((i) => (
                   <div key={i._id} className="mr-4 mb-4">
                     <CarouselCard
-                      image={i.image}
+                      image={i.image[0]?.url}
                       caption={i.caption}
                       handleDelete={() => setOperations(i._id)}
                     />

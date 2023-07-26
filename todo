@@ -23,3 +23,35 @@
 ///profiles dropdown
 // address not responsive
 //buy again in order details page
+
+// cancel order
+//create product button has no loading effect
+
+/**user
+//**create user--- done */
+//**delete user--- done */
+//**update user--- pending */
+
+/**shop
+//**create shop--- done */
+//**delete shop--- pending... */
+//**update shop--- pending... */
+
+/**user avatar
+//**create user avatar--- done */
+//**delete user avatar--- pending... */
+//**update user avatar--- pending... */
+//**remove user avatar--- pending... */
+
+/**product
+//**create product--- done */
+//**delete product--- done */
+//**update product--- done */
+
+/**categories
+//**create categories--- done */
+//**delete categories--- done */
+
+/**carousel
+//**create carousel--- done */
+//**delete carousel--- done */

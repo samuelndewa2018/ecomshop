@@ -40,7 +40,6 @@ const Payment = () => {
             },
           },
         ],
-        // not needed if a shipping address is actually needed
         application_context: {
           shipping_preference: "NO_SHIPPING",
         },
@@ -121,11 +120,9 @@ const Payment = () => {
           setTimeout(() => {
             window.location.reload();
           }, 2000);
-          // await axios.post(`${server}/order/send-order-email`, order, config);
         });
       setLoading1(false);
     } catch (error) {
-      console.log(error);
       setLoading1(false);
     }
 
@@ -273,7 +270,6 @@ const PaymentInfo = ({
             }, 10000);
             toast.success("Your Payment is Validating");
           } else if (response.errorCode === "500.001.1001") {
-            // console.log(response.errorMessage);
           } else {
             clearInterval(timer);
             setLoading(false);
@@ -287,7 +283,6 @@ const PaymentInfo = ({
           }
         })
         .catch((err) => {
-          // toast.error(err.message);
           console.log(err.message);
         });
     }, 2000);
@@ -302,12 +297,6 @@ const PaymentInfo = ({
     onSubmit: async (values) => {
       const phone = values.phone;
       const amount = amount1;
-      // if (amount >= 150000) {
-      //   setLimit(true);
-      //   setError(false);
-      //   setSuccess(false);
-      //   setValidating(false);
-      // }
       await setLoading(true);
       await axios
         .post(

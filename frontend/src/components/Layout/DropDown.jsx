@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../../styles/styles";
-import { backend_url, server } from "../../server";
+import { server } from "../../server";
 
 const DropDown = ({ setDropDown }) => {
   const navigate = useNavigate();
@@ -39,7 +39,6 @@ const DropDown = ({ setDropDown }) => {
   const submitHandle = (category) => {
     navigate(`/products?category=${category.name}`);
     setDropDown(false);
-    // window.location.reload();
   };
 
   return (
@@ -56,7 +55,7 @@ const DropDown = ({ setDropDown }) => {
             onClick={() => submitHandle(category)}
           >
             <img
-              src={`${backend_url}${category?.image}`}
+              src={`${category?.image[0]?.url}`}
               style={{
                 width: "25px",
                 height: "25px",

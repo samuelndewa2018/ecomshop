@@ -29,7 +29,6 @@ const shopSignupSchema = yup.object({
     .oneOf([true], "You need to accept the terms and conditions"),
 });
 const ShopCreate = () => {
-  const navigate = useNavigate();
   const [avatar, setAvatar] = useState();
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,8 +39,15 @@ const ShopCreate = () => {
   const [checked, setChecked] = useState(false);
 
   const handleFileInputChange = (e) => {
-    const file = e.target.files[0];
-    setAvatar(file);
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setAvatar(reader.result);
+      }
+    };
+
+    reader.readAsDataURL(e.target.files[0]);
   };
 
   const formik = useFormik({
@@ -52,6 +58,7 @@ const ShopCreate = () => {
       address: "",
       zipCode: "",
       password: "",
+      avatar: "",
       termsAndConditions: false,
     },
     validationSchema: shopSignupSchema,
@@ -62,22 +69,19 @@ const ShopCreate = () => {
       const address = values.address;
       const zipCode = values.zipCode;
       const password = values.password;
-      const avatari = avatar;
 
-      await setLoading(true);
-      const config = { headers: { "Content-Type": "multipart/form-data" } };
+      setLoading(true);
 
-      const newForm = new FormData();
-
-      newForm.append("file", avatari);
-      newForm.append("name", name);
-      newForm.append("email", email);
-      newForm.append("password", password);
-      newForm.append("zipCode", zipCode);
-      newForm.append("address", address);
-      newForm.append("phoneNumber", phoneNumber);
       axios
-        .post(`${server}/shop/create-shop`, newForm, config)
+        .post(`${server}/shop/create-shop`, {
+          name,
+          email,
+          password,
+          avatar,
+          zipCode,
+          address,
+          phoneNumber,
+        })
         .then((res) => {
           toast.success(res.data.message);
           setAvatar();
@@ -146,7 +150,6 @@ const ShopCreate = () => {
                   <input
                     type="name"
                     name="name"
-                    // required
                     onChange={formik.handleChange("name")}
                     onBlur={formik.handleBlur("name")}
                     value={formik.values.name}
@@ -169,7 +172,6 @@ const ShopCreate = () => {
                   <input
                     type="phonenumber"
                     name="phone-number"
-                    // required
                     onChange={formik.handleChange("phoneNumber")}
                     onBlur={formik.handleBlur("phoneNumber")}
                     value={formik.values.phoneNumber}
@@ -193,7 +195,6 @@ const ShopCreate = () => {
                     type="email"
                     name="email"
                     autoComplete="email"
-                    // required
                     onChange={formik.handleChange("email")}
                     onBlur={formik.handleBlur("email")}
                     value={formik.values.email}
@@ -216,7 +217,6 @@ const ShopCreate = () => {
                   <input
                     type="address"
                     name="address"
-                    // required
                     onChange={formik.handleChange("address")}
                     onBlur={formik.handleBlur("address")}
                     value={formik.values.address}
@@ -239,7 +239,6 @@ const ShopCreate = () => {
                   <input
                     type="number"
                     name="zipcode"
-                    // required
                     onChange={formik.handleChange("zipCode")}
                     onBlur={formik.handleBlur("zipCode")}
                     value={formik.values.zipCode}
@@ -263,7 +262,6 @@ const ShopCreate = () => {
                     type={visible ? "text" : "password"}
                     name="password"
                     autoComplete="current-password"
-                    // required
                     onChange={formik.handleChange("password")}
                     onBlur={formik.handleBlur("password")}
                     value={formik.values.password}
@@ -297,7 +295,7 @@ const ShopCreate = () => {
                   <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
                     {avatar ? (
                       <img
-                        src={URL.createObjectURL(avatar)}
+                        src={avatar}
                         alt="avatar"
                         className="h-full w-full object-cover rounded-full"
                       />

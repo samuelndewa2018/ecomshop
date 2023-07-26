@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   LoginPage,
   SignupPage,
@@ -84,7 +84,6 @@ import Location from "./Trial/Location";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
-  // const { id } = useParams();
 
   async function getStripeApikey() {
     const { data } = await axios.get(`${server}/payment/stripeapikey`);
@@ -95,7 +94,6 @@ const App = () => {
     Store.dispatch(loadUser());
     Store.dispatch(loadSeller());
     Store.dispatch(getAllProducts());
-    // Store.dispatch(getProduct(id));
     Store.dispatch(getAllEvents());
     getStripeApikey();
   }, []);
@@ -259,6 +257,7 @@ const App = () => {
         />
         {/* to be removed in production */}
         <Route path="/trial" element={<TrialPage />} />
+
         <Route path="/location" element={<Location />} />
 
         {/* /// */}

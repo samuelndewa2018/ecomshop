@@ -10,10 +10,9 @@ import { AiOutlinePlusCircle, AiOutlineDelete } from "react-icons/ai";
 import DashboardSideBar from "./Layout/DashboardSideBar";
 import DashboardHeader from "./Layout/DashboardHeader";
 import Spinner from "../Spinner";
-import { backend_url, server } from "../../server";
+import { server } from "../../server";
 import axios from "axios";
 import CustomModal from "../CustomModal";
-// import axiosInstance from "./axiosInstance";
 
 const editProductSchema = yup.object({
   name: yup.string().required("Name is required"),
@@ -50,6 +49,7 @@ const EditProduct = () => {
       discountPrice: "",
       stock: "",
       condition: "",
+      images: "",
     },
     validationSchema: editProductSchema,
     onSubmit: async (values) => {
@@ -64,11 +64,10 @@ const EditProduct = () => {
         const discountPrice = values.discountPrice;
         const stock = values.stock;
         // condition: values.condition,
-        const imagesi = images;
 
         const newForm = new FormData();
 
-        imagesi.forEach((image) => {
+        images.forEach((image) => {
           newForm.append("images", image);
         });
         newForm.append("name", name);
@@ -79,10 +78,16 @@ const EditProduct = () => {
         newForm.append("discountPrice", discountPrice);
         newForm.append("stock", stock);
 
-        await axios.put(
-          `${server}/product/update-product/${productId}`,
-          newForm
-        );
+        await axios.put(`${server}/product/update-product/${productId}`, {
+          name,
+          description,
+          category,
+          tags,
+          originalPrice,
+          discountPrice,
+          stock,
+          images,
+        });
 
         setLoading(false);
         toast.success("Product updated!");
@@ -126,7 +131,7 @@ const EditProduct = () => {
           condition: productData.condition,
         });
 
-        setcurrentImages(productData.images); // Set the images array in state
+        setcurrentImages(productData.images);
       } catch (error) {
         console.log(error);
       }
@@ -136,10 +141,15 @@ const EditProduct = () => {
   }, [productId]);
 
   const handleImageChange = (e) => {
-    e.preventDefault();
+    const files = Array.from(e.target.files);
 
-    let files = Array.from(e.target.files);
-    setImages((prevImages) => [...prevImages, ...files]);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImages((old) => [...old, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
   };
   const handleImageChange2 = (e) => {
     e.preventDefault();
@@ -345,7 +355,7 @@ const EditProduct = () => {
                         key={index}
                       >
                         <img
-                          src={`${backend_url}${image}`}
+                          src={`${image.url}`}
                           alt=""
                           className="h-[120px] w-[120px] object-cover m-2"
                         />
@@ -390,7 +400,7 @@ const EditProduct = () => {
                       key={index}
                     >
                       <img
-                        src={URL.createObjectURL(image)}
+                        src={image}
                         alt=""
                         className="h-[120px] w-[120px] object-cover m-2"
                       />

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { backend_url, server } from "../../../server";
+import { server } from "../../../server";
 import { useSelector } from "react-redux";
 
 const Hero = () => {
@@ -12,7 +12,6 @@ const Hero = () => {
   const [bestSelling, setBestSelling] = useState([]);
   const [featuredProduct, setFeaturedProduct] = useState([]);
   const [sellers, setSellers] = useState([]);
-  console.log(sellers);
   useEffect(() => {
     fetchData();
     fetchData2();
@@ -69,7 +68,7 @@ const Hero = () => {
               <div key={slide._id}>
                 <img
                   className="rounded carousel-image object-contain"
-                  src={`${backend_url}${slide.image}`}
+                  src={`${slide.image[0]?.url}`}
                   alt={slide.caption}
                 />
                 <p className="legend">{slide.caption}</p>
@@ -114,7 +113,7 @@ const Hero = () => {
                       </div>
                       <img
                         className="w-36 h-36 lg:w-full lg:h-[245px] object-cover"
-                        src={`${backend_url}${i.images && i.images[0]}`}
+                        src={`${i.images && i.images[0].url}`}
                         alt="Sunset in the mountains"
                       />
                       <div className="px-6 py-6 flex-1 hidden lg:flex flex-col">
@@ -152,7 +151,7 @@ const Hero = () => {
                       </div>
                       <img
                         className="w-36 h-36 lg:w-full lg:h-[245px] object-cover"
-                        src={`${backend_url}${i.images && i.images[0]}`}
+                        src={`${i.images && i.images[0].url}`}
                         alt="Sunset in the mountains"
                       />
                       <div className="px-6 py-6 flex-1 flex flex-col">
@@ -240,7 +239,7 @@ const Hero = () => {
                         <div className="relative flex">
                           <img
                             className="w-36 h-36 lg:w-full lg:h-full object-cover lg:max-h-[120px] lg:max-w-[150px]"
-                            src={`${backend_url}${i.avatar && i.avatar}`}
+                            src={`${i.avatar && i.avatar.url}`}
                             alt="Sunset in the mountains"
                           />
                           <div className="px-6 py-4 flex-1 flex flex-col">
@@ -277,7 +276,7 @@ const Hero = () => {
                     >
                       <img
                         className="w-36 h-36 min-w-full lg:min-w-[50%] lg:w-full lg:h-full object-cover"
-                        src={`${backend_url}${i.images && i.images[0]}`}
+                        src={`${i.images && i.images[0].url}`}
                         alt="Sunset in the mountains"
                       />
                       <div className="px-6 py-4 flex-1 flex flex-col">

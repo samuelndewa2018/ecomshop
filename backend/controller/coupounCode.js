@@ -6,7 +6,7 @@ const { isSeller } = require("../middleware/auth");
 const CoupounCode = require("../model/coupounCode");
 const router = express.Router();
 
-// create coupoun codee
+// create coupoun code
 router.post(
   "/create-coupon-code",
   isSeller,

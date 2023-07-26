@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { server } from "../../server";
-import {
-  AiOutlineCloseCircle,
-  AiOutlineDelete,
-  AiOutlineEdit,
-  AiOutlinePlusCircle,
-  AiOutlineSave,
-} from "react-icons/ai";
+import { AiOutlineDelete, AiOutlinePlusCircle } from "react-icons/ai";
 import "react-quill/dist/quill.snow.css";
 import styles from "../../styles/styles";
 import { toast } from "react-toastify";
-import { backend_url } from "../../server";
 import { RxCross1 } from "react-icons/rx";
-import { useNavigate } from "react-router-dom";
 import CustomModal from "../CustomModal";
 
 const CreateCategory = () => {
@@ -23,16 +15,11 @@ const CreateCategory = () => {
   const [editingCategoryImage, setEditingCategoryImage] = useState(null);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
-  const [subCategoryName, setSubCategoryName] = useState("");
   const [catId, setCatId] = useState("");
 
   const [modalOpen, setModalOpen] = useState(false);
-
-  const navigate = useNavigate();
-
-  console.log(categories);
 
   useEffect(() => {
     fetchCategories();
@@ -46,85 +33,40 @@ const CreateCategory = () => {
     }
   };
 
-  const handleUpdateCategory = (categoryId) => {
-    const formData = new FormData();
-    formData.append("name", editingCategoryName);
-    formData.append("image", editingCategoryImage);
-
-    axios
-      .put(`${server}/category/categories/${categoryId}`, formData)
-      .then((response) => {
-        // Handle the successful response
-        toast.success("Category updated!");
-        cancelEditingCategory();
-        fetchCategories(); // Refresh the categories list
-      })
-      .catch((error) => {
-        // Handle the error
-        toast.error(error.response.data);
-      });
-  };
-
-  const cancelEditingCategory = () => {
-    setEditingCategoryId(null);
-    setEditingCategoryName("");
-    setEditingCategoryImage(null); // Clear the editingCategoryImage state
-  };
-
-  const startEditingCategory = (category) => {
-    setEditingCategoryId(category._id);
-    setEditingCategoryName(category.name);
-    setEditingCategoryImage(""); // Set the initial editingCategoryImage state
-  };
-
   const handleCreateCategory = async () => {
     try {
       const formData = new FormData();
       formData.append("name", name);
       formData.append("image", image);
-      const response = await axios.post(
-        `${server}/category/create-category`,
-        formData
-      );
-
-      // Get the ID of the created category
-      const categoryId = response.data._id;
-
+      await axios.post(`${server}/category/create-category`, {
+        name,
+        image,
+      });
+      await fetchCategories();
       toast.success("Category and sub-category created!");
-      window.location.reload();
-    } catch (error) {
-      toast.error(error.response.data);
-    }
-  };
-
-  const handleCreateSubCategory = async (categoryId) => {
-    try {
-      const response = await axios.post(
-        `${server}/category/create-subcategory/${categoryId}`,
-        { name: subCategoryName }
-      );
-      toast.success("Sub-category created!");
-      fetchCategories(); // Refresh the categories list after creating sub-category
     } catch (error) {
       toast.error(error.response.data);
     }
   };
 
   const handleImageChange = (e) => {
-    const selectedImage = e.target.files[0];
-    setImage(selectedImage);
-    // Create a preview of the selected image
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImagePreview(reader.result);
-    };
-    reader.readAsDataURL(selectedImage);
+    const files = Array.from(e.target.files);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result);
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
   };
+
   const handleDeleteCategory = async (id) => {
     try {
       await axios.delete(`${server}/category/delete-category/${id}`);
       toast.success("Category deleted!");
-      fetchCategories(); // Refresh the categories list after deletion
+      fetchCategories();
     } catch (error) {
       toast.error(error.response.data);
     }
@@ -162,11 +104,7 @@ const CreateCategory = () => {
                 Add Category
               </h1>
               <div className="w-full">
-                <form
-                  aria-required
-                  onSubmit={handleCreateCategory}
-                  className="w-full"
-                >
+                <form onSubmit={handleCreateCategory} className="w-full">
                   <div className="w-full block p-4">
                     <div className="w-full pb-2">
                       <label className="pb-2">Name:</label>
@@ -207,24 +145,6 @@ const CreateCategory = () => {
                         )}
                       </div>
                     </div>
-                    <div className="w-full pb-2">
-                      {/* Add Sub-category input */}
-                      <div className="flex items-center">
-                        <input
-                          type="text"
-                          name="subCategoryName"
-                          onChange={(e) => setSubCategoryName(e.target.value)}
-                          value={subCategoryName}
-                          className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                          placeholder="Enter Sub-category Name..."
-                        />
-                        <AiOutlinePlusCircle
-                          size={25}
-                          className="cursor-pointer"
-                          onClick={() => handleCreateSubCategory()}
-                        />
-                      </div>
-                    </div>
                     <div className=" w-full pb-2">
                       <input
                         type="submit"
@@ -262,7 +182,7 @@ const CreateCategory = () => {
               {!editingCategoryId || editingCategoryId !== category._id ? (
                 <div className="flex items-center">
                   <img
-                    src={`${backend_url}${category?.image}`}
+                    src={`${category.image[0]?.url}`}
                     className="w-[50px] h-[50px] rounded-full object-cover"
                     alt=""
                   />
@@ -316,33 +236,6 @@ const CreateCategory = () => {
               )}
 
               <div className="min-w-[10%] flex items-center justify-between pl-8">
-                {/* Edit button */}
-                {!editingCategoryId || editingCategoryId !== category._id ? (
-                  <AiOutlineEdit
-                    size={25}
-                    className="cursor-pointer"
-                    onClick={() => startEditingCategory(category)}
-                  />
-                ) : null}
-
-                {/* Save button */}
-                {editingCategoryId && editingCategoryId === category._id ? (
-                  <AiOutlineSave
-                    size={25}
-                    className="cursor-pointer"
-                    onClick={() => handleUpdateCategory(category._id)}
-                  />
-                ) : null}
-
-                {/* Cancel button */}
-                {editingCategoryId && editingCategoryId === category._id ? (
-                  <AiOutlineCloseCircle
-                    size={25}
-                    className="cursor-pointer"
-                    onClick={() => cancelEditingCategory()}
-                  />
-                ) : null}
-
                 {/* Delete button */}
                 <AiOutlineDelete
                   size={25}

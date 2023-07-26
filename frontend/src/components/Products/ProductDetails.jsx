@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  AiFillHeart,
-  AiOutlineHeart,
-  AiOutlineMessage,
-  AiOutlineShoppingCart,
-} from "react-icons/ai";
+import { AiOutlineMessage, AiOutlineShoppingCart } from "react-icons/ai";
 import Typed from "react-typed";
 import { FiCopy } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { getAllProductsShop } from "../../redux/actions/product";
-import { backend_url, server } from "../../server";
+import { server } from "../../server";
 import styles from "../../styles/styles";
 import {
   addToWishlist,
@@ -134,7 +129,6 @@ const ProductDetails = ({ data }) => {
     }
   };
   const copyToClipboard = (text) => {
-    console.log("text", text);
     var textField = document.createElement("textarea");
     textField.innerText = text;
     document.body.appendChild(textField);
@@ -148,7 +142,6 @@ const ProductDetails = ({ data }) => {
 
   const toggleShowMore = () => {
     setShowMore(!showMore);
-    // window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const getDescription = () => {
@@ -169,7 +162,7 @@ const ProductDetails = ({ data }) => {
             <div className="block w-full 800px:flex">
               <div className="w-full 800px:w-[50%]">
                 <img
-                  src={`${backend_url}${data && data.images[select]}`}
+                  src={`${data && data.images[select]?.url}`}
                   alt=""
                   className="w-[370px] lg:w-[80%] h-[370px] lg:h-fit object-contain"
                 />
@@ -182,7 +175,7 @@ const ProductDetails = ({ data }) => {
                         } cursor-pointer`}
                       >
                         <img
-                          src={`${backend_url}${i}`}
+                          src={`${i?.url}`}
                           alt=""
                           className="h-[50px] w-[50px] lg:h-[100px] lg:w-[100px] object-cover mr-3 mt-3"
                           onClick={() => setSelect(index)}
@@ -316,7 +309,7 @@ const ProductDetails = ({ data }) => {
                 <div className="flex items-center pt-4">
                   <Link to={`/shop/preview/${data?.shop._id}`}>
                     <img
-                      src={`${backend_url}${data?.shop?.avatar}`}
+                      src={`${data?.shop?.avatar?.url}`}
                       alt=""
                       className="w-[50px] h-[50px] rounded-full mr-2"
                     />
@@ -426,7 +419,7 @@ const ProductDetailsInfo = ({
               .map((item, index) => (
                 <div className="w-full flex my-4" key={index}>
                   <img
-                    src={`${backend_url}/${item.user.avatar}`}
+                    src={`${item.user.avatar?.url}`}
                     className="w-[50px] h-[50px] rounded-full"
                     alt=""
                   />
@@ -461,7 +454,7 @@ const ProductDetailsInfo = ({
             <Link to={`/shop/preview/${data.shop._id}`}>
               <div className="flex items-center">
                 <img
-                  src={`${backend_url}${data?.shop?.avatar}`}
+                  src={`${data?.shop?.avatar?.url}`}
                   className="w-[50px] h-[50px] rounded-full"
                   alt=""
                 />

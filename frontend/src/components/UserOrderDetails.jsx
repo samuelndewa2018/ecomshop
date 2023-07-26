@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "../styles/styles";
 import { getAllOrdersOfUser } from "../redux/actions/order";
-import { backend_url, server } from "../server";
+import { server } from "../server";
 import { RxCross1 } from "react-icons/rx";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import axios from "axios";
@@ -87,8 +87,6 @@ const UserOrderDetails = () => {
       });
   };
 
-  // const [imgSrc, setImgSrc] = useState(`${backend_url}${data?.user.avatar}`);
-
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
       const groupTitle = data._id + user._id;
@@ -145,12 +143,12 @@ const UserOrderDetails = () => {
                       <div className="pb-4 md:pb-8 flex">
                         <img
                           className="w-36 h-36 hidden md:block object-contain"
-                          src={`${backend_url}/${item.images[0]}`}
+                          src={`${item.images[0]?.url}`}
                           alt="dress"
                         />
                         <img
                           className="w-36 h-36 md:hidden object-contain"
-                          src={`${backend_url}/${item.images[0]}`}
+                          src={`${item.images[0]?.url}`}
                           alt="dress"
                         />
                       </div>
@@ -224,7 +222,7 @@ const UserOrderDetails = () => {
                   <br />
                   <div className="w-full flex">
                     <img
-                      src={`${backend_url}/${selectedItem?.images[0]}`}
+                      src={`${selectedItem?.images[0]?.url}`}
                       alt=""
                       className="w-[80px] h-[80px]"
                     />
@@ -414,7 +412,7 @@ const UserOrderDetails = () => {
               <div className="flex flex-col justify-start items-start flex-shrink-0">
                 <div className="flex w-full md:justify-start items-center space-x-4 py-8 border-b border-gray-200">
                   <img
-                    src={`${backend_url}${user.avatar}`}
+                    src={`${user.avatar?.url}`}
                     className="w-[60px] h-[60px] rounded-full avatarimg"
                     alt=""
                   />

@@ -19,6 +19,7 @@ const newPassword = () => {
   return base64Encoded;
 };
 
+//create token
 exports.token = async (req, res, next) => {
   const key = process.env.CONSUMER_KEY;
   const secret = process.env.CONSUMER_SECRET;
@@ -34,9 +35,7 @@ exports.token = async (req, res, next) => {
       }
     )
     .then((res) => {
-      //   resp.status(200).json(res.data);
       token = res.data.access_token;
-      // console.log(token);
       next();
     })
     .catch((err) => {
@@ -44,6 +43,7 @@ exports.token = async (req, res, next) => {
     });
 };
 
+//stk push
 exports.stkPush = catchAsyncErrors(async (req, res, next) => {
   const phone = req.body.phone.substring(1); //formated to 72190........
   const amount = req.body.amount;
@@ -74,10 +74,8 @@ exports.stkPush = catchAsyncErrors(async (req, res, next) => {
     Timestamp: timestamp,
     TransactionType: "CustomerPayBillOnline",
     Amount: amount,
-    // PartyA: `${phoneNo}`,
     PartyA: `254${phone}`,
     PartyB: "174379",
-    // PhoneNumber: `${phoneNo}`,
     PhoneNumber: `254${phone}`,
     CallBackURL: `${callbackurl}/${callbackroute}`,
     AccountReference: "eShop",
@@ -92,7 +90,6 @@ exports.stkPush = catchAsyncErrors(async (req, res, next) => {
         res.send(response.data);
       });
   } catch (error) {
-    console.log(error);
     return next(new ErrorHandler("Error occurred. Please try again", 500));
   }
 });
@@ -101,6 +98,7 @@ const callback_route = process.env.CALLBACK_ROUTE;
 const callback_root = process.env.CALL_BACK_ROOT;
 const callbackurl = process.env.CALL_BACK_URL;
 
+//callback stk
 exports.stkCallback = (req, res) => {
   if (!req.body.Body.stkCallback.CallbackMetadata) {
     console.log(req.body.Body.stkCallback.ResultDesc);
@@ -115,12 +113,6 @@ exports.stkCallback = (req, res) => {
       3
     );
   const phone = `0${phone1}`;
-  // saving the transaction to db
-  // console.log({
-  //   phone,
-  //   code,
-  //   amount,
-  // });
   const transaction = new Transaction();
 
   transaction.customer_number = phone;
@@ -137,6 +129,7 @@ exports.stkCallback = (req, res) => {
   res.status(200).json("ok");
 };
 
+//stk query
 exports.stkpushquery = catchAsyncErrors(async (req, res) => {
   const CheckoutRequestID = req.body.CheckoutRequestID;
 
@@ -180,6 +173,7 @@ exports.stkpushquery = catchAsyncErrors(async (req, res) => {
     });
 });
 
+//withdrawal for seller
 exports.withdrawal = catchAsyncErrors(async (req, res) => {
   getAccessToken()
     .then((accessToken) => {
@@ -230,7 +224,7 @@ exports.withdrawal = catchAsyncErrors(async (req, res) => {
     .catch(console.log);
 });
 
-// ACCESS TOKEN FUNCTION
+//access token function
 function getAccessToken() {
   const consumer_key = process.env.CONSUMER_KEY; // REPLACE IT WITH YOUR CONSUMER KEY
   const consumer_secret = process.env.CONSUMER_SECRET; // REPLACE IT WITH YOUR CONSUMER SECRET

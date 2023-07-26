@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../../styles/styles";
-import { categoriesData, productData } from "../../static/data";
 import {
   AiOutlineHeart,
   AiOutlineMessage,
@@ -18,7 +17,7 @@ import { CgProfile } from "react-icons/cg";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
 import { useDispatch, useSelector } from "react-redux";
-import { backend_url, server } from "../../server";
+import { server } from "../../server";
 import Cart from "../cart/Cart";
 import Wishlist from "../Wishlist/Wishlist";
 import { RxCross1 } from "react-icons/rx";
@@ -32,7 +31,6 @@ import { getAllProducts } from "../../redux/actions/product";
 const Header = ({ activeHeading }) => {
   const { statements } = useSelector((state) => state.statements);
   const { isAuthenticated, user } = useSelector((state) => state.user);
-  const { isSeller } = useSelector((state) => state.seller);
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
   const { allProducts } = useSelector((state) => state.products);
@@ -66,7 +64,6 @@ const Header = ({ activeHeading }) => {
       );
 
     setSearchData(filteredProducts);
-    // setOpen(false);
   };
 
   const getAlloProducts = () => {
@@ -82,9 +79,7 @@ const Header = ({ activeHeading }) => {
   });
 
   const myClickHandler = (e, props) => {
-    // Here you'll do whatever you want to happen when they click
     setOpen(props);
-
     if (!e) {
       var e = window.event;
       e.cancelBubble = true;
@@ -95,7 +90,6 @@ const Header = ({ activeHeading }) => {
   };
 
   const myClickHandler2 = (e, props) => {
-    // Here you'll do whatever you want to happen when they click
     setOpenCart(props);
     setOpenWishlist(false);
     setSearchOpen(false);
@@ -109,7 +103,6 @@ const Header = ({ activeHeading }) => {
     }
   };
   const myClickHandler3 = (e, props) => {
-    // Here you'll do whatever you want to happen when they click
     setOpenWishlist(props);
     setOpenCart(false);
     setSearchOpen(false);
@@ -221,7 +214,7 @@ const Header = ({ activeHeading }) => {
           <div>
             <Link to="/">
               <img
-                src="https://res.cloudinary.com/bramuels/image/upload/v1689346467/logo_transparent_mrwg4g.png"
+                src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
                 className="w-28 h-28"
                 alt=""
               />
@@ -246,7 +239,7 @@ const Header = ({ activeHeading }) => {
               <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
                 <div className="w-full flex items-start-py-3">
                   <img
-                    src="https://res.cloudinary.com/bramuels/image/upload/v1689346467/logo_transparent_mrwg4g.png"
+                    src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
                     alt=""
                     className="w-[40px] h-[40px] mr-[10px]"
                   />
@@ -266,7 +259,7 @@ const Header = ({ activeHeading }) => {
                           className="w-full flex items-start-py-3"
                         >
                           <img
-                            src={`${backend_url}${i.images[0]}`}
+                            src={`${i.images[0]?.url}`}
                             alt=""
                             className="w-[40px] h-[40px] mr-[10px]"
                           />
@@ -371,11 +364,7 @@ const Header = ({ activeHeading }) => {
                 {isAuthenticated ? (
                   <Link to="/profile">
                     <img
-                      src={`${backend_url}${user?.avatar}`}
-                      // src={`${backend_url}${user?.avatar}`}
-                      // onError={() =>
-                      //   setImgSrc(`${backend_url}defaultavatar.png`)
-                      // }
+                      src={`${user?.avatar?.url}`}
                       className="w-[35px] h-[35px] rounded-full"
                       alt=""
                     />
@@ -417,7 +406,7 @@ const Header = ({ activeHeading }) => {
           <div>
             <Link to="/">
               <img
-                src="https://res.cloudinary.com/bramuels/image/upload/v1689346467/logo_transparent_mrwg4g.png"
+                src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
                 alt=""
                 className="cursor-pointer h-20 w-20"
               />
@@ -488,7 +477,7 @@ const Header = ({ activeHeading }) => {
                   <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
                     <div className="w-full flex items-start-py-3">
                       <img
-                        src="https://res.cloudinary.com/bramuels/image/upload/v1689346467/logo_transparent_mrwg4g.png"
+                        src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
                         alt=""
                         className="w-[40px] h-[40px] mr-[10px]"
                       />
@@ -509,7 +498,7 @@ const Header = ({ activeHeading }) => {
                             className="flex items-center"
                           >
                             <img
-                              src={`${backend_url}${i.images[0]}`}
+                              src={`${i.image_Url[0]?.url}`}
                               alt=""
                               className="w-[50px] mr-2"
                             />
@@ -593,7 +582,7 @@ const Header = ({ activeHeading }) => {
                 <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
                   <div className="w-full flex items-start-py-3">
                     <img
-                      src="https://res.cloudinary.com/bramuels/image/upload/v1689346467/logo_transparent_mrwg4g.png"
+                      src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
                       alt=""
                       className="w-[40px] h-[40px] mr-[10px]"
                     />
@@ -616,7 +605,7 @@ const Header = ({ activeHeading }) => {
                             className="w-full flex items-start-py-3"
                           >
                             <img
-                              src={`${backend_url}${i.images[0]}`}
+                              src={`${i.images[0]?.url}`}
                               alt=""
                               className="w-[40px] h-[40px] mr-[10px]"
                             />
@@ -708,7 +697,7 @@ const Header = ({ activeHeading }) => {
               <div>
                 <Link to="/profile">
                   <img
-                    src={`${backend_url}${user?.avatar}`}
+                    src={`${user?.avatar?.url}`}
                     alt=""
                     className="w-[30px] h-[30px] rounded-full border-[3px] border-[#0eae88]"
                   />

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { conditionsData } from "../../static/data";
 import { useFormik } from "formik";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -8,12 +7,11 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import { AiOutlinePlusCircle, AiOutlineDelete } from "react-icons/ai";
 import Spinner from "../Spinner";
-import { backend_url, server } from "../../server";
+import { server } from "../../server";
 import axios from "axios";
 import CustomModal from "../CustomModal";
 import AdminHeader from "../Layout/AdminHeader";
 import AdminSideBar from "./Layout/AdminSidebar";
-// import axiosInstance from "./axiosInstance";
 
 const editProductSchema = yup.object({
   name: yup.string().required("Name is required"),
@@ -28,7 +26,6 @@ const editProductSchema = yup.object({
 
 const AdminEditProduct = () => {
   const { productId } = useParams();
-  const navigate = useNavigate();
 
   const [images, setImages] = useState([]);
   const [currentImages, setcurrentImages] = useState([]);
@@ -50,6 +47,7 @@ const AdminEditProduct = () => {
       discountPrice: "",
       stock: "",
       condition: "",
+      images: "",
     },
     validationSchema: editProductSchema,
     onSubmit: async (values) => {
@@ -64,11 +62,10 @@ const AdminEditProduct = () => {
         const discountPrice = values.discountPrice;
         const stock = values.stock;
         // condition: values.condition,
-        const imagesi = images;
 
         const newForm = new FormData();
 
-        imagesi.forEach((image) => {
+        images.forEach((image) => {
           newForm.append("images", image);
         });
         newForm.append("name", name);
@@ -79,10 +76,16 @@ const AdminEditProduct = () => {
         newForm.append("discountPrice", discountPrice);
         newForm.append("stock", stock);
 
-        await axios.put(
-          `${server}/product/update-product/${productId}`,
-          newForm
-        );
+        await axios.put(`${server}/product/update-product/${productId}`, {
+          name,
+          description,
+          category,
+          tags,
+          originalPrice,
+          discountPrice,
+          stock,
+          images,
+        });
 
         setLoading(false);
         toast.success("Product updated!");
@@ -94,7 +97,6 @@ const AdminEditProduct = () => {
   });
 
   useEffect(() => {
-    // Fetch categories from the backend when the component mounts
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${server}/category/categories`);
@@ -126,7 +128,7 @@ const AdminEditProduct = () => {
           condition: productData.condition,
         });
 
-        setcurrentImages(productData.images); // Set the images array in state
+        setcurrentImages(productData.images);
       } catch (error) {
         console.log(error);
       }
@@ -136,10 +138,18 @@ const AdminEditProduct = () => {
   }, [productId]);
 
   const handleImageChange = (e) => {
-    e.preventDefault();
+    const files = Array.from(e.target.files);
 
-    let files = Array.from(e.target.files);
-    setImages((prevImages) => [...prevImages, ...files]);
+    // setImages([]);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // if (reader.readyState >= 1) {
+        setImages((old) => [...old, reader.result]);
+        // }
+      };
+      reader.readAsDataURL(file);
+    });
   };
   const handleImageChange2 = (e) => {
     e.preventDefault();
@@ -152,7 +162,7 @@ const AdminEditProduct = () => {
     try {
       await axios.put(`${server}/product/delete-image/${productId}`, { image });
       const updatedImages = [...currentImages];
-      updatedImages.splice(index, 1); // Remove the image at the specified index
+      updatedImages.splice(index, 1);
       setcurrentImages(updatedImages);
     } catch (error) {
       console.log(error);
@@ -160,7 +170,7 @@ const AdminEditProduct = () => {
   };
   const deleteImage2 = async (index, image) => {
     const updatedImages = [...images];
-    updatedImages.splice(index, 1); // Remove the image at the specified index
+    updatedImages.splice(index, 1);
     setImages(updatedImages);
   };
   const setOperations = async (index, image) => {
@@ -345,7 +355,7 @@ const AdminEditProduct = () => {
                         key={index}
                       >
                         <img
-                          src={`${backend_url}${image}`}
+                          src={`${image.url}`}
                           alt=""
                           className="h-[120px] w-[120px] object-cover m-2"
                         />
@@ -390,7 +400,7 @@ const AdminEditProduct = () => {
                       key={index}
                     >
                       <img
-                        src={URL.createObjectURL(image)}
+                        src={image}
                         alt=""
                         className="h-[120px] w-[120px] object-cover m-2"
                       />

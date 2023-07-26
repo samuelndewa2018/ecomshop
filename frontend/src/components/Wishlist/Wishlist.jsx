@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { RxCross1 } from "react-icons/rx";
-import { IoBagHandleOutline } from "react-icons/io5";
 import { BsCartPlus } from "react-icons/bs";
 import styles from "../../styles/styles";
 import { Link } from "react-router-dom";
 import { AiOutlineHeart } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromWishlist } from "../../redux/actions/wishlist";
-import { backend_url } from "../../server";
 import { addTocart } from "../../redux/actions/cart";
 import { NumericFormat } from "react-number-format";
 import { toast } from "react-toastify";
@@ -23,7 +21,6 @@ const Wishlist = ({ setOpenWishlist }) => {
   };
 
   const myClickHandler = (e, props) => {
-    // Here you'll do whatever you want to happen when they click
     setOpenWishlist(props);
 
     if (!e) {
@@ -135,7 +132,7 @@ const CartSingle = ({ data, removeFromWishlistHandler, addToCartHandler }) => {
             color={"rgb(240 11 11 / 86%)"}
           />
           <img
-            src={`${backend_url}${data?.images[0]}`}
+            src={`${data?.images[0]?.url}`}
             alt=""
             className="w-[70px] lg:w-[130px] h-min ml-2 mr-2 rounded-[5px]"
           />
