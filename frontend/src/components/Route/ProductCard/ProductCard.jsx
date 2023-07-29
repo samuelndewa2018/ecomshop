@@ -138,7 +138,7 @@ const ProductCard = ({ data, isEvent }) => {
             </div>
             <div className="flex items-center justify-end">
               <span className="font-[400] text-[14px] mx-3 text-[#68d284]">
-                {data.sold_out === 0 ? "New Product" : `${data.sold_out} sold`}
+                {data.sold_out === 0 ? "New Listed" : `${data.sold_out} sold`}
               </span>
             </div>
 
@@ -165,7 +165,7 @@ const ProductCard = ({ data, isEvent }) => {
 
             <div className="absolute top-2 left-2">
               <span
-                className="bg-blue-500 text-white py-1 px-2 text-xs rounded-full"
+                className="bg-blue-500 text-white py-1 px-2 text-[10px] lg:text-xs rounded-full"
                 style={{ transform: "rotate(45deg)" }}
               >
                 {data.condition}

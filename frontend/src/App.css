@@ -68,7 +68,6 @@
   color: #000;
   cursor: pointer;
 }
-
 .icon {
   display: flex;
 }
@@ -100,6 +99,18 @@
 ::-webkit-scrollbar-thumb {
   background-color: gray;
   border-radius: 0;
+}
+
+.removeScrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+  display: none;
+}
+
+/* Customize scrollbar thumb */
+.removeScrollbar::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 0;
+  display: none;
 }
 
 /* Minimize scrollbar size */
@@ -319,4 +330,50 @@ input[type="number"] {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* xdhcgvcskbvjh */
+.navigation {
+  width: 400px;
+  height: 70px;
+  background: #fff;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.navigation ul {
+  width: 350px;
+  display: flex;
+}
+
+.navigation ul li {
+  width: 70px;
+  height: 70px;
+  list-style: none;
+  position: relative;
+  z-index: 1;
+}
+
+.navigation ul li a {
+  width: 100%;
+  align-items: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  font-weight: 500;
+}
+
+.navigation ul li a .icon {
+  position: relative;
+  display: block;
+  line-height: 75px;
+  transition: 0.5s;
+  text-align: center;
+  color: var(--clr); /* Replace "--clr" with your desired color variable */
+  font-size: 1.5rem;
 }

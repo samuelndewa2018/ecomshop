@@ -1,206 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Caleb Adeleye" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ asset('images/favicon.png') }}"
     />
-
-    <!-- Bootstrap CSS -->
+    <title>Receipt</title>
+    <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+    <!-- Web Fonts
+======================= -->
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900"
+      type="text/css"
+    />
+
+    <!-- Stylesheet
+======================= -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+      integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
       crossorigin="anonymous"
     />
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-    />
-    <!-- Custom Style -->
-    <link rel="stylesheet" href="style.css" />
-
-    <title>Invoice..!</title>
+    <script src="https://use.fontawesome.com/65eb163cd4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <link href="{{ asset('css/invoice.css') }}" rel="stylesheet" />
   </head>
-
   <body>
-    <div class="my-5 page" size="A4">
-      <div class="p-5">
-        <section class="top-content bb d-flex justify-content-between">
-          <div class="logo">
-            <img src="logo.png" alt="" class="img-fluid" />
+    @foreach($data as $list)
+    <!-- Container -->
+    <div class="container-fluid invoice-container" id="invoice">
+      <!-- Header -->
+      <header>
+        <div class="row align-items-center">
+          <div class="col-sm-7 text-center text-sm-left mb-3 mb-sm-0">
+            <img
+              id="logo"
+              src="{{ asset('images/ospoly-logo.png') }}"
+              title="Ospoly"
+              alt="Ospoly Logo"
+            />
           </div>
-          <div class="top-left">
-            <div class="graphic-path">
-              <p>Invoice</p>
-            </div>
-            <div class="position-relative">
-              <p>Invoice No. <span>XXXX</span></p>
-            </div>
+          <div class="col-sm-5 text-center text-sm-right">
+            <h4 class="text-7 mb-0">Receipt</h4>
           </div>
-        </section>
+        </div>
+        <hr style="background-color: green" />
+      </header>
 
-        <section class="store-user mt-5">
-          <div class="col-10">
-            <div class="row bb pb-3">
-              <div class="col-7">
-                <p>Supplier,</p>
-                <h2>Your Store Name</h2>
-                <p class="address">
-                  777 Brockton Avenue, <br />
-                  Abington MA 2351, <br />Vestavia Hills AL
-                </p>
-                <div class="txn mt-2">TXN: XXXXXXX</div>
-              </div>
-              <div class="col-5">
-                <p>Client,</p>
-                <h2>Sabur Ali</h2>
-                <p class="address">
-                  777 Brockton Avenue, <br />
-                  Abington MA 2351, <br />Vestavia Hills AL
-                </p>
-                <div class="txn mt-2">TXN: XXXXXXX</div>
-              </div>
-            </div>
-            <div class="row extra-info pt-3">
-              <div class="col-7">
-                <p>Payment Method: <span>bKash</span></p>
-                <p>Order Number: <span>#868</span></p>
-              </div>
-              <div class="col-5">
-                <p>Deliver Date: <span>10-04.2021</span></p>
-              </div>
-            </div>
+      <!-- Main Content -->
+      <main id="receipt">
+        <div class="row">
+          <div class="col-sm-6">
+            <strong>Date:</strong> {{ $list->created_at }}
           </div>
-        </section>
+          <div class="col-sm-6 text-sm-right">
+            <strong>Reference No:</strong> {{ $list->invoice_no }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 text-sm-center">
+            <h3 style="padding-top: 15px">STUDENT UNION GOVERMENT DUE</h3>
+          </div>
+        </div>
+        <hr style="background-color: black" />
+        <div class="row">
+          <div class="col-sm-6 text-sm-right order-sm-1">
+            <strong>OSPOLY PAY:</strong>
+            <address>
+              Osun State Polytechnic Iree<br />
+              (+234) 8034904264, 08034879983<br />
+              support@ospolypay.com.ng
+            </address>
+          </div>
+          @php $fac_data =
+          \DB::table('faculty')->where('faculty_id',$list->faculty)->get();
+          foreach ($fac_data as $value) { $faculty = $value->faculty_name; }
+          @endphp
+          <div class="col-sm-6 order-sm-0">
+            <strong>Payment By:</strong>
+            <address>
+              NAME: {{ $list->fullname }}<br />
+              MATRIC NO: {{ $list->matric }}<br />
+              FACULTY: {{ $faculty }}<br />
+              DEPARTMENT: {{ $list->department }}
+            </address>
+          </div>
+        </div>
 
-        <section class="product-area mt-4">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <td>Item Description</td>
-                <td>Price</td>
-                <td>Quantity</td>
-                <td>Total</td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="media">
-                    <img
-                      class="mr-3 img-fluid"
-                      src="mobile.jpg"
-                      alt="Product 01"
-                    />
-                    <div class="media-body">
-                      <p class="mt-0 title">Media heading</p>
-                      Cras sit amet nibh libero, in gravida nulla.
-                    </div>
-                  </div>
-                </td>
-                <td>200$</td>
-                <td>1</td>
-                <td>200$</td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="media">
-                    <img
-                      class="mr-3 img-fluid"
-                      src="mobile-2.jpg"
-                      alt="Product 01"
-                    />
-                    <div class="media-body">
-                      <p class="mt-0 title">Media heading</p>
-                      Cras sit amet nibh libero, in gravida nulla.
-                    </div>
-                  </div>
-                </td>
-                <td>300$</td>
-                <td>2</td>
-                <td>600$</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-
-        <section class="balance-info">
-          <div class="row">
-            <div class="col-8">
-              <p class="m-0 font-weight-bold">Note:</p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. In
-                delectus, adipisci vero est dolore praesentium.
-              </p>
-            </div>
-            <div class="col-4">
-              <table class="table border-0 table-hover">
-                <tr>
-                  <td>Sub Total:</td>
-                  <td>800$</td>
-                </tr>
-                <tr>
-                  <td>Tax:</td>
-                  <td>15$</td>
-                </tr>
-                <tr>
-                  <td>Deliver:</td>
-                  <td>10$</td>
-                </tr>
-                <tfoot>
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table mb-0">
+                <thead class="card-header">
                   <tr>
-                    <td>Total:</td>
-                    <td>825$</td>
+                    <td class="col-3 border-0"><strong>Description</strong></td>
+                    <td class="col-4 border-0">
+                      <strong>Student Type</strong>
+                    </td>
+                    <td class="col-2 text-center border-0">
+                      <strong>Rate</strong>
+                    </td>
+                    <td class="col-1 text-center border-0">
+                      <strong>QTY</strong>
+                    </td>
+                    <td class="col-2 text-right border-0">
+                      <strong>Amount</strong>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td
+                      class="col-3 border-0"
+                      style="background-color: #dcd8cf; color: #000"
+                    >
+                      Payment For S.U.G Due
+                    </td>
+                    <td
+                      class="col-4 text-1 border-0"
+                      style="background-color: #dcd8cf; color: #000"
+                    >
+                      Staylite
+                    </td>
+                    <td
+                      class="col-2 text-center border-0"
+                      style="background-color: #dcd8cf; color: #000"
+                    >
+                      &#8358;250
+                    </td>
+                    <td
+                      class="col-1 text-center border-0"
+                      style="background-color: #dcd8cf; color: #000"
+                    >
+                      1
+                    </td>
+                    <td
+                      class="col-2 text-right border-0"
+                      style="background-color: #2264c4; color: #fff"
+                    >
+                      &#8358;250
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot class="card-footer">
+                  <tr>
+                    <td colspan="4" class="text-right">
+                      <strong>Sub Total:</strong>
+                    </td>
+                    <td class="text-right">&#8358;250</td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" class="text-right">
+                      <strong>Transaction Fee:</strong>
+                    </td>
+                    <td class="text-right">&#8358;50</td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" class="text-right">
+                      <strong>Total:</strong>
+                    </td>
+                    <td class="text-right">&#8358;300</td>
+                  </tr>
+                  <tr>
+                    <td
+                      colspan="4"
+                      class="text-right"
+                      style="background-color: #dcd8cf; color: #000"
+                    >
+                      <strong>Receipt No:</strong>
+                    </td>
+                    <td
+                      class="text-right"
+                      style="background-color: #2264c4; color: #fff"
+                    >
+                      OP/SUGDUE/{{ $list->invoice_no }}
+                    </td>
                   </tr>
                 </tfoot>
               </table>
-
-              <!-- Signature -->
-              <div class="col-12">
-                <img src="signature.png" class="img-fluid" alt="" />
-                <p class="text-center m-0">Director Signature</p>
-              </div>
             </div>
           </div>
-        </section>
-
-        <!-- Cart BG -->
-        <img src="cart.jpg" class="img-fluid cart-bg" alt="" />
-
-        <footer>
-          <hr />
-          <p class="m-0 text-center">
-            View THis Invoice Online At -
-            <a href="#!"> invoice/saburbd.com/#868 </a>
-          </p>
-          <div class="social pt-3">
-            <span class="pr-2">
-              <i class="fas fa-mobile-alt"></i>
-              <span>0123456789</span>
-            </span>
-            <span class="pr-2">
-              <i class="fas fa-envelope"></i>
-              <span>me@saburali.com</span>
-            </span>
-            <span class="pr-2">
-              <i class="fab fa-facebook-f"></i>
-              <span>/sabur.7264</span>
-            </span>
-            <span class="pr-2">
-              <i class="fab fa-youtube"></i>
-              <span>/abdussabur</span>
-            </span>
-            <span class="pr-2">
-              <i class="fab fa-github"></i>
-              <span>/example</span>
-            </span>
+        </div>
+      </main>
+      <!-- Footer -->
+      <footer class="text-center mt-4">
+        <p class="text-1">
+          <strong>NOTE :</strong> Any alteration on this receipt will be
+          rendered invalid.
+        </p>
+        <br /><br />
+        <div class="row">
+          <div class="col-sm-6">
+            <img
+              src="{{ asset('images/signatures/pres.png') }}"
+              style="margin-left: 70px"
+              width="50"
+            />
+            <strong>President:</strong>______________
           </div>
-        </footer>
-      </div>
+
+          <div class="col-sm-6">
+            <img
+              src="{{ asset('images/signatures/fin_sec.png') }}"
+              style="margin-left: 70px"
+              width="50"
+            /><br />
+            <strong> Financial Secretary:</strong>_____________
+          </div>
+        </div>
+
+        <br />
+        <div class="btn-group btn-group-sm d-print-none">
+          <a
+            href="javascript:window.print()"
+            class="btn btn-light border text-black-50 shadow-none"
+            ><i class="fa fa-print"></i> Print</a
+          >
+          <a
+            href="#"
+            id="download"
+            class="btn btn-light border text-black-50 shadow-none"
+            ><i class="fa fa-download"></i> Download</a
+          >
+        </div>
+      </footer>
     </div>
+
+    @endforeach
+
+    <script>
+      window.onload = function () {
+        document.getElementById("download").addEventListener("click", () => {
+          const invoice = this.document.getElementById("invoice");
+          var opt = {
+            filename: "OP/SUGDUE/{{ $list->invoice_no }}",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+          };
+          html2pdf().from(invoice).set(opt).save();
+        });
+      };
+    </script>
   </body>
 </html>

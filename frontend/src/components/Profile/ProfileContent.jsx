@@ -855,7 +855,7 @@ const Address = () => {
           >
             <div
               onClick={(e) => myClickHandler(e, true)}
-              className="w-[35%] h-[80vh] bg-white rounded shadow relative overflow-y-scroll appear__smoothly"
+              className="w-[85%] lg:w-[35%] h-[70vh] lg:h-[80vh] bg-white rounded shadow relative overflow-y-scroll appear__smoothly"
             >
               <div className="w-full flex justify-end p-3">
                 <RxCross1
@@ -1032,7 +1032,7 @@ const Address = () => {
         {user &&
           user.addresses.map((item, index) => (
             <div
-              className="w-full bg-white h-min 800px:h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10 mb-5"
+              className="w-full bg-white 800px:h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10 mb-5"
               key={index}
             >
               {modalOpen && (

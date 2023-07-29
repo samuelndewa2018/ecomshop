@@ -80,7 +80,7 @@ const Footer = () => {
               className="bg-[#56d879] hover:bg-teal-500 duration-300 px-5 py-2.5 rounded-md text-whie md:w-auto w-full"
             >
               {loading ? (
-                <p className="flex">
+                <p className="flex ml-[25%]">
                   <Spinner /> sending...
                 </p>
               ) : (
@@ -170,7 +170,7 @@ const Footer = () => {
             </li>
           ))}
         </ul>
-        <div className="flex lg:hidden gap-3">
+        <div className="flex lg:hidden gap-3 ml-[10%]">
           <ul className="text-start">
             <h1 className="mb-1 font-semibold">Company</h1>
             {footerProductLinks.map((link, index) => (

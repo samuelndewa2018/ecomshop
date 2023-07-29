@@ -26,7 +26,7 @@ const Checkout = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const paymentSubmit = () => {
+  const paymentSubmit = async () => {
     if (
       address1 === "" ||
       address2 === "" ||
@@ -53,7 +53,6 @@ const Checkout = () => {
         shippingAddress,
         user,
       };
-
       // update local storage with the updated orders array
       localStorage.setItem("latestOrder", JSON.stringify(orderData));
       navigate("/payment");
@@ -166,6 +165,23 @@ const ShippingInfo = ({
   zipCode,
   setZipCode,
 }) => {
+  const email = user?.email;
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const saveNumber = async (e) => {
+    await axios.put(
+      `${server}/user/update-user-phone`,
+      {
+        email,
+        phoneNumber,
+      },
+      {
+        withCredentials: true,
+        headers: {
+          "Access-Control-Allow-Credentials": true,
+        },
+      }
+    );
+  };
   return (
     <div className="w-full 800px:w-[95%] bg-white rounded-md p-5 pb-8">
       <h5 className="text-[18px] font-[500]">Shipping Address</h5>
@@ -199,9 +215,16 @@ const ShippingInfo = ({
               type="number"
               required
               value={user && user.phoneNumber}
+              onChange={(e) => saveNumber(e.target.value)}
               className={`${styles.input} !w-[95%]`}
             />
           </div>
+          <button
+            onClick={() => saveNumber()}
+            className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white border border-blue-500 hover:border-transparent rounded h-8"
+          >
+            save
+          </button>
           <div className="w-[50%]">
             <label className="block pb-2 font-[500]">Zip Code</label>
             <input
