@@ -649,6 +649,25 @@ export const conditionsData = [
   },
 ];
 
+export const Datasizes = [
+  {
+    id: 1,
+    title: "SM",
+  },
+  {
+    id: 2,
+    title: "MD",
+  },
+  {
+    id: 3,
+    title: "LG",
+  },
+  {
+    id: 4,
+    title: "XL",
+  },
+];
+
 export const footerSupportLinks = [
   {
     name: "FAQ",
