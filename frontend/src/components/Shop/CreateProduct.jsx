@@ -78,6 +78,11 @@ const CreateProduct = () => {
     updatedSizes[index][field] = value;
     setSizes(updatedSizes);
   };
+  const handleDeleteSize = (index) => {
+    const updatedSizes = [...sizes];
+    updatedSizes.splice(index, 1);
+    setSizes(updatedSizes);
+  };
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -317,6 +322,13 @@ const CreateProduct = () => {
                 className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="Stock"
               />
+              <button
+                type="button"
+                onClick={() => handleDeleteSize(index)}
+                className="text-red-500 cursor-pointer"
+              >
+                <AiOutlineDelete size={20} />
+              </button>
               <div className="text-red-500">
                 {/* Display validation errors for sizes (if any) */}
                 {formik.touched.sizes &&
