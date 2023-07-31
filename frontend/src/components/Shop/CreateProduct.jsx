@@ -89,7 +89,7 @@ const CreateProduct = () => {
       stock: "",
       images: "",
       condition: "",
-      sizes: [{ name: "", price: "", stock: "" }], // Initialize the sizes array
+      sizes: [{ name: "", price: "", stock: "" }],
     },
     validationSchema: createProductSchema,
     onSubmit: async (values) => {
