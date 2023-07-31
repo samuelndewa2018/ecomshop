@@ -148,9 +148,11 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
   const [value, setValue] = useState(data.qty);
   const [modalOpen, setModalOpen] = useState(false);
   const totalPrice = data.discountPrice * value;
-
+  console.log("data", data);
   const increment = (data) => {
-    if (data.stock < value) {
+    if (data.stock <= value) {
+      toast.error("Product stock limited!");
+    } else if (data.selectedQuantity <= value) {
       toast.error("Product stock limited!");
     } else {
       setValue(value + 1);
