@@ -380,10 +380,13 @@ input[type="number"] {
   color: #222327;
   font-size: 1.5em;
   transition: 0.5s;
+  transform: translateY(0);
+  transition: transform 1s ease;
 }
 
 .navigation ul li.active a .icon {
   background: var(--clr);
   color: #fff;
   transform: translateY(-27px);
+  transition: transform 1s ease;
 }
