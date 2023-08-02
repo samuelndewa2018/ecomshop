@@ -170,7 +170,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                 <div className="flex pt-3">
                   <h4 className={`${styles.productDiscountPrice}`}>
                     <NumericFormat
-                      value={data.discountPrice}
+                      value={selectedSize ? selectedPrice : data.discountPrice}
                       displayType={"text"}
                       thousandSeparator={true}
                       prefix={"Ksh. "}
@@ -230,7 +230,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                 {data.stock < 1 ? (
                   <p className="text-red-600">Out Of Stock</p>
                 ) : (
-                  <div className="w-full mt-4">
+                  <div className="w-full mt-4 flex justify-end">
                     <div className="w-full flex">
                       <div className="w-1/2">
                         <div className="text-lg font-bold">Qty:</div>
@@ -264,6 +264,24 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                           </div>
                         </div>
                       </div>
+                    </div>
+                    <div>
+                      {click ? (
+                        <AiFillHeart
+                          size={30}
+                          className="cursor-pointer"
+                          onClick={() => removeFromWishlistHandler(data)}
+                          color={click ? "red" : "#333"}
+                          title="Remove from wishlist"
+                        />
+                      ) : (
+                        <AiOutlineHeart
+                          size={30}
+                          className="cursor-pointer"
+                          onClick={() => addToWishlistHandler(data)}
+                          title="Add to wishlist"
+                        />
+                      )}
                     </div>
                   </div>
                 )}

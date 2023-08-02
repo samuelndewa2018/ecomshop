@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
+  AiFillHeart,
   AiOutlineHeart,
 } from "react-icons/ai";
 import Typed from "react-typed";
@@ -335,7 +336,7 @@ const ProductDetails = ({ data, isEvent }) => {
                 {data.stock < 1 ? (
                   <p className="text-red-600">Out Of Stock</p>
                 ) : (
-                  <div className="w-full mt-4">
+                  <div className="w-full mt-4 flex flex-end">
                     <div className="w-full flex">
                       <div className="w-1/2">
                         <div className="text-lg font-bold">Qty:</div>
@@ -369,6 +370,24 @@ const ProductDetails = ({ data, isEvent }) => {
                           </div>
                         </div>
                       </div>
+                    </div>
+                    <div>
+                      {click ? (
+                        <AiFillHeart
+                          size={30}
+                          className="cursor-pointer"
+                          onClick={() => removeFromWishlistHandler(data)}
+                          color={click ? "red" : "#333"}
+                          title="Remove from wishlist"
+                        />
+                      ) : (
+                        <AiOutlineHeart
+                          size={30}
+                          className="cursor-pointer"
+                          onClick={() => addToWishlistHandler(data)}
+                          title="Add to wishlist"
+                        />
+                      )}
                     </div>
                   </div>
                 )}
