@@ -2,34 +2,63 @@ import React from "react";
 
 const TrialPage = () => {
   return (
-    <div>
-      TrialPage
-      <div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-        <div class="animate-pulse flex space-x-4">
-          <div class="rounded-full bg-slate-200 h-10 w-10 animate-pulse"></div>
-          <div class="flex-1 space-y-6 py-1">
-            <div class="h-2 bg-slate-200 rounded animate-pulse"></div>
-            <div class="space-y-3">
-              <div class="grid grid-cols-3 gap-4">
-                <div class="h-2 bg-slate-200 rounded col-span-2 animate-pulse"></div>
-                <div class="h-2 bg-slate-200 rounded col-span-1 animate-pulse"></div>
-              </div>
-              <div class="h-2 bg-slate-200 rounded animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      two three
-      <div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-        <div class="animate-bounce">
-          <div class="rounded-full bg-slate-200 h-10 w-10"></div>
-        </div>
-      </div>
-      four
-      <div class="border border-gray-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-        <div class="relative">
-          <div class="h-[50vh] bg-slate-200 rounded animate-stripes"></div>
-          <div class="h-3 mt-3 bg-slate-200 rounded animate-stripes"></div>
+    <div class="Gbody">
+      <div class="preloader">
+        <svg
+          class="cart"
+          role="img"
+          aria-label="Shopping cart line animation"
+          viewBox="0 0 128 128"
+          width="128px"
+          height="128px"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="8"
+          >
+            <g class="cart__track" stroke="hsla(0,10%,10%,0.1)">
+              <polyline points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" />
+              <circle cx="43" cy="111" r="13" />
+              <circle cx="102" cy="111" r="13" />
+            </g>
+            <g class="cart__lines" stroke="currentColor">
+              <polyline
+                class="cart__top"
+                points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80"
+                stroke-dasharray="338 338"
+                stroke-dashoffset="-338"
+              />
+              <g class="cart__wheel1" transform="rotate(-90,43,111)">
+                <circle
+                  class="cart__wheel-stroke"
+                  cx="43"
+                  cy="111"
+                  r="13"
+                  stroke-dasharray="81.68 81.68"
+                  stroke-dashoffset="81.68"
+                />
+              </g>
+              <g class="cart__wheel2" transform="rotate(90,102,111)">
+                <circle
+                  class="cart__wheel-stroke"
+                  cx="102"
+                  cy="111"
+                  r="13"
+                  stroke-dasharray="81.68 81.68"
+                  stroke-dashoffset="81.68"
+                />
+              </g>
+            </g>
+          </g>
+        </svg>
+        <div class="preloader__text">
+          <p class="preloader__msg">Bringing you the goods…</p>
+          <p class="preloader__msg preloader__msg--last">
+            This is taking long. Something's wrong.
+          </p>
         </div>
       </div>
     </div>
