@@ -1,252 +1,745 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  AiOutlineHeart,
+  AiOutlineSearch,
+  AiOutlineMessage,
+  AiOutlineShoppingCart,
+} from "react-icons/ai";
+import {
+  IoIosArrowDown,
+  IoIosArrowForward,
+  IoIosArrowUp,
+} from "react-icons/io";
+import { BiMenuAltLeft, BiHomeAlt2 } from "react-icons/bi";
+import { BsSearch } from "react-icons/bs";
+import { CgProfile } from "react-icons/cg";
+import { useSelector } from "react-redux";
+import { RxCross1 } from "react-icons/rx";
+import Typed from "react-typed";
+import axios from "axios";
+import { TbArrowsShuffle2 } from "react-icons/tb";
+import { toast } from "react-toastify";
+import styles from "../styles/styles";
+import CustomModal from "../components/CustomModal";
+import DropDown from "../components/Layout/DropDown";
+import Navbar from "../components/Layout/Navbar";
+import Cart from "../components/cart/Cart";
+import Wishlist from "../components/Wishlist/Wishlist";
+import { server } from "../server";
 
-const TrialPage = () => {
+const Header = ({ activeHeading }) => {
+  const { isAuthenticated, user } = useSelector((state) => state.user);
+  const { statements } = useSelector((state) => state.statements);
+  const { isSeller } = useSelector((state) => state.seller);
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const { cart } = useSelector((state) => state.cart);
+  const { allProducts } = useSelector((state) => state.products);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchData, setSearchData] = useState(null);
+  const [categoriesData, setCategoriesData] = useState([]);
+  const [active, setActive] = useState(false);
+  const [dropDown, setDropDown] = useState(false);
+  const [openCart, setOpenCart] = useState(false);
+  const [openWishlist, setOpenWishlist] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  const promotionName = statements?.map((i) => i.promotionName);
+  const typingName1 = statements?.map((i) => i.typingName1);
+  const typingName2 = statements?.map((i) => i.typingName2);
+  const typingName3 = statements?.map((i) => i.typingName3);
+
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+
+    const filteredProducts =
+      allProducts &&
+      allProducts.filter((product) =>
+        product.name.toLowerCase().includes(term.toLowerCase())
+      );
+    setSearchData(filteredProducts);
+  };
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 70) {
+      setActive(true);
+    } else {
+      setActive(false);
+    }
+  });
+
+  const myClickHandler = (e, props) => {
+    // Here you'll do whatever you want to happen when they click
+    setOpen(props);
+
+    if (!e) {
+      var e = window.event;
+      e.cancelBubble = true;
+    }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  };
+
+  const [activeItem, setActiveItem] = useState("home");
+
+  const handleClick = (item) => {
+    setActiveItem(item);
+  };
+
+  const myClickHandler2 = (e, props) => {
+    // Here you'll do whatever you want to happen when they click
+    setOpenCart(props);
+    setOpenWishlist(false);
+    setSearchOpen(false);
+
+    if (!e) {
+      var e = window.event;
+      e.cancelBubble = true;
+    }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  };
+  const myClickHandler3 = (e, props) => {
+    // Here you'll do whatever you want to happen when they click
+    setOpenWishlist(props);
+    setOpenCart(false);
+    setSearchOpen(false);
+    setOpen(false);
+
+    if (!e) {
+      var e = window.event;
+      e.cancelBubble = true;
+    }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  };
+  const myClickHandler4 = (e, props) => {
+    setSearchOpen(props);
+    setOpenCart(false);
+    setOpenWishlist(false);
+
+    if (!e) {
+      var e = window.event;
+      e.cancelBubble = true;
+    }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  };
+  const myClickHandler5 = (e) => {
+    e.preventDefault();
+    setSearchOpen(false);
+    setOpenCart(false);
+    setOpenWishlist(false);
+    navigate("/");
+
+    if (!e) {
+      var e = window.event;
+      e.cancelBubble = true;
+    }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  };
+
+  const myClickHandler6 = (e) => {
+    e.preventDefault();
+    setSearchOpen(false);
+    setOpenCart(false);
+    setOpenWishlist(false);
+    navigate("/inbox");
+
+    if (!e) {
+      var e = window.event;
+      e.cancelBubble = true;
+    }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  };
+  useEffect(() => {
+    const fetchCategoriesData = async () => {
+      try {
+        const response = await axios.get(`${server}/category/categories`);
+        setCategoriesData(response.data);
+      } catch (error) {
+        console.error("Error fetching categoriesData:", error);
+      }
+    };
+
+    fetchCategoriesData();
+  }, []);
+
+  const logoutHandler = () => {
+    axios
+      .get(`${server}/user/logout`, { withCredentials: true })
+      .then((res) => {
+        toast.success(res.data.message);
+        navigate("/");
+        window.location.reload(true);
+      })
+      .catch((error) => {
+        console.log(error.response.data.message);
+      });
+  };
+
   return (
-    <div class="fixed bottom-0 left-0 z-50 grid w-full h-16 grid-cols-1 px-8 bg-white border-t border-gray-200 md:grid-cols-3 dark:bg-gray-700 dark:border-gray-600">
-      <div class="items-center justify-center hidden mr-auto text-gray-500 dark:text-gray-400 md:flex">
-        <svg
-          class="w-3 h-3 mr-2"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
-        </svg>
-        <span class="text-sm">12:43 PM</span>
+    <div onClick={dropDown === true ? () => setDropDown(false) : () => {}}>
+      <div className="flex p-auto w-full bg-[#3321c8] h-[40px] justify-between py-[7px] px-[5px] lg:py-[22px] lg:px-[60px] lg:h-[70px]">
+        <div className="flex ml-2">
+          <p className="hidden text-white lg:block">{promotionName}</p>
+          <Typed
+            className="text-white lg:ml-20 sm:ml-0"
+            strings={[
+              `${
+                typingName1 === undefined
+                  ? "Welcome to Ninety One"
+                  : typingName1
+              }`,
+              `${
+                typingName2 === undefined
+                  ? "Welcome to Ninety One"
+                  : typingName2
+              }`,
+              `${
+                typingName3 === undefined
+                  ? "Welcome to Ninety One"
+                  : typingName3
+              }`,
+            ]}
+            typeSpeed={40}
+            backSpeed={50}
+            loop
+          />
+        </div>
+        <p className="hidden text-white lg:block">
+          Phone:{" "}
+          <a className="text-white" href="tel: +254712012113">
+            +254 741 895 028
+          </a>
+        </p>
       </div>
-      <div class="flex items-center justify-center mx-auto">
-        <button
-          data-tooltip-target="tooltip-microphone"
-          type="button"
-          class="p-2.5 group bg-gray-100 rounded-full hover:bg-gray-200 mr-4 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:bg-gray-600 dark:hover:bg-gray-800"
-        >
-          <svg
-            class="w-4 h-4 text-gray-500 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 16 19"
-          >
-            <path d="M15 5a1 1 0 0 0-1 1v3a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a1 1 0 0 0-2 0v3a6.006 6.006 0 0 0 6 6h1v2H5a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2H9v-2h1a6.006 6.006 0 0 0 6-6V6a1 1 0 0 0-1-1Z" />
-            <path d="M9 0H7a3 3 0 0 0-3 3v5a3 3 0 0 0 3 3h2a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3Z" />
-          </svg>
-          <span class="sr-only">Mute microphone</span>
-        </button>
-        <div
-          id="tooltip-microphone"
-          role="tooltip"
-          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-        >
-          Mute microphone
-          <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-        <button
-          data-tooltip-target="tooltip-camera"
-          type="button"
-          class="p-2.5 bg-gray-100 group rounded-full hover:bg-gray-200 mr-4 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:bg-gray-600 dark:hover:bg-gray-800"
-        >
-          <svg
-            class="w-4 h-4 text-gray-500 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 20 14"
-          >
-            <path d="M11 0H2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm8.585 1.189a.994.994 0 0 0-.9-.138l-2.965.983a1 1 0 0 0-.685.949v8a1 1 0 0 0 .675.946l2.965 1.02a1.013 1.013 0 0 0 1.032-.242A1 1 0 0 0 20 12V2a1 1 0 0 0-.415-.811Z" />
-          </svg>
-          <span class="sr-only">Hide camera</span>
-        </button>
-        <div
-          id="tooltip-camera"
-          role="tooltip"
-          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-        >
-          Hide camera
-          <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-        <button
-          data-tooltip-target="tooltip-feedback"
-          type="button"
-          class="p-2.5 bg-gray-100 group rounded-full hover:bg-gray-200 mr-4 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:bg-gray-600 dark:hover:bg-gray-800"
-        >
-          <svg
-            class="w-4 h-4 text-gray-500 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM13.5 6a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm-7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm3.5 9.5A5.5 5.5 0 0 1 4.6 11h10.81A5.5 5.5 0 0 1 10 15.5Z" />
-          </svg>
-          <span class="sr-only">Share feedback</span>
-        </button>
-        <div
-          id="tooltip-feedback"
-          role="tooltip"
-          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-        >
-          Share feedback
-          <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-        <button
-          data-tooltip-target="tooltip-settings"
-          type="button"
-          class="p-2.5 bg-gray-100 group rounded-full mr-4 md:mr-0 hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:bg-gray-600 dark:hover:bg-gray-800"
-        >
-          <svg
-            class="w-4 h-4 text-gray-500 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 20"
-          >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 12.25V1m0 11.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M4 19v-2.25m6-13.5V1m0 2.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M10 19V7.75m6 4.5V1m0 11.25a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM16 19v-2"
+      <div className={`${styles.section}`}>
+        <div className="hidden 800px:h-[50px] 800px:my-[20px] 800px:flex items-center justify-between">
+          <div>
+            <Link to="/">
+              <img
+                src="https://shopo.quomodothemes.website/assets/images/logo.svg"
+                className="w-28 h-28"
+                alt=""
+              />
+            </Link>
+          </div>
+          {/* search box */}
+          <div className="w-[50%] relative">
+            <input
+              type="search"
+              placeholder="Search Product..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="h-[40px] w-full px-2 border-[#3957db] border-[2px] rounded-md"
             />
-          </svg>
-          <span class="sr-only">Video settings</span>
-        </button>
-        <div
-          id="tooltip-settings"
-          role="tooltip"
-          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-        >
-          Video settings
-          <div class="tooltip-arrow" data-popper-arrow></div>
+            {searchTerm === "" && (
+              <BsSearch
+                size={30}
+                className="absolute right-2 top-1.5 cursor-pointer"
+              />
+            )}
+            {searchData && searchData.length === 0 && searchTerm !== "" ? (
+              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+                <div className="w-full flex items-start-py-3">
+                  <img
+                    src="https://res.cloudinary.com/bramuels/image/upload/v1689346467/logo_transparent_mrwg4g.png"
+                    alt=""
+                    className="w-[40px] h-[40px] mr-[10px]"
+                  />
+                  <h1>We are sorry, No such Product in our store</h1>
+                </div>
+              </div>
+            ) : searchData && searchData.length !== 0 && searchTerm !== "" ? (
+              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+                {searchData &&
+                  searchData.map((i, index) => {
+                    return (
+                      <Link to={`/product/${i._id}`}>
+                        <div className="w-full flex items-start-py-3">
+                          <img
+                            src={`$${i.images[0].url}`}
+                            alt=""
+                            className="w-[40px] h-[40px] mr-[10px]"
+                          />
+                          <h1>{i.name}</h1>
+                        </div>
+                      </Link>
+                    );
+                  })}
+              </div>
+            ) : null}
+          </div>
+
+          <div className={`${styles.button}`}>
+            <Link to={`${isAuthenticated ? "/profile" : "/login"}`}>
+              <h1 className="text-[#fff] flex items-center">
+                {isAuthenticated
+                  ? `Hello, ${
+                      user?.name.indexOf(" ") >= 0
+                        ? user?.name.substring(0, user?.name.indexOf(" "))
+                        : user?.name
+                    }`
+                  : "Login/Register"}
+                {!isAuthenticated && <IoIosArrowForward className="ml-1" />}
+              </h1>
+            </Link>
+          </div>
         </div>
-        <button
-          id="moreOptionsDropdownButton"
-          data-dropdown-toggle="moreOptionsDropdown"
-          type="button"
-          class="p-2.5 bg-gray-100 md:hidden group rounded-full hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:bg-gray-600 dark:hover:bg-gray-800"
-        >
-          <svg
-            class="w-4 h-4 text-gray-500 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 4 15"
-          >
-            <path d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
-          </svg>
-          <span class="sr-only">Show options</span>
-        </button>
+      </div>
+      <div
+        className={`${
+          active === true ? "shadow-sm fixed top-0 left-0 z-20" : null
+        } transition hidden 800px:flex items-center justify-between w-full bg-[#3321c8] h-[70px]`}
+      >
         <div
-          id="moreOptionsDropdown"
-          class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
+          className={`${styles.section} relative ${styles.noramlFlex} justify-between`}
         >
-          <ul
-            class="py-2 text-sm text-gray-700 dark:text-gray-200"
-            aria-labelledby="moreOptionsDropdownButton"
+          {/* categories */}
+          <div onClick={() => setDropDown(!dropDown)}>
+            <div className="relative h-[60px] mt-[10px] w-[270px] hidden 1000px:block">
+              <BiMenuAltLeft size={30} className="absolute top-3 left-2" />
+              <button
+                className={`h-[100%] w-full flex justify-between items-center pl-10 bg-white font-sans text-lg font-[500] select-none rounded-t-md`}
+              >
+                All Categories
+              </button>
+              {dropDown === false && (
+                <IoIosArrowDown
+                  size={20}
+                  className="absolute right-2 top-4 cursor-pointer"
+                  onClick={() => setDropDown(!dropDown)}
+                />
+              )}
+              {dropDown === true && (
+                <IoIosArrowUp
+                  size={20}
+                  className="absolute right-2 top-4 cursor-pointer"
+                />
+              )}
+              {dropDown ? (
+                <DropDown
+                  categoriesData={categoriesData}
+                  setDropDown={setDropDown}
+                />
+              ) : null}
+            </div>
+          </div>
+          {/* navitems */}
+          <div className={`${styles.noramlFlex}`}>
+            <Navbar active={activeHeading} />
+          </div>
+
+          <div className="flex">
+            <div className={`${styles.noramlFlex}`}>
+              <div
+                className="relative cursor-pointer mr-[15px]"
+                onClick={() => setOpenWishlist(true)}
+              >
+                <AiOutlineHeart size={30} color="rgb(255 255 255 / 83%)" />
+                <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
+                  {wishlist && wishlist.length}
+                </span>
+              </div>
+            </div>
+
+            <div className={`${styles.noramlFlex}`}>
+              <div
+                className="relative cursor-pointer mr-[15px]"
+                onClick={() => setOpenCart(true)}
+              >
+                <AiOutlineShoppingCart
+                  size={30}
+                  color="rgb(255 255 255 / 83%)"
+                />
+                <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
+                  {cart && cart.length}
+                </span>
+              </div>
+            </div>
+
+            <div className={`${styles.noramlFlex}`}>
+              <div className="relative cursor-pointer mr-[15px]">
+                {isAuthenticated ? (
+                  <Link to="/profile">
+                    <img
+                      src={`${user?.avatar.url}`}
+                      // src={`${backend_url}${user?.avatar}`}
+                      // onError={() =>
+                      //   setImgSrc(`${backend_url}defaultavatar.png`)
+                      // }
+                      className="w-[35px] h-[35px] rounded-full"
+                      alt=""
+                    />
+                  </Link>
+                ) : (
+                  <Link to="/login">
+                    <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* cart popup */}
+            {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+
+            {/* wishlist popup */}
+            {openWishlist ? (
+              <Wishlist setOpenWishlist={setOpenWishlist} />
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* mobile header */}
+      <div
+        className={`${
+          active === true ? "shadow-sm fixed top-0 left-0 z-10" : null
+        }
+      w-full h-[60px] bg-[#fff] z-50 top-0 left-0 shadow-sm 800px:hidden`}
+      >
+        <div className="w-full flex items-center justify-between">
+          <div>
+            <BiMenuAltLeft
+              size={40}
+              className="ml-4"
+              onClick={(e) => myClickHandler(e, true)}
+            />
+          </div>
+          <div>
+            <Link to="/">
+              <img
+                src="https://shopo.quomodothemes.website/assets/images/logo.svg"
+                alt=""
+                className="cursor-pointer h-20 w-20"
+              />
+            </Link>
+          </div>
+          <div>
+            <div
+              className="relative mr-[20px]"
+              onClick={(e) => myClickHandler2(e, true)}
+            >
+              <AiOutlineShoppingCart size={30} />
+              <span className="absolute rounded-full flex items-center justify-center bottom-[70%] right-0 h-[20px] w-[20px] border-none text-white bg-[#3bc177]">
+                {cart && cart.length}
+              </span>
+            </div>
+          </div>
+          {/* cart popup */}
+          {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+
+          {/* wishlist popup */}
+          {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null}
+        </div>
+
+        {/* header sidebar */}
+        {open && (
+          <div
+            className={`fixed w-full bg-[#0000005f] z-20 h-full top-0 left-0 appear__smoothly`}
+            onClick={(e) => myClickHandler(e, false)}
           >
-            <li>
-              <a
-                href="#"
-                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-              >
-                Show participants
+            <div
+              onClick={(e) => myClickHandler(e, true)}
+              className="fixed w-[70%] bg-[#fff] h-screen top-0 left-0 z-10 overflow-y-scroll"
+            >
+              <div className="w-full justify-between flex pr-3">
+                <div>
+                  <div
+                    className="relative mr-[15px]"
+                    onClick={(e) => myClickHandler3(e, true)}
+                  >
+                    <AiOutlineHeart size={30} className="mt-5 ml-3" />
+                    <span class="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
+                      {wishlist && wishlist.length}
+                    </span>
+                  </div>
+                </div>
+                <RxCross1
+                  size={30}
+                  className="ml-4 mt-5"
+                  onClick={(e) => myClickHandler(e, false)}
+                />
+              </div>
+
+              <div className="relative my-8 w-[92%] m-auto h-[40px relative]">
+                <input
+                  type="search"
+                  placeholder="Search Product..."
+                  className="h-[40px] w-full px-2 border-[#3957db] border-[2px] rounded-md"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
+                {searchTerm === "" && (
+                  <BsSearch
+                    size={30}
+                    className="absolute right-2 top-1.5 cursor-pointer"
+                  />
+                )}
+                {searchData && searchData.length === 0 && searchTerm !== "" ? (
+                  <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+                    <div className="w-full flex items-start-py-3">
+                      <img
+                        src="https://res..com/bramuels/image/upload/v1689346467/logo_transparent_mrwg4g.png"
+                        alt=""
+                        className="w-[40px] h-[40px] mr-[10px]"
+                      />
+                      <h1>We are sorry, No such Product in our store</h1>
+                    </div>
+                  </div>
+                ) : searchData &&
+                  searchData.length !== 0 &&
+                  searchTerm !== "" ? (
+                  <div className="absolute bg-[#fff] z-10 shadow w-full left-0 p-3">
+                    {searchData.map((i) => {
+                      return (
+                        <Link to={`/product/${i._id}`}>
+                          <div className="flex items-center">
+                            <img
+                              src={`${i.images[0].url}`}
+                              alt=""
+                              className="w-[50px] mr-2"
+                            />
+                            <h5>
+                              {" "}
+                              {i.name.length > 40
+                                ? i.name.slice(0, 40) + "..."
+                                : i.name}
+                            </h5>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>
+
+              <Navbar active={activeHeading} />
+              <div>
+                {modalOpen && (
+                  <CustomModal
+                    message={"Are you sure you want to logout?"}
+                    ok={" Yes, I'm sure"}
+                    cancel={"No, cancel"}
+                    setModalOpen={setModalOpen}
+                    performAction={() => logoutHandler()}
+                    closeModel={() => setModalOpen(false)}
+                  />
+                )}
+                {isAuthenticated && (
+                  <div
+                    onClick={() => setModalOpen(true)}
+                    className="pb-[30px] 800px:pb-0 font-[500] px-6 cursor-pointer"
+                  >
+                    Log Out
+                  </div>
+                )}
+              </div>
+              <div className={`${styles.button} ml-4 !rounded-[4px]`}>
+                <Link to={`${isAuthenticated ? "/profile" : "/login"}`}>
+                  <h1 className="text-[#fff] flex items-center">
+                    {isAuthenticated
+                      ? `Hello, ${
+                          user?.name.indexOf(" ") >= 0
+                            ? user?.name.substring(0, user?.name.indexOf(" "))
+                            : user?.name
+                        }`
+                      : "Login/Register"}
+                    {!isAuthenticated && <IoIosArrowForward className="ml-1" />}
+                  </h1>
+                </Link>
+              </div>
+              <br />
+              <br />
+              <br />
+            </div>
+          </div>
+        )}
+        {/* search for bottom tab */}
+        {searchOpen && (
+          <div
+            onClick={(e) => myClickHandler4(e, false)}
+            className=" fixed top-0 left-0 right-0 bg-black/[.6] p-4 z-50 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%)] max-h-full appear__smoothly"
+          >
+            {/* <div className="w-[90%] absolute top-[20%]"> */}
+            <div className="searchContainer">
+              <input
+                type="search"
+                placeholder="Search Product..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                onClick={(e) => myClickHandler4(e, true)}
+                className="searchInput"
+              />
+              {searchTerm === "" && (
+                <BsSearch size={24} className="searchIcon" />
+              )}
+            </div>
+            {searchData && searchData.length === 0 && searchTerm !== "" ? (
+              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+                <div className="w-full flex items-start-py-3">
+                  <img
+                    src="https://res.cloudinary.com/bramuels/image/upload/v1689346467/logo_transparent_mrwg4g.png"
+                    alt=""
+                    className="w-[40px] h-[40px] mr-[10px]"
+                  />
+                  <h1>We are sorry, No such Product in our store</h1>
+                </div>
+              </div>
+            ) : searchData && searchData.length !== 0 && searchTerm !== "" ? (
+              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+                {searchData &&
+                  searchData.map((i, index) => {
+                    return (
+                      <Link
+                        to={`/product/${i._id}`}
+                        onClick={(e) => myClickHandler4(e, false)}
+                      >
+                        <div className="w-full flex items-start-py-3">
+                          <img
+                            src={`${i.images[0].url}`}
+                            alt=""
+                            className="w-[40px] h-[40px] mr-[10px]"
+                          />
+                          <h1>
+                            {" "}
+                            {i.name.length > 40
+                              ? i.name.slice(0, 40) + "..."
+                              : i.name}
+                          </h1>
+                        </div>
+                      </Link>
+                    );
+                  })}
+              </div>
+            ) : null}
+            {/* </div> */}
+          </div>
+        )}
+        {/* bottom tab */}
+        <div className="navigation">
+          <ul>
+            <li
+              className={`list ${activeItem === "home" ? "active" : ""}`}
+              onClick={() => handleClick("home")}
+              style={{ "--clr": "#f44336" }}
+            >
+              <a href="#">
+                <span className="icon">
+                  <BiHomeAlt2
+                    style={{
+                      color: "#000",
+                      fontSize: "25px",
+                      margin: "5px",
+                      opacity: ".8",
+                    }}
+                    onClick={(e) => myClickHandler5(e)}
+                  />{" "}
+                </span>
               </a>
             </li>
-            <li>
-              <a
-                href="#"
-                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-              >
-                Adjust volume
+            <li
+              className={`list ${activeItem === "person" ? "active" : ""}`}
+              onClick={() => handleClick("person")}
+              style={{ "--clr": "#ffa117" }}
+            >
+              <a href="#">
+                <span className="icon">
+                  <AiOutlineMessage
+                    style={{
+                      color: "#000",
+                      fontSize: "25px",
+                      margin: "5px",
+                      opacity: ".8",
+                    }}
+                    // onClick={(e) => myClickHandler6(e, true)}
+                  />
+                </span>
               </a>
             </li>
-            <li>
-              <a
-                href="#"
-                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-              >
-                Show information
+            <li
+              className={`list ${activeItem === "chatbubble" ? "active" : ""}`}
+              onClick={() => handleClick("chatbubble")}
+              style={{ "--clr": "#0fc70f" }}
+            >
+              <a href="#">
+                <span className="icon">
+                  <BsSearch
+                    onClick={(e) => myClickHandler4(e, true)}
+                    style={{
+                      color: "#000",
+                      fontSize: "25px",
+                      margin: "5px",
+                      opacity: ".8",
+                    }}
+                  />{" "}
+                </span>
+              </a>
+            </li>
+            <li
+              className={`list ${activeItem === "camera" ? "active" : ""}`}
+              onClick={() => handleClick("camera")}
+              style={{ "--clr": "#2196f3" }}
+            >
+              <Link to="/compare-products">
+                <span className="icon">
+                  <TbArrowsShuffle2
+                    style={{
+                      color: "#000",
+                      fontSize: "25px",
+                      margin: "5px",
+                      opacity: ".8",
+                    }}
+                  />{" "}
+                </span>
+              </Link>
+            </li>
+            <li
+              className={`list ${activeItem === "settings" ? "active" : ""}`}
+              onClick={() => handleClick("settings")}
+              style={{ "--clr": "#b145e9" }}
+            >
+              <a href="#">
+                <span className="icon">
+                  <div>
+                    {isAuthenticated ? (
+                      <div>
+                        <Link to="/profile">
+                          <img
+                            src={`${user?.avatar?.url}`}
+                            alt=""
+                            className="w-[30px] h-[30px] rounded-full border-[3px] border-[#0eae88]"
+                          />
+                        </Link>
+                      </div>
+                    ) : (
+                      <Link to="/login">
+                        <CgProfile size={34} color="rgb(0 0 0 / 83%)" />
+                      </Link>
+                    )}
+                  </div>
+                </span>
               </a>
             </li>
           </ul>
-        </div>
-      </div>
-      <div class="items-center justify-center hidden ml-auto md:flex">
-        <button
-          data-tooltip-target="tooltip-participants"
-          type="button"
-          class="p-2.5 group rounded-full hover:bg-gray-100 mr-1 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-600 dark:hover:bg-gray-600"
-        >
-          <svg
-            class="w-4 h-4 text-gray-500 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 20 18"
-          >
-            <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
-          </svg>
-          <span class="sr-only">Show participants</span>
-        </button>
-        <div
-          id="tooltip-participants"
-          role="tooltip"
-          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-        >
-          Show participants
-          <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-        <button
-          data-tooltip-target="tooltip-volume"
-          type="button"
-          class="p-2.5 group rounded-full hover:bg-gray-100 mr-1 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-600 dark:hover:bg-gray-600"
-        >
-          <svg
-            class="w-4 h-4 text-gray-500 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 20 18"
-          >
-            <path d="M10.836.357a1.978 1.978 0 0 0-2.138.3L3.63 5H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h1.63l5.07 4.344a1.985 1.985 0 0 0 2.142.299A1.98 1.98 0 0 0 12 15.826V2.174A1.98 1.98 0 0 0 10.836.357Zm2.728 4.695a1.001 1.001 0 0 0-.29 1.385 4.887 4.887 0 0 1 0 5.126 1 1 0 0 0 1.674 1.095A6.645 6.645 0 0 0 16 9a6.65 6.65 0 0 0-1.052-3.658 1 1 0 0 0-1.384-.29Zm4.441-2.904a1 1 0 0 0-1.664 1.11A10.429 10.429 0 0 1 18 9a10.465 10.465 0 0 1-1.614 5.675 1 1 0 1 0 1.674 1.095A12.325 12.325 0 0 0 20 9a12.457 12.457 0 0 0-1.995-6.852Z" />
-          </svg>
-          <span class="sr-only">Adjust volume</span>
-        </button>
-        <div
-          id="tooltip-volume"
-          role="tooltip"
-          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-        >
-          Adjust volume
-          <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-        <button
-          data-tooltip-target="tooltip-information"
-          type="button"
-          class="p-2.5 group rounded-full hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-600 dark:hover:bg-gray-600"
-        >
-          <svg
-            class="w-4 h-4 text-gray-500 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-          </svg>
-          <span class="sr-only">Show information</span>
-        </button>
-        <div
-          id="tooltip-information"
-          role="tooltip"
-          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-        >
-          Show information
-          <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
       </div>
     </div>
   );
 };
 
-export default TrialPage;
+export default Header;
