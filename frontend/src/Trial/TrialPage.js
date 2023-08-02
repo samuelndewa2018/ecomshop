@@ -2,7 +2,7 @@ import React from "react";
 
 const TrialPage = () => {
   return (
-    <div class="Gbody">
+    <div class="">
       <div class="preloader">
         <svg
           class="cart"
