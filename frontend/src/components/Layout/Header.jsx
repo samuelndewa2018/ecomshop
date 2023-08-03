@@ -668,6 +668,7 @@ const Header = ({ activeHeading, activeItem }) => {
                     }}
                   />{" "}
                 </span>
+                <spana class="text text-black">Home</spana>
               </a>
             </li>
             <li
@@ -687,6 +688,7 @@ const Header = ({ activeHeading, activeItem }) => {
                     }}
                   />{" "}
                 </span>
+                <spana class="text text-black">Inbox</spana>
               </Link>
             </li>
             <li
@@ -725,6 +727,7 @@ const Header = ({ activeHeading, activeItem }) => {
                     }}
                   />{" "}
                 </span>
+                <spana class="text text-black">Compare</spana>
               </Link>
             </li>
             <li
@@ -756,6 +759,7 @@ const Header = ({ activeHeading, activeItem }) => {
                     )}
                   </div>
                 </span>
+                <spana class="text text-black">Account</spana>
               </a>
             </li>
           </ul>
