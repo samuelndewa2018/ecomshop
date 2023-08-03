@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
-  AiFillHeart,
   AiOutlineHeart,
+  AiFillHeart,
 } from "react-icons/ai";
 import Typed from "react-typed";
 import { FiCopy } from "react-icons/fi";
@@ -25,6 +25,7 @@ import { addTocompare } from "../../redux/actions/compare";
 import { NumericFormat } from "react-number-format";
 import { formatDistanceToNow } from "date-fns";
 import { IoIosShareAlt } from "react-icons/io";
+import Loader from "../Layout/Loader";
 
 const ProductDetails = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -38,17 +39,19 @@ const ProductDetails = ({ data, isEvent }) => {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedPrice, setSelectedPrice] = useState(0);
   const [selectedQuantity, setSelectedQuantity] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  console.log("selectedSize", selectedSize);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
+    setLoading(true);
     dispatch(getAllProductsShop(data && data?.shop._id));
     if (wishlist && wishlist.find((i) => i._id === data?._id)) {
       setClick(true);
     } else {
       setClick(false);
     }
+    setLoading(false);
   }, [data, wishlist]);
 
   const incrementCount = () => {
@@ -102,14 +105,11 @@ const ProductDetails = ({ data, isEvent }) => {
           discountPrice: selectedSize ? selectedPrice : data.discountPrice,
           selectedQuantity: selectedSize ? selectedQuantity : data.stock,
         };
-        console.log("cartData", cartData);
         dispatch(addTocart(cartData));
         toast.success("Item added to cart successfully!");
       }
     }
   };
-
-  console.log("product data", data);
 
   const totalReviewsLength =
     products &&
@@ -207,298 +207,312 @@ const ProductDetails = ({ data, isEvent }) => {
 
   return (
     <div className="bg-white">
-      {data ? (
-        <div className={`${styles.section} w-[90%] 800px:w-[80%]`}>
-          <div className="w-full py-5">
-            <div className="block w-full 800px:flex">
-              <div className="w-full 800px:w-[50%]">
-                <img
-                  src={`${data && data.images[select]?.url}`}
-                  alt=""
-                  className="w-[370px] lg:w-[80%] h-[370px] lg:h-fit object-contain"
-                />
-                <div className="w-full flex justify-center items-center gap-1">
-                  {data &&
-                    data.images.map((i, index) => (
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          {data ? (
+            <div className={`${styles.section} w-[90%] 800px:w-[80%]`}>
+              <div className="w-full py-5">
+                <div className="block w-full 800px:flex">
+                  <div className="w-full 800px:w-[50%]">
+                    <img
+                      src={`${data && data.images[select]?.url}`}
+                      alt=""
+                      className="w-[370px] lg:w-[80%] h-[370px] lg:h-fit object-contain"
+                    />
+                    <div className="w-full flex justify-center items-center gap-1">
+                      {data &&
+                        data.images.map((i, index) => (
+                          <div
+                            className={`${
+                              select === 0 ? "border rounded" : "null"
+                            } cursor-pointer`}
+                          >
+                            <img
+                              src={`${i?.url}`}
+                              alt=""
+                              className="h-[50px] w-[50px] lg:h-[100px] lg:w-[100px] object-cover mr-3 mt-3"
+                              onClick={() => setSelect(index)}
+                            />
+                          </div>
+                        ))}
                       <div
                         className={`${
-                          select === 0 ? "border rounded" : "null"
+                          select === 1 ? "border" : "null"
                         } cursor-pointer`}
-                      >
-                        <img
-                          src={`${i?.url}`}
-                          alt=""
-                          className="h-[50px] w-[50px] lg:h-[100px] lg:w-[100px] object-cover mr-3 mt-3"
-                          onClick={() => setSelect(index)}
-                        />
-                      </div>
-                    ))}
-                  <div
-                    className={`${
-                      select === 1 ? "border" : "null"
-                    } cursor-pointer`}
-                  ></div>
-                </div>
-              </div>
-              <div className="w-full 800px:w-[50%] pt-5 ml-2">
-                <h1 className="text-[16px] lg:text-[25px]  font-[600] font-Roboto text-[#333]">
-                  {data.name}
-                </h1>
-                <div className="disableStyles mt-3 text-[14px] lg:text-[16px]">
-                  <p dangerouslySetInnerHTML={{ __html: getDescription() }}></p>
-                  {data.description.length > 450 && (
-                    <button
-                      className="text-blue-500 hover:underline focus:outline-none"
-                      onClick={toggleShowMore}
-                    >
-                      {showMore ? "Show less" : "Show more"}
-                    </button>
-                  )}
-                </div>
-                <div className="flex pt-3">
-                  <h4 className={`${styles.productDiscountPrice}`}>
-                    <NumericFormat
-                      value={selectedSize ? selectedPrice : data.discountPrice}
-                      displayType={"text"}
-                      thousandSeparator={true}
-                    />
-                  </h4>
-                  <h3 className={`${styles.price}`}>
-                    <NumericFormat
-                      value={data.originalPrice}
-                      displayType={"text"}
-                      thousandSeparator={true}
-                    />
-                  </h3>
-                </div>
-
-                <p
-                  className={`
-                ${
-                  selectedSize && selectedQuantity !== 0
-                    ? `text-[#5500ff]`
-                    : selectedSize && selectedQuantity === 0
-                    ? `text-red-500`
-                    : !selectedSize && data.stock !== 0
-                    ? `text-[#5500ff]`
-                    : `text-red-500`
-                }
-                `}
-                >
-                  {selectedSize && selectedQuantity !== 0
-                    ? `${selectedQuantity} products remaining`
-                    : selectedSize && selectedQuantity === 0
-                    ? `Out of Stock`
-                    : !selectedSize && data.stock !== 0
-                    ? `${data.stock} products remaining`
-                    : `Out of Stock`}
-                </p>
-                {/* Display Sizes */}
-                {data.sizes && data.sizes.length > 0 && (
-                  <div className="block mt-3 items-center">
-                    <span className="mr-3">Size:</span>
-                    <div className="flex flex-wrap gap-2">
-                      {data.sizes &&
-                        data.sizes.length > 0 &&
-                        data.sizes.map((size, index) => (
-                          <button
-                            key={index}
-                            className={`px-4 py-2 rounded border ${
-                              size.stock === 0 ? "text-gray-300	" : "text-black"
-                            }  ${
-                              selectedSize === size.name
-                                ? "border-blue-500 text-blue-500"
-                                : "bg-white text-black"
-                            }`}
-                            onClick={() => {
-                              setSelectedSize(size.name);
-                              setSelectedPrice(size.price);
-                              setSelectedQuantity(size.stock);
-                            }}
-                            disabled={
-                              selectedSize === size.name &&
-                              selectedQuantity === 0
-                            }
-                            style={{
-                              opacity:
-                                selectedSize === size.name &&
-                                selectedQuantity === 0
-                                  ? 0.2
-                                  : 1,
-                            }}
-                          >
-                            {size.name}
-                          </button>
-                        ))}
+                      ></div>
                     </div>
                   </div>
-                )}
-                {data.stock < 1 ? (
-                  <p className="text-red-600">Out Of Stock</p>
-                ) : (
-                  <div className="w-full mt-4 flex flex-end">
-                    <div className="w-full flex">
-                      <div className="w-1/2">
-                        <div className="text-lg font-bold">Qty:</div>
-                        <div className="flex items-center mt-2">
-                          <div
-                            className={`${
-                              count <= 1
-                                ? "bg-gray-300 cursor-not-allowed"
-                                : "bg-gray-300 cursor-pointer"
-                            } w-10 h-10 flex items-center justify-center rounded-full`}
-                            onClick={decrementCount}
-                          >
-                            <span className="text-xl">-</span>
-                          </div>
-                          <div className="mx-4">{count}</div>
-                          <div
-                            className={`${
-                              count >= data.stock
-                                ? "bg-gray-300 cursor-not-allowed"
-                                : "bg-gray-300 cursor-pointer"
-                            } w-10 h-10 flex items-center justify-center rounded-full`}
-                            onClick={
-                              data.stock <= count
-                                ? maximum
-                                : selectedSize && selectedQuantity <= count
-                                ? maximum
-                                : incrementCount
-                            }
-                          >
-                            <span className="text-xl">+</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      {click ? (
-                        <AiFillHeart
-                          size={30}
-                          className="cursor-pointer"
-                          onClick={() => removeFromWishlistHandler(data)}
-                          color={click ? "red" : "#333"}
-                          title="Remove from wishlist"
-                        />
-                      ) : (
-                        <AiOutlineHeart
-                          size={30}
-                          className="cursor-pointer"
-                          onClick={() => addToWishlistHandler(data)}
-                          title="Add to wishlist"
-                        />
+                  <div className="w-full 800px:w-[50%] pt-5 ml-2">
+                    <h1 className="text-[16px] lg:text-[25px]  font-[600] font-Roboto text-[#333]">
+                      {data.name}
+                    </h1>
+                    <div className="disableStyles mt-3 text-[14px] lg:text-[16px]">
+                      <p
+                        dangerouslySetInnerHTML={{ __html: getDescription() }}
+                      ></p>
+                      {data.description.length > 450 && (
+                        <button
+                          className="text-blue-500 hover:underline focus:outline-none"
+                          onClick={toggleShowMore}
+                        >
+                          {showMore ? "Show less" : "Show more"}
+                        </button>
                       )}
                     </div>
-                  </div>
-                )}
-
-                <div className="flex gap-4">
-                  {data.stock === 0 ? (
-                    <div
-                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                      onClick={() => notifyMe()}
-                    >
-                      <span className="text-white flex items-center">
-                        Notify Me <AiOutlineHeart className="ml-1" />
-                      </span>
-                    </div>
-                  ) : selectedSize && selectedQuantity === 0 ? (
-                    <div
-                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                      onClick={() => notifyMe()}
-                    >
-                      <span className="text-white flex items-center">
-                        Notify Me <AiOutlineHeart className="ml-1" />
-                      </span>
-                    </div>
-                  ) : (
-                    <div
-                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                      onClick={() => addToCartHandler(data._id)}
-                    >
-                      <span className="text-white flex items-center">
-                        Add to cart <AiOutlineShoppingCart className="ml-1" />
-                      </span>
-                    </div>
-                  )}
-                  <div
-                    className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                    onClick={() => addToCompareHandler(data._id)}
-                  >
-                    <span className="text-white flex items-center">
-                      Add to compare <TbArrowsShuffle2 className="ml-1" />
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center my-3 text-szm">
-                  <h3 className="product-heading mr-1 text-[13px]">
-                    Share Product:
-                  </h3>
-                  <p
-                    onClick={() =>
-                      shareToSocialMedia(
-                        `${
-                          isEvent === true
-                            ? `/product/${data._id}?isEvent=true`
-                            : `/product/${data._id}`
-                        }`
-                      )
-                    }
-                    className="cursor-pointer"
-                  >
-                    <div className="flex items-center text-[13px]">
-                      <IoIosShareAlt
-                        size={20}
-                        color="blue"
-                        className="fs-5 me-2"
-                      />
-                      <Typed
-                        strings={["Click Here To Share this Product."]}
-                        typeSpeed={40}
-                        backSpeed={50}
-                        loop
-                      />
-                    </div>
-                  </p>
-                </div>
-                <div className="flex items-center pt-4">
-                  <Link to={`/shop/preview/${data?.shop._id}`}>
-                    <img
-                      src={`${data?.shop?.avatar?.url}`}
-                      alt=""
-                      className="w-[50px] h-[50px] rounded-full mr-2"
-                    />
-                  </Link>
-                  <div className="pr-8">
-                    <Link to={`/shop/preview/${data?.shop._id}`}>
-                      <h3 className={`${styles.shop_name} pb-1 pt-1`}>
-                        {data.shop.name}
+                    <div className="flex pt-3">
+                      <h4 className={`${styles.productDiscountPrice}`}>
+                        <NumericFormat
+                          value={
+                            selectedSize ? selectedPrice : data.discountPrice
+                          }
+                          displayType={"text"}
+                          thousandSeparator={true}
+                          prefix={"Ksh. "}
+                        />
+                      </h4>
+                      <h3 className={`${styles.price}`}>
+                        <NumericFormat
+                          value={data.originalPrice}
+                          displayType={"text"}
+                          thousandSeparator={true}
+                        />
                       </h3>
-                    </Link>
-                    <h5 className="pb-3">({averageRating}/5) Ratings</h5>
-                  </div>
-                  <div
-                    className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
-                    onClick={handleMessageSubmit}
-                  >
-                    <span className="text-white flex items-center">
-                      Send Message <AiOutlineMessage className="ml-1" />
-                    </span>
+                    </div>
+                    <p
+                      className={`
+                      ${
+                        selectedSize && selectedQuantity !== 0
+                          ? `text-[#5500ff]`
+                          : selectedSize && selectedQuantity === 0
+                          ? `text-red-500`
+                          : !selectedSize && data.stock !== 0
+                          ? `text-[#5500ff]`
+                          : `text-red-500`
+                      }
+                      `}
+                    >
+                      {selectedSize && selectedQuantity !== 0
+                        ? `${selectedQuantity} products remaining`
+                        : selectedSize && selectedQuantity === 0
+                        ? `Out of Stock`
+                        : !selectedSize && data.stock !== 0
+                        ? `${data.stock} products remaining`
+                        : `Out of Stock`}
+                    </p>
+                    {/* Display Sizes */}
+                    {data.sizes && data.sizes.length > 0 && (
+                      <div className="block mt-3 items-center">
+                        <span className="mr-3">Size:</span>
+                        <div className="flex flex-wrap gap-2">
+                          {data.sizes &&
+                            data.sizes.length > 0 &&
+                            data.sizes.map((size, index) => (
+                              <button
+                                key={index}
+                                className={`px-4 py-2 rounded border ${
+                                  size.stock === 0
+                                    ? "text-gray-300	"
+                                    : "text-black"
+                                }  ${
+                                  selectedSize === size.name
+                                    ? "border-blue-500 text-blue-500"
+                                    : "bg-white text-black"
+                                }`}
+                                onClick={() => {
+                                  setSelectedSize(size.name);
+                                  setSelectedPrice(size.price);
+                                  setSelectedQuantity(size.stock);
+                                }}
+                                disabled={
+                                  selectedSize === size.name &&
+                                  selectedQuantity === 0
+                                }
+                                style={{
+                                  opacity:
+                                    selectedSize === size.name &&
+                                    selectedQuantity === 0
+                                      ? 0.2
+                                      : 1,
+                                }}
+                              >
+                                {size.name}
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+                    {data.stock < 1 ? (
+                      <p className="text-red-600">Out Of Stock</p>
+                    ) : (
+                      <div className="w-full mt-4 flex flex-end">
+                        <div className="w-full flex">
+                          <div className="w-1/2">
+                            <div className="text-lg font-bold">Qty:</div>
+                            <div className="flex items-center mt-2">
+                              <div
+                                className={`${
+                                  count <= 1
+                                    ? "bg-gray-300 cursor-not-allowed"
+                                    : "bg-gray-300 cursor-pointer"
+                                } w-10 h-10 flex items-center justify-center rounded-full`}
+                                onClick={decrementCount}
+                              >
+                                <span className="text-xl">-</span>
+                              </div>
+                              <div className="mx-4">{count}</div>
+                              <div
+                                className={`${
+                                  count >= data.stock
+                                    ? "bg-gray-300 cursor-not-allowed"
+                                    : "bg-gray-300 cursor-pointer"
+                                } w-10 h-10 flex items-center justify-center rounded-full`}
+                                onClick={
+                                  data.stock <= count
+                                    ? maximum
+                                    : selectedSize && selectedQuantity <= count
+                                    ? maximum
+                                    : incrementCount
+                                }
+                              >
+                                <span className="text-xl">+</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          {click ? (
+                            <AiFillHeart
+                              size={30}
+                              className="cursor-pointer"
+                              onClick={() => removeFromWishlistHandler(data)}
+                              color={click ? "red" : "#333"}
+                              title="Remove from wishlist"
+                            />
+                          ) : (
+                            <AiOutlineHeart
+                              size={30}
+                              className="cursor-pointer"
+                              onClick={() => addToWishlistHandler(data)}
+                              title="Add to wishlist"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex gap-4">
+                      {data.stock === 0 ? (
+                        <div
+                          className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                          onClick={() => notifyMe()}
+                        >
+                          <span className="text-white flex items-center">
+                            Notify Me <AiOutlineHeart className="ml-1" />
+                          </span>
+                        </div>
+                      ) : selectedSize && selectedQuantity === 0 ? (
+                        <div
+                          className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                          onClick={() => notifyMe()}
+                        >
+                          <span className="text-white flex items-center">
+                            Notify Me <AiOutlineHeart className="ml-1" />{" "}
+                          </span>
+                        </div>
+                      ) : (
+                        <div
+                          className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                          onClick={() => addToCartHandler(data._id)}
+                        >
+                          <span className="text-white flex items-center">
+                            Add to cart{" "}
+                            <AiOutlineShoppingCart className="ml-1" />
+                          </span>
+                        </div>
+                      )}
+                      <div
+                        className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                        onClick={() => addToCompareHandler(data._id)}
+                      >
+                        <span className="text-white flex items-center">
+                          Add to compare <TbArrowsShuffle2 className="ml-1" />
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center my-3 text-szm">
+                      <h3 className="product-heading mr-1 text-[13px]">
+                        Share Product:
+                      </h3>
+
+                      <p
+                        onClick={() =>
+                          shareToSocialMedia(
+                            `${
+                              isEvent === true
+                                ? `/product/${data._id}?isEvent=true`
+                                : `/product/${data._id}`
+                            }`
+                          )
+                        }
+                        className="cursor-pointer"
+                      >
+                        <div className="flex items-center text-[13px]">
+                          <IoIosShareAlt
+                            size={20}
+                            color="blue"
+                            className="fs-5 me-2"
+                          />{" "}
+                          <Typed
+                            strings={["Click Here To Share this Product."]}
+                            typeSpeed={40}
+                            backSpeed={50}
+                            loop
+                          />
+                        </div>
+                      </p>
+                    </div>
+                    <div className="flex items-center pt-4">
+                      <Link to={`/shop/preview/${data?.shop._id}`}>
+                        <img
+                          src={`${data?.shop?.avatar?.url}`}
+                          alt=""
+                          className="w-[50px] h-[50px] rounded-full mr-2"
+                        />
+                      </Link>
+                      <div className="pr-8">
+                        <Link to={`/shop/preview/${data?.shop._id}`}>
+                          <h3 className={`${styles.shop_name} pb-1 pt-1`}>
+                            {data.shop.name}
+                          </h3>
+                        </Link>
+                        <h5 className="pb-3">({averageRating}/5) Ratings</h5>
+                      </div>
+                      <div
+                        className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
+                        onClick={handleMessageSubmit}
+                      >
+                        <span className="text-white flex items-center">
+                          Send Message <AiOutlineMessage className="ml-1" />
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <ProductDetailsInfo
+                data={data}
+                products={products}
+                totalReviewsLength={totalReviewsLength}
+                averageRating={averageRating}
+              />
+              <br />
+              <br />
             </div>
-          </div>
-          <ProductDetailsInfo
-            data={data}
-            products={products}
-            totalReviewsLength={totalReviewsLength}
-            averageRating={averageRating}
-          />
-          <br />
-          <br />
-        </div>
-      ) : null}
+          ) : null}
+        </>
+      )}
     </div>
   );
 };

@@ -233,7 +233,7 @@ const ShippingInfo = ({
               value={zipCode}
               onChange={(e) => setZipCode(e.target.value)}
               required
-              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="w-[95%] border h-10 rounded-md px-4 py-2 bg-white text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         </div>
@@ -243,7 +243,7 @@ const ShippingInfo = ({
           <div className="w-[50%]">
             <label className="block pb-2 font-[500]">Country</label>
             <select
-              className="w-[95%] border h-10 rounded-md"
+              className="w-[95%] border h-10 rounded-md px-4 py-2 bg-white text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               value={"Kenya"}
               onChange={(e) => setCountry(e.target.value)}
             >
@@ -254,7 +254,7 @@ const ShippingInfo = ({
             <label className="block pb-2 font-bold">County</label>
             <select
               name="county"
-              className="w-[95%] border h-10 rounded-md"
+              className="w-[95%] border h-10 rounded-md px-4 py-2 bg-white text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setCity(e.target.value)}
               value={city}
             >
