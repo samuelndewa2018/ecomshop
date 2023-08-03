@@ -55,7 +55,7 @@ const ProductDetails = ({ data, isEvent }) => {
   }, [data, wishlist]);
 
   const incrementCount = () => {
-    if (data.sizes.length !== 0 && selectedSize === "") {
+    if (data.sizes.length > 1 && selectedSize === "") {
       toast.info("select size first");
     } else {
       setCount(count + 1);
@@ -67,6 +67,8 @@ const ProductDetails = ({ data, isEvent }) => {
   const minimum = () => {
     toast.error("Minimun Stock reached");
   };
+
+  console.log("data", data);
 
   const decrementCount = () => {
     if (count > 1) {
@@ -95,7 +97,7 @@ const ProductDetails = ({ data, isEvent }) => {
     } else {
       if (data.stock < 1) {
         toast.error("Product stock limited!");
-      } else if (data.sizes.length !== 0 && selectedSize === "") {
+      } else if (data.sizes.length > 1 && selectedSize === "") {
         toast.error("Please select the size!");
       } else {
         const cartData = {
@@ -302,12 +304,12 @@ const ProductDetails = ({ data, isEvent }) => {
                         : `Out of Stock`}
                     </p>
                     {/* Display Sizes */}
-                    {data.sizes && data.sizes.length > 0 && (
+                    {data.sizes && data.sizes.length > 1 && (
                       <div className="block mt-3 items-center">
                         <span className="mr-3">Size:</span>
                         <div className="flex flex-wrap gap-2">
                           {data.sizes &&
-                            data.sizes.length > 0 &&
+                            data.sizes.length > 1 &&
                             data.sizes.map((size, index) => (
                               <button
                                 key={index}
