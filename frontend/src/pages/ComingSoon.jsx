@@ -4,7 +4,7 @@ import Footer from "../components/Layout/Footer";
 
 const ComingSoon = () => {
   return (
-    <>
+    <div>
       <Header />
       <div
         className="coming-soon-container bg-cover bg-center flex flex-col items-center justify-center min-h-screen"
@@ -16,7 +16,7 @@ const ComingSoon = () => {
         }}
       ></div>
       <Footer />
-    </>
+    </div>
   );
 };
 

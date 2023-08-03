@@ -81,6 +81,7 @@ import NotFound from "./pages/NotFound";
 import Unsubscribe from "./pages/Unsubscribe";
 import SendEmailsPage from "./pages/SendEmailsPage";
 import Location from "./Trial/Location";
+import ComingSoon from "./pages/ComingSoon";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
@@ -134,6 +135,7 @@ const App = () => {
         <Route path="/events" element={<EventsPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/coming-soon" element={<ComingSoon />} />
         <Route
           path="/unsubscribe"
           element={
