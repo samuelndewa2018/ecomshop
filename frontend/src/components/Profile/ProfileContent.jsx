@@ -280,10 +280,8 @@ const AllOrders = () => {
 
   const renderOrderButton = (orderId) => {
     return (
-      <Link to={`/user/order/${orderId}`}>
-        <button className="bg-blue-500 text-white rounded-lg py-2 px-4 flex items-center">
-          See Order
-        </button>
+      <Link className="text-emerald-500	" to={`/user/order/${orderId}`}>
+        See Order
       </Link>
     );
   };
@@ -303,6 +301,48 @@ const AllOrders = () => {
   return (
     <div>
       <h3 className="pb-4 ml-2 font-bold">{user.name}'s Orders</h3>
+      {rows?.map((row) => (
+        <div class="bg-white rounded-lg shadow mb-3 m-1">
+          <div class="p-4">
+            <div class="block lg:flex justify-between">
+              <div class="block lg:flex flex-row items-center">
+                <div>
+                  <img
+                    src={`${row.image[0]?.url}`}
+                    class="w-16 rounded"
+                    alt="Shopping item"
+                  />
+                </div>
+                <div class="ml-3">
+                  <h5>Order No: {row.no}</h5>
+                  <h5> {row.items.slice(0, 1) + "..."}</h5>
+                  <p class="text-sm mb-0">Ordered on: {row.createdAt}</p>
+                  <span
+                    className={`font-medium ${getOrderStatusColor(row.status)}`}
+                  >
+                    {row.status}
+                  </span>
+                </div>
+              </div>
+              <div class="flex flex-row items-center">
+                <div class="w-12">
+                  <h5 class="font-normal mb-0">{row.itemsQty}</h5>
+                </div>
+                <div class="w-20">
+                  <h5 class="mb-0">{row.total}</h5>
+                </div>
+
+                <a href="#!" class="text-gray-400">
+                  <i class="fas fa-trash-alt"></i>
+                </a>
+              </div>
+              <div class="w-20">
+                <h5 class="mb-0"> {row.orderButton}</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
       <div className="grid grid-cols-1">
         {rows?.map((row) => (
           <div
