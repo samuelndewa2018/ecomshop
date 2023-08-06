@@ -54,6 +54,11 @@ const ProductDetails = ({ data, isEvent }) => {
     setLoading(false);
   }, [data, wishlist]);
 
+  useEffect(() => {
+    // Whenever selectedSize changes, reset the count to 1
+    setCount(1);
+  }, [selectedSize]);
+
   const incrementCount = () => {
     if (data.sizes.length > 1 && selectedSize === "") {
       toast.info("select size first");

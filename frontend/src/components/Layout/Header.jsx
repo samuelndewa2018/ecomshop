@@ -117,19 +117,34 @@ const Header = ({ activeHeading, activeItem }) => {
       e.stopPropagation();
     }
   };
-  const myClickHandler4 = async (e, props) => {
-    setSearchOpen(props);
+
+  const myClickHandler4 = (e, props) => {
+    e.preventDefault();
+    setSearchOpen((prev) => !prev);
     setOpenCart(false);
     setOpenWishlist(false);
-
     if (!e) {
       var e = window.event;
       e.cancelBubble = true;
     }
-    if (e.stopPropagation) {
-      e.stopPropagation();
+    if (e.nativeEvent.stopImmediatePropagation) {
+      e.nativeEvent.stopImmediatePropagation();
     }
   };
+
+  // const myClickHandler4 = async (e, props) => {
+  //   setSearchOpen(props);
+  //   setOpenCart(false);
+  //   setOpenWishlist(false);
+
+  //   if (!e) {
+  //     var e = window.event;
+  //     e.cancelBubble = true;
+  //   }
+  //   if (e.stopPropagation) {
+  //     e.stopPropagation();
+  //   }
+  // };
   const myClickHandler5 = async (e, item) => {
     e.preventDefault();
     setSearchOpen(false);
