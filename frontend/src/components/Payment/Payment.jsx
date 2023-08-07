@@ -27,6 +27,8 @@ const Payment = () => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
     setOrderData(orderData);
   }, []);
+  const paypalTotals = Math.round(orderData?.totalPrice / 145);
+  console.log("paypalTotals, ", paypalTotals);
 
   const createOrder = (data, actions) => {
     return actions.order
@@ -36,7 +38,7 @@ const Payment = () => {
             description: "Sunflower",
             amount: {
               currency_code: "USD",
-              value: orderData?.totalPrice,
+              value: paypalTotals,
             },
           },
         ],
@@ -49,13 +51,18 @@ const Payment = () => {
       });
   };
 
+  console.log("orderData", orderData);
+
   const order = {
     cart: orderData?.cart,
     shippingAddress: orderData?.shippingAddress,
     user: user && user,
     totalPrice: orderData?.totalPrice,
+    shippingPrice: orderData.shippingPrice,
+    discount: orderData.discountPrice,
   };
 
+  console.log("paymentorder", order);
   const onApprove = async (data, actions) => {
     return actions.order.capture().then(function (details) {
       const { payer } = details;
@@ -564,7 +571,7 @@ const PaymentInfo = ({
 };
 
 const CartData = ({ orderData }) => {
-  const shipping = orderData?.shipping?.toFixed(2);
+  const shipping = orderData?.shippingPrice?.toFixed(2);
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
       <div className="flex justify-between">

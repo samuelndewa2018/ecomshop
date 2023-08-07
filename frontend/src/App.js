@@ -82,6 +82,7 @@ import Unsubscribe from "./pages/Unsubscribe";
 import SendEmailsPage from "./pages/SendEmailsPage";
 import Location from "./Trial/Location";
 import ComingSoon from "./pages/ComingSoon";
+import Exchange from "./Trial/Exchange";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
@@ -259,6 +260,7 @@ const App = () => {
         />
         {/* to be removed in production */}
         <Route path="/trial" element={<TrialPage />} />
+        <Route path="/exchange" element={<Exchange />} />
 
         <Route path="/location" element={<Location />} />
 

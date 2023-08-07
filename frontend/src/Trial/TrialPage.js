@@ -24,6 +24,7 @@ function App() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          console.log(latitude, longitude);
           setCurrentLocation("Fetching location...");
           const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`;
           axios
@@ -67,12 +68,13 @@ function App() {
         <button type="submit">Submit</button>
       </form>
       {currentLocation && (
-        <>
+        <div>
           <p>Current Location:</p>
-          {currentLocation.split(",").map((part, index) => (
-            <p key={index}>{part.trim()},</p>
-          ))}
-        </>
+          <p>City: {currentLocation.split(",")[0]}</p>
+          <p>State: {currentLocation.split(",")[1]}</p>
+          <p>Country: {currentLocation.split(",")[2]}</p>
+          <p>Postal Code: {currentLocation.split(",")[3]}</p>
+        </div>
       )}
     </div>
   );
