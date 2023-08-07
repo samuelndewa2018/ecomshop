@@ -41,6 +41,8 @@ const ProductDetails = ({ data, isEvent }) => {
   const [selectedQuantity, setSelectedQuantity] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  console.log("details data", data);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
