@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Layout/Header";
 import Footer from "../components/Layout/Footer";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,12 +7,26 @@ import CompareProductsCard from "../components/compare/CompareProductsCard";
 import Meta from "../components/Meta";
 import Loader from "../components/Layout/Loader";
 import styles from "../styles/styles";
-import { Link } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import SuggestedProduct from "../components/Products/SuggestedProduct";
 
 const CompareProducts = () => {
   const { compare, isLoading } = useSelector((state) => state.compare);
   const dispatch = useDispatch();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
+  const { allProducts } = useSelector((state) => state.products);
+  const { allEvents } = useSelector((state) => state.events);
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+
+  console.log("alldata", compare?.[0]);
+
+  const eventData = searchParams.get("isEvent");
+
+  useEffect(() => {
+    const data = compare && compare.find((i) => i._id === id);
+    setData(data);
+  }, []);
 
   const removeFromCompareHandler = (data) => {
     dispatch(removeFromCompare(data));
@@ -49,6 +63,7 @@ const CompareProducts = () => {
               </>
             ) : null}
           </div>
+          <SuggestedProduct data={compare?.[0]} />
           <Footer />
         </div>
       )}
