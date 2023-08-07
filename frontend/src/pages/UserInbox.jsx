@@ -10,6 +10,7 @@ import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
 import { TfiGallery } from "react-icons/tfi";
 import styles from "../styles/styles";
 import Meta from "../components/Meta";
+import Loader from "../components/Layout/Loader";
 const ENDPOINT = "https://socket-ecommerce-tu68.onrender.com/"; //endpoind to be added
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
@@ -24,6 +25,7 @@ const UserInbox = () => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [images, setImages] = useState();
   const [activeStatus, setActiveStatus] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const scrollRef = useRef(null);
 
@@ -46,6 +48,7 @@ const UserInbox = () => {
   useEffect(() => {
     const getConversation = async () => {
       try {
+        setLoading(true);
         const resonse = await axios.get(
           `${server}/conversation/get-all-conversation-user/${user?._id}`,
           {
@@ -54,7 +57,10 @@ const UserInbox = () => {
         );
 
         setConversations(resonse.data.conversations);
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
+
         // console.log(error);
       }
     };
@@ -210,25 +216,32 @@ const UserInbox = () => {
       {!open && (
         <>
           <Header activeItem={"person"} />
-          <h1 className="text-center text-[30px] py-3 font-Poppins">
-            All Messages
-          </h1>
-          {/* All messages list */}
-          {conversations &&
-            conversations.map((item, index) => (
-              <MessageList
-                data={item}
-                key={index}
-                index={index}
-                setOpen={setOpen}
-                setCurrentChat={setCurrentChat}
-                me={user?._id}
-                setUserData={setUserData}
-                userData={userData}
-                online={onlineCheck(item)}
-                setActiveStatus={setActiveStatus}
-              />
-            ))}
+          {loading ? (
+            <Loader />
+          ) : (
+            <>
+              {" "}
+              <h1 className="text-center text-[30px] py-3 font-Poppins">
+                All Messages
+              </h1>
+              {/* All messages list */}
+              {conversations &&
+                conversations.map((item, index) => (
+                  <MessageList
+                    data={item}
+                    key={index}
+                    index={index}
+                    setOpen={setOpen}
+                    setCurrentChat={setCurrentChat}
+                    me={user?._id}
+                    setUserData={setUserData}
+                    userData={userData}
+                    online={onlineCheck(item)}
+                    setActiveStatus={setActiveStatus}
+                  />
+                ))}
+            </>
+          )}
         </>
       )}
 
