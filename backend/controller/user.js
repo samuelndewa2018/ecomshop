@@ -590,6 +590,17 @@ router.post(
   })
 );
 
+router.get("/test-third-party-cookie", (req, res) => {
+  res.cookie("testCookie", "third-party-cookie-ok", {
+    domain: "http://localhost:3000", // Replace with your actual domain
+    httpOnly: true,
+    secure: true, // Use 'false' if not using HTTPS in development
+    sameSite: "none", // Set sameSite to 'none' for third-party cookies
+  });
+
+  res.send("third-party-cookie-ok");
+});
+
 // contact email
 router.post(
   "/subscribe",

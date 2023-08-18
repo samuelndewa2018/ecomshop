@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import styles from "../../styles/styles";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import Spinner from "../Spinner";
 import Header from "../Layout/Header";
 import Footer from "../Layout/Footer";
 import { useLocation } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const loginSchema = yup.object({
   email: yup
@@ -27,6 +28,32 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const checkThirdPartyCookies = async () => {
+      try {
+        // Make a request to your server to set a test cookie
+        const response = await fetch(`${server}/user/test-third-party-cookie`, {
+          credentials: "include", // Include credentials (cookies) in the request
+        });
+
+        // Read the cookie value from the response using js-cookie
+        const cookieValue = await response.text();
+
+        // Check if the value matches the one set by the server
+        if (cookieValue === "third-party-cookie-ok") {
+          alert("Third-party cookies are supported.");
+        } else {
+          alert("Third-party cookies are not supported.");
+          // Display a message or redirect here
+        }
+      } catch (error) {
+        console.error("Error testing third-party cookies:", error);
+      }
+    };
+
+    checkThirdPartyCookies();
+  }, []);
 
   const formik = useFormik({
     initialValues: {
