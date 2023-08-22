@@ -9,7 +9,7 @@ const path = require("path");
 app.use(
   cors({
     origin: "http://localhost:3000",
-    // origin: ['https://eshop-tutorial-cefl.vercel.app','http://localhost:3000'],
+    // origin: ["https://eshop-tutorial-cefl.vercel.app", "http://localhost:3000"],
     credentials: true,
   })
 );
