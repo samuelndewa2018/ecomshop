@@ -329,9 +329,12 @@ router.post(
                                   <table>
                                     <thead>
                                       <tr>
-                                      <td style="padding-right: 5px;"><strong>Product(s)</strong></td>
-                                      <td style="padding-right: 5px;"><strong>Quantity</strong></td>
-                                      <td style="text-align: right;"><strong align="right">Price</strong></td>
+                                      <td width="75%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
+                                      <strong>Product(s)</strong></td>
+                                      <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
+                                      <strong>Quantity</strong></td>
+                                      <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
+                                      <strong align="right">Price</strong></td>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -364,13 +367,15 @@ router.post(
                                     <br/>
                                     <tfoot>
                                       <tr>
-                                        <td colspan="2">Items Price:</td>
-                                        <td align="right">Ksh. ${subTotals
-                                          .toString()
-                                          .replace(
-                                            /\B(?=(\d{3})+(?!\d))/g,
-                                            ","
-                                          )}</td>
+                                      <td width="75%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
+                                      Items Price:</td>
+                                      <td width="25%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
+                                      Ksh. ${subTotals
+                                        .toString()
+                                        .replace(
+                                          /\B(?=(\d{3})+(?!\d))/g,
+                                          ","
+                                        )}</td>
                                       </tr> 
                                       <tr>
                                         <td colspan="2">Shipping Price:</td>
@@ -429,8 +434,16 @@ router.post(
           
                                   <h2>Shipping address</h2>
                                   <p>
-                                    ${shippingAddress.address1},<br />
-                                    ${shippingAddress.address2},<br />
+                                    ${
+                                      shippingAddress.address1
+                                        ? shippingAddress.address1
+                                        : ""
+                                    },<br />
+                                    ${
+                                      shippingAddress.address2
+                                        ? shippingAddress.address2
+                                        : ""
+                                    },<br />
                                     ${shippingAddress.city},<br />
                                     ${shippingAddress.country}<br />
                                   </p>
@@ -810,9 +823,12 @@ router.post(
                                   <table>
                                     <thead>
                                       <tr>
-                                      <td style="padding-right: 5px;"><strong>Product(s)</strong></td>
-                                      <td style="padding-right: 5px;"><strong>Quantity</strong></td>
-                                      <td style="text-align: right;"><strong align="right">Price</strong></td>
+                                      <td width="75%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
+                                      <strong>Product(s)</strong></td>
+                                      <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
+                                      <strong>Quantity</strong></td>
+                                      <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
+                                      <strong align="right">Price</strong></td>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -845,13 +861,15 @@ router.post(
                                     <br/>
                                     <tfoot>
                                       <tr>
-                                        <td colspan="2">Items Price:</td>
-                                        <td align="right">Ksh. ${subTotals
-                                          .toString()
-                                          .replace(
-                                            /\B(?=(\d{3})+(?!\d))/g,
-                                            ","
-                                          )}</td>
+                                      <td width="75%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
+                                      Items Price:</td>
+                                      <td width="25%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
+                                      Ksh. ${subTotals
+                                        .toString()
+                                        .replace(
+                                          /\B(?=(\d{3})+(?!\d))/g,
+                                          ","
+                                        )}</td>
                                       </tr> 
                                       <tr>
                                         <td colspan="2">Shipping Price:</td>
@@ -866,17 +884,15 @@ router.post(
                                         }</td>
                                       </tr>
                                       <tr>
-                                      
                                         <td colspan="2">Discount: </td>
                                         <td align="right">Ksh. ${
+                                          order?.discount &&
                                           order?.discount
-                                            ? order?.discount
-                                                .toString()
-                                                .replace(
-                                                  /\B(?=(\d{3})+(?!\d))/g,
-                                                  ","
-                                                )
-                                            : 0
+                                            .toString()
+                                            .replace(
+                                              /\B(?=(\d{3})+(?!\d))/g,
+                                              ","
+                                            )
                                         }</td>
                                       </tr>
                                       <br/>
@@ -912,8 +928,16 @@ router.post(
           
                                   <h2>Shipping address</h2>
                                   <p>
-                                    ${shippingAddress.address1},<br />
-                                    ${shippingAddress.address2},<br />
+                                    ${
+                                      shippingAddress.address1
+                                        ? shippingAddress.address1
+                                        : ""
+                                    },<br />
+                                    ${
+                                      shippingAddress.address2
+                                        ? shippingAddress.address2
+                                        : ""
+                                    },<br />
                                     ${shippingAddress.city},<br />
                                     ${shippingAddress.country}<br />
                                   </p>
@@ -1033,7 +1057,7 @@ router.post(
               </table>
             </body>
           </html>
-          `,
+           `,
           attachments: attachments,
         });
         orders.push(order);
