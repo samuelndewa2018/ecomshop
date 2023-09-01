@@ -25,16 +25,16 @@ const Hero = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+
       const response = await axios.get(`${server}/carousel/get-carousel`);
       const products = await axios.get(`${server}/product/get-all-products`);
 
       setCarouselData(response.data);
       setBestSelling(products.data.products);
-      // setFeaturedProduct(products.data.products);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching carousel data:", error);
       setLoading(false);
+      console.error("Error fetching carousel data:", error);
     }
   };
   const fetchData2 = async () => {
@@ -138,7 +138,7 @@ const Hero = () => {
                       </p>
                     </div>
                   </div>
-                </div>
+                </div>{" "}
                 <div class="h-3 mt-3 bg-slate-200 rounded animate-stripes"></div>
               </div>
             </div>
@@ -165,7 +165,7 @@ const Hero = () => {
 
             <style jsx>{`
               .carousel-image {
-                /* Set default size for larger screens */
+                /* Increase size for smaller screens */
                 max-width: 100%;
                 height: 500px;
               }
@@ -181,7 +181,6 @@ const Hero = () => {
             `}</style>
           </div>
         )}
-
         <div>
           <div className="rounded grid grid-cols-3 lg:grid-cols-3 gap-2 mt-3 max-h-[370px] mx-2">
             {loading ? (
@@ -234,7 +233,7 @@ const Hero = () => {
               </div>
             )}
             {loading ? (
-              <div className="rounded mt-3">
+              <div className="rounded carousel-container mt-3">
                 <div class="border border-gray-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
                   <div class="relative">
                     <div class="h-28 lg:w-full lg:h-[300px] bg-slate-200 rounded animate-stripes"></div>
@@ -282,6 +281,7 @@ const Hero = () => {
                   })}
               </div>
             )}
+
             {loading ? (
               <div className="rounded carousel-container mt-3">
                 <div class="border border-gray-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
@@ -398,9 +398,8 @@ const Hero = () => {
                   </Carousel>
                 </div>
               </div>
-
               <div className="max-h-[120px]">
-                <div class="w-full p-2 my-4 lg:my-0 max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div class="w-full my-4 lg:my-0 p-2 max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                   <ul class="space-y-1 space-x-1 grid grid-cols-2">
                     <li>
                       <Link
