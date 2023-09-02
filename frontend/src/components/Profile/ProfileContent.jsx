@@ -224,11 +224,6 @@ const ProfileContent = ({ active }) => {
         </>
       )}
 
-      {orderactive === 1 && (
-        <div>
-          <AllOrders />
-        </div>
-      )}
       {/* order */}
       {active === 2 && (
         <div>
