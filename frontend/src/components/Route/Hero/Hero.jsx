@@ -347,7 +347,7 @@ const Hero = () => {
             <div className="rounded flex justify-center lg:grid lg:grid-cols-2 gap-2 mt-3 mx-2">
               <div className="flex max-h-[120px] relative">
                 <div className="max-w-full lg:max-w-[100%] my-4 lg:my-0">
-                  <div className="absolute top-4 left-2 z-10">
+                  <div className="absolute top-4 lg:top-1 left-2 z-10">
                     <span
                       className="bg-blue-500 text-white py-1 px-2 text-xs rounded-full"
                       style={{ transform: "rotate(45deg)" }}
@@ -371,7 +371,7 @@ const Hero = () => {
                           to={`/shop/preview/${i._id}`}
                           class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
                         >
-                          <div className="flex w-full">
+                          <div className="flex w-full h-32">
                             <img
                               className="w-32 h-32 lg:w-full lg:h-full object-cover lg:max-h-[120px] lg:max-w-[150px] rounded-t-lg md:h-auto md:w-48 md:rounded-none md:rounded-l-lg"
                               src={`${i.avatar && i.avatar.url}`}
