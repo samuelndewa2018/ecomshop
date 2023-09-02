@@ -72,7 +72,7 @@ const Categories = () => {
       </div>
 
       {/* Categories component */}
-      <div className="mt-1 lg:mt-6">
+      <div className="mt-1 lg:mt-6 ">
         <div
           className={`${styles.section} relative  bg-white lg:p-6 sm:p-2 rounded-lg lg:mb-12 sm:mb-3 `}
           id="categories"
@@ -96,7 +96,7 @@ const Categories = () => {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((category, index) => (
                   <div
-                    className="mb-2 p-3 min-w-[100px] w-fit h-[100px] lg:h-[120px] cursor-pointer"
+                    className="border mt-1 p-3 min-w-[100px] w-fit h-[100px] lg:h-[120px] rounded-md cursor-pointer"
                     key={index}
                     onClick={() => submitHandle(category)}
                   >
