@@ -31,7 +31,11 @@ const ProfileContent = ({ active }) => {
   const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState();
 
+  const [orderactive, Setorderactive] = useState(0);
+
   const [modalOpen, setModalOpen] = useState(false);
+
+  console.log("active", active);
 
   const dispatch = useDispatch();
 
@@ -220,6 +224,11 @@ const ProfileContent = ({ active }) => {
         </>
       )}
 
+      {orderactive === 1 && (
+        <div>
+          <AllOrders />
+        </div>
+      )}
       {/* order */}
       {active === 2 && (
         <div>
