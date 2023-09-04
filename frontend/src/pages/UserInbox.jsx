@@ -276,6 +276,7 @@ const MessageList = ({
 }) => {
   const [active, setActive] = useState(0);
   const [user, setUser] = useState([]);
+  const [imagesloader, setImageloader] = useState(false);
   const navigate = useNavigate();
   const handleClick = (id) => {
     navigate(`/inbox?${id}`);
@@ -287,50 +288,59 @@ const MessageList = ({
     const userId = data.members.find((user) => user !== me);
     const getUser = async () => {
       try {
+        setImageloader(true);
         const res = await axios.get(`${server}/shop/get-shop-info/${userId}`);
         setUser(res.data.shop);
+        setImageloader(false);
       } catch (error) {
         console.log(error);
+        setImageloader(false);
       }
     };
     getUser();
   }, [me, data]);
 
   return (
-    <div
-      className={`w-full flex p-3 px-3 ${
-        active === index ? "bg-[#00000010]" : "bg-transparent"
-      }  cursor-pointer`}
-      onClick={(e) =>
-        setActive(index) ||
-        handleClick(data._id) ||
-        setCurrentChat(data) ||
-        setUserData(user) ||
-        setActiveStatus(online)
-      }
-    >
-      <div className="relative">
-        <img
-          src={`${user?.avatar?.url}`}
-          alt=""
-          className="w-[50px] h-[50px] rounded-full"
-        />
-        {online ? (
-          <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[2px] right-[2px]" />
-        ) : (
-          <div className="w-[12px] h-[12px] bg-[#c7b9b9] rounded-full absolute top-[2px] right-[2px]" />
-        )}
-      </div>
-      <div className="pl-3">
-        <h1 className="text-[18px]">{user?.name}</h1>
-        <p className="text-[16px] text-[#000c]">
-          {data?.lastMessageId !== userData?._id
-            ? "You:"
-            : userData?.name.split(" ")[0] + ": "}{" "}
-          {data?.lastMessage}
-        </p>
-      </div>
-    </div>
+    <>
+      {imagesloader ? (
+        <p>loading...</p>
+      ) : (
+        <div
+          className={`w-full flex p-3 px-3 ${
+            active === index ? "bg-[#00000010]" : "bg-transparent"
+          }  cursor-pointer`}
+          onClick={(e) =>
+            setActive(index) ||
+            handleClick(data._id) ||
+            setCurrentChat(data) ||
+            setUserData(user) ||
+            setActiveStatus(online)
+          }
+        >
+          <div className="relative">
+            <img
+              src={`${user?.avatar?.url}`}
+              alt=""
+              className="w-[50px] h-[50px] rounded-full"
+            />
+            {online ? (
+              <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[2px] right-[2px]" />
+            ) : (
+              <div className="w-[12px] h-[12px] bg-[#c7b9b9] rounded-full absolute top-[2px] right-[2px]" />
+            )}
+          </div>
+          <div className="pl-3">
+            <h1 className="text-[18px]">{user?.name}</h1>
+            <p className="text-[16px] text-[#000c]">
+              {data?.lastMessageId !== userData?._id
+                ? "You:"
+                : userData?.name.split(" ")[0] + ": "}{" "}
+              {data?.lastMessage}
+            </p>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
