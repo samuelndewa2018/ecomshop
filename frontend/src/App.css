@@ -165,6 +165,7 @@
   height: auto;
   object-fit: cover;
 }
+
 @tailwind components;
 @tailwind utilities;
 
