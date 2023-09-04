@@ -84,6 +84,7 @@ import Location from "./Trial/Location";
 import ComingSoon from "./pages/ComingSoon";
 import Exchange from "./Trial/Exchange";
 import ScrollToTop from "./components/ScroolTop";
+import DynamicLoader from "./components/Layout/DynamicLoader";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
@@ -243,6 +244,7 @@ const App = () => {
         <Route path="/shop/preview/:id" element={<ShopPreviewPage />} />
         {/* shop Routes */}
         <Route path="/shop-create" element={<ShopCreatePage />} />
+        <Route path="/dloader" element={<DynamicLoader />} />
         <Route path="/shop-login" element={<ShopLoginPage />} />
         <Route
           path="/shop/:id"
