@@ -22,6 +22,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { HiUserRemove } from "react-icons/hi";
 import Spinner from "../Spinner";
 import CustomModal from "../CustomModal";
+import Loader from "../Layout/Loader";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -264,7 +265,7 @@ const ProfileContent = ({ active }) => {
 
 const AllOrders = () => {
   const { user } = useSelector((state) => state.user);
-  const { orders } = useSelector((state) => state.order);
+  const { orders, isLoading } = useSelector((state) => state.order);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -305,48 +306,58 @@ const AllOrders = () => {
   return (
     <div>
       <h3 className="pb-4 ml-2 font-bold">{user.name}'s Orders</h3>
-      {rows?.map((row) => (
-        <div class="bg-white rounded-lg shadow mb-3 m-1">
-          <div class="p-4">
-            <div class="block lg:flex justify-between">
-              <div class="block lg:flex flex-row items-center">
-                <div>
-                  <img
-                    src={`${row.image[0]?.url}`}
-                    class="w-16 rounded"
-                    alt="Shopping item"
-                  />
-                </div>
-                <div class="ml-3">
-                  <h5>Order No: {row.no}</h5>
-                  <h5> {row.items.slice(0, 1) + "..."}</h5>
-                  <p class="text-sm mb-0">Ordered on: {row.createdAt}</p>
-                  <span
-                    className={`font-medium ${getOrderStatusColor(row.status)}`}
-                  >
-                    {row.status}
-                  </span>
-                </div>
-              </div>
-              <div class="flex flex-row items-center">
-                <div class="w-12">
-                  <h5 class="font-normal mb-0">{row.itemsQty}</h5>
-                </div>
-                <div class="w-20">
-                  <h5 class="mb-0">{row.total}</h5>
-                </div>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          {" "}
+          {rows?.map((row) => (
+            <div class="bg-white rounded-lg shadow mb-3 m-1">
+              <div class="p-4">
+                <div class="block lg:flex justify-between">
+                  <div class="block lg:flex flex-row items-center">
+                    <div>
+                      <img
+                        src={`${row.image[0]?.url}`}
+                        class="w-16 rounded"
+                        alt="Shopping item"
+                      />
+                    </div>
+                    <div class="ml-3">
+                      <h5>Order No: {row.no}</h5>
+                      <h5> {row.items.slice(0, 1) + "..."}</h5>
+                      <p class="text-sm mb-0">Ordered on: {row.createdAt}</p>
+                      <span
+                        className={`font-medium ${getOrderStatusColor(
+                          row.status
+                        )}`}
+                      >
+                        {row.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="flex flex-row items-center">
+                    <div class="w-12">
+                      <h5 class="font-normal mb-0">{row.itemsQty}</h5>
+                    </div>
+                    <div class="w-20">
+                      <h5 class="mb-0">{row.total}</h5>
+                    </div>
 
-                <a href="#!" class="text-gray-400">
-                  <i class="fas fa-trash-alt"></i>
-                </a>
-              </div>
-              <div class="w-20">
-                <h5 class="mb-0"> {row.orderButton}</h5>
+                    <a href="#!" class="text-gray-400">
+                      <i class="fas fa-trash-alt"></i>
+                    </a>
+                  </div>
+                  <div class="w-20">
+                    <h5 class="mb-0"> {row.orderButton}</h5>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      ))}
+          ))}{" "}
+        </>
+      )}
+
       <div className="grid grid-cols-1">
         {rows?.map((row) => (
           <div
