@@ -10,7 +10,7 @@ import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
 import { TfiGallery } from "react-icons/tfi";
 import styles from "../styles/styles";
 import Meta from "../components/Meta";
-import Loader from "../components/Layout/Loader";
+import DynamicLoader from "../Layout/DynamicLoader";
 const ENDPOINT = "https://socket-ecommerce-tu68.onrender.com/"; //endpoind to be added
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
@@ -217,7 +217,10 @@ const UserInbox = () => {
         <>
           <Header activeItem={"person"} />
           {loading ? (
-            <Loader />
+            <DynamicLoader
+              message={"Bringing messages.."}
+              delayedmessage={"Sorry messages not coming.."}
+            />
           ) : (
             <>
               {" "}
