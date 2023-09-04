@@ -372,6 +372,8 @@ const Hero = () => {
                   <Carousel
                     autoPlay
                     infiniteLoop
+                    // showArrows={false}
+                    showIndicators={false}
                     showStatus={false}
                     showThumbs={false}
                     interval={5000}
