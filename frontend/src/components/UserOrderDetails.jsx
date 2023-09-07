@@ -214,7 +214,7 @@ const UserOrderDetails = () => {
               >
                 <div
                   onClick={(e) => myClickHandler(e, true)}
-                  className="w-[50%] h-min bg-[#fff] shadow rounded-md p-3"
+                  className="w-[85%] lg:w-[35%] h-[90vh] lg:h-[90vh] bg-[#fff] shadow rounded-md p-3"
                 >
                   <div className="w-full flex justify-end p-3">
                     <RxCross1
