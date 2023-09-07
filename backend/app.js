@@ -6,6 +6,20 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
 
+app.options(
+  "*",
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Access-Control-Allow-Credentials",
+    ],
+    credentials: true,
+  })
+);
+
 app.use(
   cors({
     origin: "http://localhost:3000",

@@ -15,6 +15,8 @@ const DashboardHero = () => {
   const { seller } = useSelector((state) => state.seller);
   const { products } = useSelector((state) => state.products);
 
+  console.log("seller", seller);
+
   useEffect(() => {
     dispatch(getAllOrdersOfShop(seller._id));
     dispatch(getAllProductsShop(seller._id));
