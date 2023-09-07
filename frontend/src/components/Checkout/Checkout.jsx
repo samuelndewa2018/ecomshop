@@ -11,6 +11,7 @@ import { updatUserAddress } from "../../redux/actions/user";
 
 const Checkout = () => {
   const { user } = useSelector((state) => state.user);
+  const { statements } = useSelector((state) => state.statements);
   const { cart } = useSelector((state) => state.cart);
   const [country, setCountry] = useState("Kenya");
   const [city, setCity] = useState("");

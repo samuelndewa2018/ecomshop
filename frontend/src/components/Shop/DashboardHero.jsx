@@ -67,7 +67,7 @@ const DashboardHero = () => {
       renderCell: (params) => {
         return (
           <>
-            <Link to={`/dashboard/order/${params.id}`}>
+            <Link to={`/order/${params.id}`}>
               <Button>
                 <AiOutlineArrowRight size={20} />
               </Button>
@@ -85,7 +85,7 @@ const DashboardHero = () => {
       row.push({
         id: item._id,
         itemsQty: item.cart.reduce((acc, item) => acc + item.qty, 0),
-        total: "US$ " + item.totalPrice,
+        total: "Ksh " + item.totalPrice,
         status: item.status,
       });
     });
