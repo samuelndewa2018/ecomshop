@@ -7,19 +7,31 @@ const axios = require("axios");
 const request = require("request");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
-const pass_key = process.env.pass_key;
 
-const short_code = process.env.SHORT_CODE;
+// const pass_key = process.env.pass_key;
+// const short_code = process.env.SHORT_CODE;
+
+console.log("Before conversion - pass_key:", process.env.pass_key);
+console.log("Before conversion - SHORT_CODE:", process.env.SHORT_CODE);
+
+try {
+  const pass_key = `"${process.env.pass_key}"`;
+  const short_code = `"${process.env.SHORT_CODE}"`;
+
+  console.log("After conversion - pass_key:", pass_key);
+  console.log("After conversion - short_code:", short_code);
+} catch (error) {
+  console.error("Error converting environment variables to strings:", error);
+}
+
+// const short_code_env = process.env.SHORT_CODE;
+// const short_code = short_code_env.toString();
+
+// const pass_key_env = process.env.pass_key;
+// const pass_key = pass_key_env.toString();
+
 const key = process.env.CONSUMER_KEY;
 const secret = process.env.CONSUMER_SECRET;
-const auth = new Buffer.from(`${key}:${secret}`).toString("base64");
-const newPassword = () => {
-  const dt = datetime.create();
-  const formatted = dt.format("YmdHMS");
-  const passString = short_code + pass_key + formatted;
-  const base64Encoded = Buffer.from(passString).toString("base64");
-  return base64Encoded;
-};
 
 //access token function
 function getAccessToken() {
@@ -80,13 +92,13 @@ router.post(
       const stkUrl =
         "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
       let data = {
-        BusinessShortCode: "174379",
+        BusinessShortCode: short_code,
         Password: password,
         Timestamp: timestamp,
         TransactionType: "CustomerPayBillOnline",
         Amount: amount,
         PartyA: `254${phone}`,
-        PartyB: "174379",
+        PartyB: short_code,
         PhoneNumber: `254${phone}`,
         CallBackURL: `${callbackurl}/${callbackroute}`,
         AccountReference: "eShop",
