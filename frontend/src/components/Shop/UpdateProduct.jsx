@@ -238,6 +238,22 @@ const EditProduct = () => {
     "image",
     "video",
   ];
+
+  const customStyles = [
+    {
+      video: {
+        width: "100%", // Set the width of videos to 100%
+        height: "auto", // Auto-adjust the height to maintain aspect ratio
+      },
+    },
+    {
+      img: {
+        maxWidth: "100%", // Set the maximum width for images to 100%
+        height: "auto", // Auto-adjust the height to maintain aspect ratio
+      },
+    },
+  ];
+
   return (
     <div>
       <DashboardHeader />
@@ -302,6 +318,7 @@ const EditProduct = () => {
                 modules={quillModules}
                 formats={quillFormats}
                 value={formik.values.description}
+                styles={customStyles} // Apply custom styles
                 onChange={(value) => formik.setFieldValue("description", value)}
               />
               {formik.touched.description && formik.errors.description && (

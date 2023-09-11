@@ -8,28 +8,6 @@ const request = require("request");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 
-// const pass_key = process.env.pass_key;
-// const short_code = process.env.SHORT_CODE;
-
-console.log("Before conversion - pass_key:", process.env.pass_key);
-console.log("Before conversion - SHORT_CODE:", process.env.SHORT_CODE);
-
-try {
-  const pass_key = `"${process.env.pass_key}"`;
-  const short_code = `"${process.env.SHORT_CODE}"`;
-
-  console.log("After conversion - pass_key:", pass_key);
-  console.log("After conversion - short_code:", short_code);
-} catch (error) {
-  console.error("Error converting environment variables to strings:", error);
-}
-
-// const short_code_env = process.env.SHORT_CODE;
-// const short_code = short_code_env.toString();
-
-// const pass_key_env = process.env.pass_key;
-// const pass_key = pass_key_env.toString();
-
 const key = process.env.CONSUMER_KEY;
 const secret = process.env.CONSUMER_SECRET;
 
