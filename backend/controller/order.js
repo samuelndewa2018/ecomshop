@@ -1146,7 +1146,11 @@ router.put(
         return next(new ErrorHandler("Order not found with this id", 400));
       }
       if (req.body.status === "Transferred to delivery partner") {
+        console.log("order cart", order.cart);
         order.cart.forEach(async (o) => {
+          if (o.sizes.length > 0) {
+            await updateOrderWithSizes(o._id, o.qty, o.size);
+          }
           await updateOrder(o._id, o.qty);
         });
       }
@@ -1177,6 +1181,14 @@ router.put(
 
         product.stock -= qty;
         product.sold_out += qty;
+
+        await product.save({ validateBeforeSave: false });
+      }
+
+      async function updateOrderWithSizes(id, qty, size) {
+        const product = await Product.findById(id);
+
+        product.sizes.find((s) => s.name === size).stock -= qty;
 
         await product.save({ validateBeforeSave: false });
       }

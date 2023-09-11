@@ -158,7 +158,6 @@ router.post(
       ).toString("base64");
 
       await axios
-
         .post(
           "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
           {
