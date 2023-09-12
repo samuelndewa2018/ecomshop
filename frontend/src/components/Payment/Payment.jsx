@@ -211,7 +211,11 @@ const PaymentInfo = ({
           CheckoutRequestID: checkOutRequestID,
         })
         .then(async (response) => {
-          if (response.data.ResultCode === "0") {
+          if (
+            response.data.ResultCode === "0" &&
+            response.data.ResponseDescription ===
+              "The service request has been accepted successsfully"
+          ) {
             setSuccess(false);
             setValidating(true);
             clearInterval(timer);
@@ -234,6 +238,14 @@ const PaymentInfo = ({
               type: "Mpesa",
               status: "succeeded",
             };
+            console.log("response data", response.data);
+            try {
+              await axios.post(`${server}/mpesa/callback`, response.data);
+              toast.success("callback was success");
+            } catch (error) {
+              console.log(error);
+              toast.error("callback failed");
+            }
             await axios
               .post(`${server}/order/create-order`, order, config)
               .then((res) => {
@@ -242,11 +254,11 @@ const PaymentInfo = ({
                 toast.success("Your Payment is Sucessful and order placed");
                 localStorage.setItem("cartItems", JSON.stringify([]));
                 localStorage.setItem("latestOrder", JSON.stringify([]));
-                setTimeout(() => {
-                  window.location.reload();
-                }, 5000);
+                // setTimeout(() => {
+                //   window.location.reload();
+                // }, 5000);
               });
-            toast.success("Your Payment is Validating");
+            // toast.success("Your Payment is Validating");
           } else if (response.errorCode === "500.001.1001") {
           } else {
             clearInterval(timer);

@@ -89,6 +89,7 @@ router.post(
             headers: headers,
           })
           .then((response) => {
+            console.log(response.data);
             res.send(response.data);
           });
       } catch (error) {
@@ -246,12 +247,12 @@ router.get("/transactions", (req, res) => {
         res.status(400).json(err.message);
       } else {
         res.status(201).json(data);
-        // data.forEach((transaction) => {
-        //   const firstFour = transaction.customer_number.substring(0, 4);
-        //   const lastTwo = transaction.customer_number.slice(-2);
+        data.forEach((transaction) => {
+          const firstFour = transaction.customer_number.substring(0, 4);
+          const lastTwo = transaction.customer_number.slice(-2);
 
-        //   console.log(`${firstFour}xxxx${lastTwo}`);
-        // });
+          console.log(`${firstFour}xxxx${lastTwo}`);
+        });
       }
     });
 });
