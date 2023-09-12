@@ -79,7 +79,7 @@ router.post(
         PartyA: `254${phone}`,
         PartyB: short_code,
         PhoneNumber: `254${phone}`,
-        CallBackURL: `${callbackurl}/${callbackroute}`,
+        CallBackURL: `${callbackurl}/api/v2/pesa/${callbackroute}`,
         AccountReference: "eShop",
         TransactionDesc: "Lipa na M-PESA",
       };
@@ -107,6 +107,7 @@ const callbackurl = process.env.CALL_BACK_URL;
 
 //callback stk
 router.post("/callback", (req, res) => {
+  console.log("i was called");
   if (!req.body.Body.stkCallback.CallbackMetadata) {
     console.log(req.body.Body.stkCallback.ResultDesc);
     res.status(200).json("ok");
@@ -134,6 +135,49 @@ router.post("/callback", (req, res) => {
     .catch((err) => console.log(err.message));
 
   res.status(200).json("ok");
+});
+
+// REGISTER URL FOR C2B
+router.get("/registerurl", (req, resp) => {
+  getAccessToken()
+    .then(async (accessToken) => {
+      const url = "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl";
+      const auth = `Bearer ${accessToken}`;
+      await axios
+        .post(
+          url,
+          {
+            ShortCode: "174379",
+            ResponseType: "Complete",
+            ConfirmationURL: `${callbackurl}/api/v2/pesa/confirmation`,
+            ValidationURL: `${callbackurl}/api/v2/pesa/validation`,
+          },
+          {
+            headers: {
+              Authorization: auth,
+            },
+          }
+        )
+        .then((response) => {
+          resp.status(200).json(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+          resp.status(500).send("❌ Request failed");
+        });
+    })
+    .catch(console.log);
+});
+
+router.get("/confirmation", (req, res) => {
+  console.log("All transaction will be sent to this URL");
+  console.log(req.body);
+  res.status(200).json(req.body);
+});
+
+router.get("/validation", (req, resp) => {
+  console.log("Validating payment");
+  console.log(req.body);
 });
 
 //stk query

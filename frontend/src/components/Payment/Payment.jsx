@@ -207,7 +207,7 @@ const PaymentInfo = ({
         return;
       }
       await axios
-        .post(`${server}/mpesa/stkpushquery`, {
+        .post(`${server}/pesa/stkpushquery`, {
           CheckoutRequestID: checkOutRequestID,
         })
         .then(async (response) => {
@@ -240,7 +240,7 @@ const PaymentInfo = ({
             };
             console.log("response data", response.data);
             try {
-              await axios.post(`${server}/mpesa/callback`, response.data);
+              await axios.post(`${server}/pesa/callback`, response.data);
               toast.success("callback was success");
             } catch (error) {
               console.log(error);
@@ -290,7 +290,7 @@ const PaymentInfo = ({
       await setLoading(true);
       await axios
         .post(
-          `${server}/mpesa/stk`,
+          `${server}/pesa/stk`,
           { phone, amount },
           { withCredentials: true }
         )
