@@ -106,7 +106,7 @@ const callback_root = process.env.CALL_BACK_ROOT;
 const callbackurl = process.env.CALL_BACK_URL;
 
 //callback stk
-router.post("/callback", (req, res) => {
+router.post("/callback", async (req, res) => {
   console.log("i was called");
   if (!req.body.Body.stkCallback.CallbackMetadata) {
     console.log(req.body.Body.stkCallback.ResultDesc);
@@ -127,7 +127,7 @@ router.post("/callback", (req, res) => {
   transaction.mpesa_ref = code;
   transaction.amount = amount;
 
-  transaction
+  await transaction
     .save()
     .then((data) => {
       console.log({ message: "transaction saved successfully", data });
@@ -283,22 +283,42 @@ router.get(
   })
 );
 
-router.get("/transactions", (req, res) => {
-  Transaction.find({})
-    .sort({ createdAt: -1 })
-    .exec(function (err, data) {
-      if (err) {
-        res.status(400).json(err.message);
-      } else {
-        res.status(201).json(data);
-        data.forEach((transaction) => {
-          const firstFour = transaction.customer_number.substring(0, 4);
-          const lastTwo = transaction.customer_number.slice(-2);
+router.get("/transactions", async (req, res) => {
+  try {
+    const transactions = await Transaction.find({}).sort({ createdAt: -1 });
 
-          console.log(`${firstFour}xxxx${lastTwo}`);
-        });
-      }
+    // Map transactions to a new array with masked customer numbers
+    const maskedTransactions = transactions.map((transaction) => {
+      const firstFour = transaction.customer_number.substring(0, 4);
+      const lastTwo = transaction.customer_number.slice(-2);
+      const maskedNumber = `${firstFour}xxxx${lastTwo}`;
+      return {
+        ...transaction.toObject(),
+        customer_number: maskedNumber,
+      };
     });
+
+    res.status(200).json(maskedTransactions);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
+// router.get("/transactions", (req, res) => {
+//   Transaction.find({})
+//     .sort({ createdAt: -1 })
+//     .exec(function (err, data) {
+//       if (err) {
+//         res.status(400).json(err.message);
+//       } else {
+//         res.status(201).json(data);
+//         data.forEach((transaction) => {
+//           const firstFour = transaction.customer_number.substring(0, 4);
+//           const lastTwo = transaction.customer_number.slice(-2);
+
+//           console.log(`${firstFour}xxxx${lastTwo}`);
+//         });
+//       }
+//     });
+// });
 
 module.exports = router;
