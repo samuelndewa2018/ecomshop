@@ -238,14 +238,7 @@ const PaymentInfo = ({
               type: "Mpesa",
               status: "succeeded",
             };
-            console.log("response data", response.data);
-            try {
-              await axios.post(`${server}/pesa/callback`, response.data);
-              toast.success("callback was success");
-            } catch (error) {
-              console.log(error);
-              toast.error("callback failed");
-            }
+
             await axios
               .post(`${server}/order/create-order`, order, config)
               .then((res) => {

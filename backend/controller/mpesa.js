@@ -107,34 +107,37 @@ const callbackurl = process.env.CALL_BACK_URL;
 
 //callback stk
 router.post("/callback", async (req, res) => {
-  console.log("i was called");
-  if (!req.body.Body.stkCallback.CallbackMetadata) {
-    console.log(req.body.Body.stkCallback.ResultDesc);
+  try {
+    if (!req.body.Body.stkCallback.CallbackMetadata) {
+      console.log(req.body.Body.stkCallback.ResultDesc);
+      res.status(200).json("ok");
+      return;
+    }
+
+    const amount = req.body.Body.stkCallback.CallbackMetadata.Item[0].Value;
+    const code = req.body.Body.stkCallback.CallbackMetadata.Item[1].Value;
+    const phone1 =
+      req.body.Body.stkCallback.CallbackMetadata.Item[4].Value.toString().substring(
+        3
+      );
+    const phone = `0${phone1}`;
+    const transaction = new Transaction();
+
+    transaction.customer_number = phone;
+    transaction.mpesa_ref = code;
+    transaction.amount = amount;
+
+    await transaction
+      .save()
+      .then((data) => {
+        console.log({ message: "transaction saved successfully", data });
+      })
+      .catch((err) => console.log(err.message));
+
     res.status(200).json("ok");
-    return;
+  } catch (error) {
+    return next(new ErrorHandler("Error occurred.", 500));
   }
-
-  const amount = req.body.Body.stkCallback.CallbackMetadata.Item[0].Value;
-  const code = req.body.Body.stkCallback.CallbackMetadata.Item[1].Value;
-  const phone1 =
-    req.body.Body.stkCallback.CallbackMetadata.Item[4].Value.toString().substring(
-      3
-    );
-  const phone = `0${phone1}`;
-  const transaction = new Transaction();
-
-  transaction.customer_number = phone;
-  transaction.mpesa_ref = code;
-  transaction.amount = amount;
-
-  await transaction
-    .save()
-    .then((data) => {
-      console.log({ message: "transaction saved successfully", data });
-    })
-    .catch((err) => console.log(err.message));
-
-  res.status(200).json("ok");
 });
 
 // REGISTER URL FOR C2B
