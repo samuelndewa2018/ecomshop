@@ -194,7 +194,8 @@ const PaymentInfo = ({
 
   var reqcount = 0;
   const navigate = useNavigate();
-  const stkPushQuery = (checkOutRequestID) => {
+  const stkPushQuery = async (checkOutRequestID) => {
+    await setCounting(true);
     const timer = setInterval(async () => {
       reqcount += 1;
       if (reqcount === 30) {
@@ -219,6 +220,7 @@ const PaymentInfo = ({
             setSuccess(false);
             setValidating(true);
             clearInterval(timer);
+            setSuccessMessage("Validating your Payment");
             //successfull payment
             setLoading(false);
             const config = {
@@ -247,19 +249,32 @@ const PaymentInfo = ({
                 toast.success("Your Payment is Sucessful and order placed");
                 localStorage.setItem("cartItems", JSON.stringify([]));
                 localStorage.setItem("latestOrder", JSON.stringify([]));
-                // setTimeout(() => {
-                //   window.location.reload();
-                // }, 5000);
+                setTimeout(() => {
+                  window.location.reload();
+                }, 5000);
               });
             // toast.success("Your Payment is Validating");
           } else if (response.errorCode === "500.001.1001") {
+            console.log(response);
           } else {
             clearInterval(timer);
             setLoading(false);
             setError(true);
             setSuccess(false);
-            setErrorMessage(response.data.ResultDesc);
-            toast.error(response.data.ResultDesc);
+            setCounting(false);
+            if (response.data.ResultDesc === "Request cancelled by user") {
+              setErrorMessage("You cancelled the transaction");
+              toast.error("You cancelled the transaction");
+            } else if (
+              response.data.ResultDesc ===
+              "The initiator information is invalid."
+            ) {
+              setErrorMessage("You entered the wrong PIN");
+              toast.error("You entered the wrong PIN");
+            } else {
+              setErrorMessage(response.data.ResultDesc);
+              toast.error(response.data.ResultDesc);
+            }
             setTimeout(() => {
               window.location.reload();
             }, 10000);
@@ -268,7 +283,7 @@ const PaymentInfo = ({
         .catch((err) => {
           console.log(err.message);
         });
-    }, 2000);
+    }, 30000);
   };
 
   const formik = useFormik({
@@ -298,11 +313,11 @@ const PaymentInfo = ({
           );
         })
         .catch((error) => {
-          toast.error(error.response.data.message);
           setLoading(false);
           setError(true);
           setSuccess(false);
           setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message);
         });
     },
   });
@@ -318,6 +333,26 @@ const PaymentInfo = ({
       e.stopPropagation();
     }
   };
+  const [seconds, setSeconds] = useState(31);
+  const [counting, setCounting] = useState(false);
+  useEffect(() => {
+    let interval;
+
+    if (counting) {
+      interval = setInterval(() => {
+        if (seconds > 0) {
+          setSeconds(seconds - 1);
+        } else {
+          clearInterval(interval);
+          setCounting(false);
+        }
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [seconds, counting]);
 
   return (
     <div className="w-full 800px:w-[95%] bg-[#fff] rounded-md p-5 pb-8">
@@ -350,14 +385,14 @@ const PaymentInfo = ({
                   <p>{errorMessage}</p>
                 </div>
               )}
-              {/* {success && (
+              {success && (
                 <div
                   className="bg-green-100 border border-green-400 text-green-700 px-1 py-1 text-center mb-2 rounded relative"
                   role="alert"
                 >
                   <p>{successMessage}</p>
                 </div>
-              )} */}
+              )}
             </div>
             <div className=" w-ful lg:flex sm:block border-b appear__smoothly">
               <div className="items-center">
@@ -372,6 +407,7 @@ const PaymentInfo = ({
                   <label className=" w-[50%] pb-2 mt-[11px]">
                     Total Amount
                   </label>
+
                   <div className="w-[50%] text-[18px] font-[600] pb-2 mt-[11px]">
                     <NumericFormat
                       value={amount1}
@@ -410,6 +446,7 @@ const PaymentInfo = ({
                       loading ||
                       success ||
                       validating ||
+                      counting ||
                       error ||
                       amount1 > 150000
                     }
@@ -422,15 +459,37 @@ const PaymentInfo = ({
                       </p>
                     ) : (
                       <p className="">
-                        {success
-                          ? "Put PIN on your Phone"
-                          : validating
-                          ? "Validating Payment..."
-                          : error
-                          ? `${errorMessage}`
-                          : amount1 > 150000
-                          ? "Amout exceed Mpesa limt"
-                          : "Pay Now"}
+                        {
+                          // success ? (
+                          //   "Put PIN on your Phone"
+                          // ) :
+                          counting ? (
+                            <div class="text-center flex w-full items-center justify-center">
+                              <div class="mr-1 font-extralight">
+                                contacting Mpesa in
+                              </div>
+                              <div class="w-24 flex mx-1 p-2  text-yellow-500 rounded-lg">
+                                <div
+                                  class="font-mono mr-2 leading-none"
+                                  x-text="seconds"
+                                >
+                                  {seconds}
+                                </div>
+                                <div class="font-mono leading-none">
+                                  Seconds
+                                </div>
+                              </div>
+                            </div>
+                          ) : validating ? (
+                            "Validating Payment..."
+                          ) : error ? (
+                            `${errorMessage}`
+                          ) : amount1 > 150000 ? (
+                            "Amout exceed Mpesa limt"
+                          ) : (
+                            "Pay Now"
+                          )
+                        }
                       </p>
                     )}
                   </button>
