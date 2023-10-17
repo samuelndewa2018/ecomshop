@@ -21,13 +21,68 @@ import { NumericFormat } from "react-number-format";
 import { TbArrowsShuffle2 } from "react-icons/tb";
 import { addTocompare } from "../../../redux/actions/compare";
 import { IoIosShareAlt } from "react-icons/io";
+import { AiOutlineDelete } from "react-icons/ai";
 
-const ProductCard = ({ data, isEvent }) => {
+const ProductCard = ({ data, isEvent, inRecent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
   const { compare } = useSelector((state) => state.compare);
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
+  ////
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+  useEffect(() => {
+    const storedRecentlyViewed = localStorage.getItem("recentlyViewed");
+    if (storedRecentlyViewed) {
+      setRecentlyViewed(JSON.parse(storedRecentlyViewed));
+    }
+  }, []);
+  const addToRecentlyViewed = (product) => {
+    // Create a copy of the current recentlyViewed array
+    const updatedRecentlyViewed = [...recentlyViewed];
+
+    // Check if the product is already in the list
+    const productIndex = updatedRecentlyViewed.findIndex(
+      (item) => item._id === product._id
+    );
+
+    if (productIndex === -1) {
+      // If the product is not in the list, add it to the beginning
+      updatedRecentlyViewed.unshift(product);
+
+      // Limit the list to a certain number of products (e.g., 10)
+      if (updatedRecentlyViewed.length > 10) {
+        updatedRecentlyViewed.pop();
+      }
+
+      // Update state and local storage
+      setRecentlyViewed(updatedRecentlyViewed);
+      localStorage.setItem(
+        "recentlyViewed",
+        JSON.stringify(updatedRecentlyViewed)
+      );
+    }
+  };
+
+  // const [recentlyViewed2, setRecentlyViewed2] = useState(
+  //   JSON.parse(localStorage.getItem("recentlyViewed")) || []
+  // );
+
+  const removeFromRecentlyViewed = (productId) => {
+    const updatedRecentlyViewed = recentlyViewed.filter(
+      (product) => product._id !== productId
+    );
+
+    setRecentlyViewed(updatedRecentlyViewed);
+    localStorage.setItem(
+      "recentlyViewed",
+      JSON.stringify(updatedRecentlyViewed)
+    );
+    window.location.reload();
+  };
+
+  ///
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -108,7 +163,10 @@ const ProductCard = ({ data, isEvent }) => {
 
   return (
     <>
-      <div className=" md:grid-cols-1 gap-2">
+      <div
+        className=" md:grid-cols-1 gap-2"
+        onClick={() => addToRecentlyViewed(data)}
+      >
         <div className="w-full min-h-[370px] max-h-[370px] mb-2 bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
           <div className="flex justify-end"></div>
           <Link
@@ -310,6 +368,13 @@ const ProductCard = ({ data, isEvent }) => {
               color="#444"
               title="Compare Products"
             />
+            {inRecent && (
+              <AiOutlineDelete
+                size={25}
+                className="cursor-pointer absolute right-2 top-60"
+                onClick={() => removeFromRecentlyViewed(data._id)}
+              />
+            )}
 
             {open ? <ProductDetailsCard setOpen={setOpen} data={data} /> : null}
           </div>

@@ -7,12 +7,13 @@ const axios = require("axios");
 const request = require("request");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
+const Shop = require("../model/shop");
 
 const pass_key =
   "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
 const short_code = "174379";
 
-//access token function
+//access token function sec ached
 function getAccessToken() {
   const consumer_key = process.env.CONSUMER_KEY;
   const consumer_secret = process.env.CONSUMER_SECRET;
@@ -89,7 +90,6 @@ router.post(
             headers: headers,
           })
           .then((response) => {
-            console.log(response.data);
             res.send(response.data);
           });
       } catch (error) {
@@ -107,46 +107,43 @@ const callbackurl = process.env.CALL_BACK_URL;
 
 //callback stk
 router.post("/callback", async (req, res) => {
-  try {
-    if (!req.body.Body.stkCallback.CallbackMetadata) {
-      console.log(req.body.Body.stkCallback.ResultDesc);
-      res.status(200).json("ok");
-      return;
-    }
-
-    const amount = req.body.Body.stkCallback.CallbackMetadata.Item[0].Value;
-    const code = req.body.Body.stkCallback.CallbackMetadata.Item[1].Value;
-    const phone1 =
-      req.body.Body.stkCallback.CallbackMetadata.Item[4].Value.toString().substring(
-        3
-      );
-    const phone = `0${phone1}`;
-    const transaction = new Transaction();
-
-    transaction.customer_number = phone;
-    transaction.mpesa_ref = code;
-    transaction.amount = amount;
-
-    await transaction
-      .save()
-      .then((data) => {
-        console.log({ message: "transaction saved successfully", data });
-      })
-      .catch((err) => console.log(err.message));
-
+  if (!req.body.Body.stkCallback.CallbackMetadata) {
+    console.log(req.body.Body.stkCallback.ResultDesc);
     res.status(200).json("ok");
-  } catch (error) {
-    return next(new ErrorHandler("Error occurred.", 500));
+    return;
   }
+
+  const amount = req.body.Body.stkCallback.CallbackMetadata.Item[0].Value;
+  const code = req.body.Body.stkCallback.CallbackMetadata.Item[1].Value;
+  const phone1 =
+    req.body.Body.stkCallback.CallbackMetadata.Item[4].Value.toString().substring(
+      3
+    );
+  const phone = `0${phone1}`;
+  const transaction = new Transaction();
+
+  transaction.customer_number = phone;
+  transaction.mpesa_ref = code;
+  transaction.amount = amount;
+
+  await transaction
+    .save()
+    .then((data) => {
+      console.log({ message: "transaction saved successfully", data });
+    })
+    .catch((err) => console.log(err.message));
+
+  res.status(200).json("ok");
 });
 
 // REGISTER URL FOR C2B
 router.get("/registerurl", (req, resp) => {
   getAccessToken()
-    .then(async (accessToken) => {
+    .then((accessToken) => {
+      const callbackurl = process.env.CALL_BACK_URL;
       const url = "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl";
-      const auth = `Bearer ${accessToken}`;
-      await axios
+      const auth = "Bearer " + accessToken;
+      axios
         .post(
           url,
           {
@@ -175,12 +172,13 @@ router.get("/registerurl", (req, resp) => {
 router.get("/confirmation", (req, res) => {
   console.log("All transaction will be sent to this URL");
   console.log(req.body);
-  res.status(200).json(req.body);
+  res.status(200).json("Confirmation success");
 });
 
-router.get("/validation", (req, resp) => {
+router.get("/validation", (req, res) => {
   console.log("Validating payment");
   console.log(req.body);
+  res.status(200).json("Validating success");
 });
 
 //stk query
@@ -206,6 +204,7 @@ router.post(
       ).toString("base64");
 
       await axios
+
         .post(
           "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
           {
@@ -232,65 +231,67 @@ router.post(
 );
 
 //withdrawal for seller
-router.get(
-  "/withdral",
+router.post(
+  "/withdrawal",
   catchAsyncErrors(async (req, res) => {
+    const { phoneNumber, amount, sellerId, updatedBalance } = req.body;
+
+    const seller = await Shop.findById(sellerId);
+    console.log("seller is", seller.availableBalance);
+
+    console.log(phoneNumber);
     getAccessToken()
-      .then((accessToken) => {
+      .then(async (accessToken) => {
         const securityCredential = process.env.SECURITY_CREDENTIAL;
         const url =
-            "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest",
-          auth = "Bearer " + accessToken;
+          "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest";
+        const auth = "Bearer " + accessToken;
         request(
           {
             url: url,
-
             method: "POST",
-
             headers: {
               Authorization: auth,
             },
-
             json: {
               InitiatorName: "testapi",
-
               SecurityCredential: securityCredential,
-
               CommandID: "PromotionPayment",
-
-              Amount: "1",
-
+              Amount: amount,
               PartyA: "600998",
-
-              PartyB: "254712012113",
-
+              PartyB: `254${phoneNumber}`,
               Remarks: "Withdrawal",
-
               QueueTimeOutURL: `${callbackurl}/b2c/queue`,
-
               ResultURL: `${callbackurl}/b2c/result`,
-
               Occasion: "Withdrawal",
             },
           },
-          function (error, response, body) {
+          async function (error, response, body) {
             if (error) {
               console.log(error);
+              res.status(500).json({ error: "Failed to initiate withdrawal" });
+            } else {
+              seller.availableBalance = updatedBalance;
+              await seller.save();
+              console.log(seller.availableBalance);
+
+              res.status(200).json(body);
+              console.log(body);
             }
-            res.status(200).json(body);
-            console.log(body);
           }
         );
       })
-      .catch(console.log);
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: "Failed to get access token" });
+      });
   })
 );
-
+//transactions
 router.get("/transactions", async (req, res) => {
   try {
     const transactions = await Transaction.find({}).sort({ createdAt: -1 });
 
-    // Map transactions to a new array with masked customer numbers
     const maskedTransactions = transactions.map((transaction) => {
       const firstFour = transaction.customer_number.substring(0, 4);
       const lastTwo = transaction.customer_number.slice(-2);
@@ -306,22 +307,5 @@ router.get("/transactions", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-// router.get("/transactions", (req, res) => {
-//   Transaction.find({})
-//     .sort({ createdAt: -1 })
-//     .exec(function (err, data) {
-//       if (err) {
-//         res.status(400).json(err.message);
-//       } else {
-//         res.status(201).json(data);
-//         data.forEach((transaction) => {
-//           const firstFour = transaction.customer_number.substring(0, 4);
-//           const lastTwo = transaction.customer_number.slice(-2);
-
-//           console.log(`${firstFour}xxxx${lastTwo}`);
-//         });
-//       }
-//     });
-// });
 
 module.exports = router;

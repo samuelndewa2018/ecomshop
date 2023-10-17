@@ -8,6 +8,7 @@ import Events from "../components/Events/Events";
 import Sponsored from "../components/Route/Sponsored";
 import Footer from "../components/Layout/Footer";
 import Meta from "../components/Meta";
+import RecentProduct from "../components/Route/RecentProduct/RecentProduct";
 
 const HomePage = () => {
   return (
@@ -19,6 +20,7 @@ const HomePage = () => {
       <BestDeals />
       <Events />
       <FeaturedProduct />
+      <RecentProduct />
       <Sponsored />
       <Footer />
     </div>
