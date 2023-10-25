@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "../components/Layout/Footer";
 import Header from "../components/Layout/Header";
 import Lottie from "react-lottie";
 import animationData from "../Assests/animations/107043-success.json";
 import Meta from "../components/Meta";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { server } from "../server";
 
 const OrderSuccessPage = () => {
+  // useEffect(() => {
+  //   axios.post(`${server}/order/sendorderemail`);
+  // }, []);
   const defaultOptions = {
     loop: false,
     autoplay: true,

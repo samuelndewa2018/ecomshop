@@ -28,8 +28,12 @@ const Payment = () => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
     setOrderData(orderData);
   }, []);
+
   const exchangeRate = statements?.map((i) => i.exchangeRate);
-  const paypalTotals = (orderData?.totalPrice / exchangeRate).toFixed(2);
+  const paypalTotals = (
+    (orderData?.totalPrice / exchangeRate) * 1.0349 +
+    0.49
+  ).toFixed(2);
 
   const createOrder = (data, actions) => {
     return actions.order
@@ -54,7 +58,8 @@ const Payment = () => {
 
   const order = {
     cart: orderData?.cart,
-    shippingAddress: orderData?.shippingAddress,
+    orderNo: orderData?.orderNumber,
+    shippingAddress: orderData?.shippingAddress, //yoo are you following..
     user: user && user,
     totalPrice: orderData?.totalPrice,
     shippingPrice: orderData.shippingPrice,
@@ -75,6 +80,7 @@ const Payment = () => {
 
   const paypalPaymentHandler = async (paymentInfo) => {
     setLoading2(true);
+
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -100,6 +106,7 @@ const Payment = () => {
         }, 2000);
       });
     setLoading2(false);
+    await axios.post(`${server}/order/sendorderemail`);
   };
 
   const cashOnDeliveryHandler = async (e) => {
@@ -124,11 +131,12 @@ const Payment = () => {
           toast.success("Order successful!");
           localStorage.setItem("cartItems", JSON.stringify([]));
           localStorage.setItem("latestOrder", JSON.stringify([]));
-          setTimeout(() => {
+          setTimeout(async () => {
             window.location.reload();
           }, 2000);
         });
       setLoading1(false);
+      // await axios.post(`${server}/order/sendorderemail`, order, config);
     } catch (error) {
       setLoading1(false);
     }
@@ -185,6 +193,7 @@ const PaymentInfo = ({
   const [successMessage, setSuccessMessage] = useState("");
   const [validating, setValidating] = useState(false);
   const [limit, setLimit] = useState(false);
+  const [paymentDone, setPaymentDone] = useState(false);
 
   useEffect(() => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
@@ -194,19 +203,48 @@ const PaymentInfo = ({
 
   var reqcount = 0;
   const navigate = useNavigate();
+
+  const createOrderNow = async () => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const order = {
+      cart: orderData?.cart,
+      shippingAddress: orderData?.shippingAddress,
+      shippingPrice: orderData.shippingPrice,
+      user: user && user,
+      totalPrice: orderData?.totalPrice,
+    };
+    order.paymentInfo = {
+      type: "Mpesa",
+      status: "succeeded",
+    };
+    setValidating(true);
+    setSuccess(false);
+    setSuccessMessage("Validating your Payment");
+    setTimeout(async () => {
+      await axios
+        .post(`${server}/order/create-order`, order, config)
+        .then((res) => {
+          setValidating(false);
+          setOpen(false);
+          navigate("/order/success");
+          toast.success("Your Payment is Sucessful and order placed");
+          localStorage.setItem("cartItems", JSON.stringify([]));
+          localStorage.setItem("latestOrder", JSON.stringify([]));
+          setTimeout(async () => {
+            window.location.reload();
+          }, 5000);
+        });
+      await axios.post(`${server}/order/sendorderemail`);
+    }, 5000);
+  };
+
   const stkPushQuery = async (checkOutRequestID) => {
-    await setCounting(true);
+    // await setCounting(true);
     const timer = setInterval(async () => {
-      reqcount += 1;
-      if (reqcount === 2 && errorMessage === "") {
-        clearInterval(timer);
-        setLoading(false);
-        toast.error("You took too long to pay");
-        setSuccess(false);
-        setError(true);
-        setErrorMessage("You took too long to pay");
-        return;
-      }
       await axios
         .post(`${server}/pesa/stkpushquery`, {
           CheckoutRequestID: checkOutRequestID,
@@ -254,6 +292,7 @@ const PaymentInfo = ({
                 }, 5000);
               });
             // toast.success("Your Payment is Validating");
+            await axios.post(`${server}/order/sendorderemail`);
           } else if (response.errorCode === "500.001.1001") {
             console.log(response);
           } else {
@@ -261,10 +300,12 @@ const PaymentInfo = ({
             setLoading(false);
             setError(true);
             setSuccess(false);
-            setCounting(false);
+            // setCounting(false);
             if (response.data.ResultDesc === "Request cancelled by user") {
-              setErrorMessage("You cancelled the transaction");
-              toast.error("You cancelled the transaction");
+              setErrorMessage(
+                "You cancelled the transaction or took too long to pay"
+              );
+              toast.error("Transaction not completed");
             } else if (
               response.data.ResultDesc ===
               "The initiator information is invalid."
@@ -281,19 +322,24 @@ const PaymentInfo = ({
             } else {
               setErrorMessage(response.data.ResultDesc);
               toast.error(response.data.ResultDesc);
-              // setErrorMessage("You took too long to pay");
-              // toast.error("You took too long to pay");
             }
-
-            console.log(response.data);
           }
         })
         .catch((err) => {
           console.log(err.message);
         });
-    }, 28000);
+      // reqcount += 1;
+      // if (reqcount === 1 && errorMessage === "") {
+      //   clearInterval(timer);
+      //   setLoading(false);
+      //   toast.error("You took too long to pay");
+      //   setSuccess(false);
+      //   setError(true);
+      //   setErrorMessage("You took too long to pay");
+      //   return;
+      // }
+    }, 3000);
   };
-
   const formik = useFormik({
     initialValues: {
       phone: `${user && user.phoneNumber ? user && user.phoneNumber : ""}`,
@@ -321,11 +367,14 @@ const PaymentInfo = ({
           );
         })
         .catch((error) => {
-          setLoading(false);
           setError(true);
+          if (error.response.data.message === "Request cancelled by user") {
+            setErrorMessage("You cancelled the transaction");
+          } else {
+            setErrorMessage(error.response.data.message);
+          }
+          setLoading(false);
           setSuccess(false);
-          setErrorMessage(error.response.data.message);
-          toast.error(error.response.data.message);
         });
     },
   });
@@ -341,26 +390,27 @@ const PaymentInfo = ({
       e.stopPropagation();
     }
   };
-  const [seconds, setSeconds] = useState(30);
-  const [counting, setCounting] = useState(false);
-  useEffect(() => {
-    let interval;
 
-    if (counting) {
-      interval = setInterval(() => {
-        if (seconds > 0) {
-          setSeconds(seconds - 1);
-        } else {
-          clearInterval(interval);
-          setCounting(false);
-        }
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
+  // const [seconds, setSeconds] = useState(31);
+  // const [counting, setCounting] = useState(false);
+  // useEffect(() => {
+  //   let interval;
 
-    return () => clearInterval(interval);
-  }, [seconds, counting]);
+  //   if (counting) {
+  //     interval = setInterval(() => {
+  //       if (seconds > 0) {
+  //         setSeconds(seconds - 1);
+  //       } else {
+  //         clearInterval(interval);
+  //         setCounting(false);
+  //       }
+  //     }, 1000);
+  //   } else {
+  //     clearInterval(interval);
+  //   }
+
+  //   return () => clearInterval(interval);
+  // }, [seconds, counting]);
 
   return (
     <div className="w-full 800px:w-[95%] bg-[#fff] rounded-md p-5 pb-8">
@@ -423,7 +473,6 @@ const PaymentInfo = ({
                   <label className=" w-[50%] pb-2 mt-[11px]">
                     Total Amount
                   </label>
-
                   <div className="w-[50%] text-[18px] font-[600] pb-2 mt-[11px]">
                     <NumericFormat
                       value={amount1}
@@ -460,11 +509,11 @@ const PaymentInfo = ({
                   <button
                     disabled={
                       loading ||
+                      // counting ||
                       success ||
                       validating ||
-                      counting ||
                       error ||
-                      amount1 > 150000
+                      amount1 > 250000
                     }
                     type="submit"
                     className="group relative w-full flex justify-center mb-4 py-3 px-4 border border-transparent text-[16px] font-[600] rounded-[5px] text-white !bg-[#12b32a] hover:!bg-[#12b32a] disabled:!bg-[#a8deb0] disabled:cursor-not-allowed"
@@ -474,37 +523,32 @@ const PaymentInfo = ({
                         <Spinner /> Processing...
                       </p>
                     ) : (
-                      <p className="">
+                      <p>
                         {
-                          // success ? (
-                          //   "Put PIN on your Phone"
-                          // ) :
-                          counting ? (
-                            <div class="text-center flex w-full items-center justify-center">
-                              <div class="mr-1 font-extralight">
-                                contacting Mpesa in
-                              </div>
-                              <div class="w-24 flex mx-1 p-2  text-yellow-500 rounded-lg">
-                                <div
-                                  class="font-mono mr-2 leading-none"
-                                  x-text="seconds"
-                                >
-                                  {seconds}
-                                </div>
-                                <div class="font-mono leading-none">
-                                  Seconds
-                                </div>
-                              </div>
-                            </div>
-                          ) : validating ? (
-                            "Validating Payment..."
-                          ) : error ? (
-                            `${errorMessage}`
-                          ) : amount1 > 150000 ? (
-                            "Amout exceed Mpesa limt"
-                          ) : (
-                            "Pay Now"
-                          )
+                          // counting ? (
+                          //   <div class="text-center flex w-full items-center justify-center">
+                          //     <div class="mr-1 font-extralight">
+                          //       contacting Mpesa in
+                          //     </div>
+                          //     <div class="w-24 flex mx-1 p-2  text-yellow-500 rounded-lg">
+                          //       <div
+                          //         class="font-mono mr-2 leading-none"
+                          //         x-text="seconds"
+                          //       >
+                          //         {seconds}
+                          //       </div>
+                          //       <div class="font-mono leading-none">Seconds</div>
+                          //     </div>
+                          //   </div>
+                          // )
+                          // :
+                          validating
+                            ? "Validating Payment..."
+                            : error
+                            ? `${errorMessage}`
+                            : amount1 > 150000
+                            ? "Amout exceed Mpesa limt"
+                            : "Pay Now"
                         }
                       </p>
                     )}
@@ -605,45 +649,51 @@ const PaymentInfo = ({
 
       <br />
       {/* cash on delivery */}
-      <div>
-        <div className="flex w-full pb-5 border-b mb-2">
-          <div
-            className="w-[25px] h-[25px] rounded-full bg-transparent border-[3px] border-[#1d1a1ab4] relative flex items-center justify-center"
-            onClick={() => setSelect(3)}
-          >
+      {orderData.shippingAddress &&
+        (orderData.shippingAddress.city === "Nairobi" ||
+          orderData.shippingAddress.city === "Mombasa" ||
+          orderData.totalPrice >= 5000 ||
+          orderData.shippingAddress.city === "Self Pickup") && (
+          <div>
+            <div className="flex w-full pb-5 border-b mb-2">
+              <div
+                className="w-[25px] h-[25px] rounded-full bg-transparent border-[3px] border-[#1d1a1ab4] relative flex items-center justify-center"
+                onClick={() => setSelect(3)}
+              >
+                {select === 3 ? (
+                  <div className="w-[13px] h-[13px] bg-[#1d1a1acb] rounded-full" />
+                ) : null}
+              </div>
+              <h4 className="text-[18px] pl-2 font-[600] text-[#000000b1]">
+                Cash/Mpesa on Delivery
+              </h4>
+            </div>
+
+            {/* cash on delivery */}
             {select === 3 ? (
-              <div className="w-[13px] h-[13px] bg-[#1d1a1acb] rounded-full" />
+              <div className="w-full flex">
+                <form
+                  className="w-full appear__smoothly"
+                  onSubmit={cashOnDeliveryHandler}
+                >
+                  <button
+                    type="submit"
+                    disabled={loading1}
+                    className={`${styles.button} !bg-[#f63b60] text-[#fff] h-[45px] rounded-[5px] cursor-pointer text-[18px] font-[600]`}
+                  >
+                    {loading1 ? (
+                      <p className="flex mx-3">
+                        <Spinner /> Processing...
+                      </p>
+                    ) : (
+                      <p className="">Confirm</p>
+                    )}
+                  </button>
+                </form>
+              </div>
             ) : null}
           </div>
-          <h4 className="text-[18px] pl-2 font-[600] text-[#000000b1]">
-            Cash on Delivery
-          </h4>
-        </div>
-
-        {/* cash on delivery */}
-        {select === 3 ? (
-          <div className="w-full flex">
-            <form
-              className="w-full appear__smoothly"
-              onSubmit={cashOnDeliveryHandler}
-            >
-              <button
-                type="submit"
-                disabled={loading1}
-                className={`${styles.button} !bg-[#f63b60] text-[#fff] h-[45px] rounded-[5px] cursor-pointer text-[18px] font-[600]`}
-              >
-                {loading1 ? (
-                  <p className="flex mx-3">
-                    <Spinner /> Processing...
-                  </p>
-                ) : (
-                  <p className="">Confirm</p>
-                )}
-              </button>
-            </form>
-          </div>
-        ) : null}
-      </div>
+        )}
     </div>
   );
 };

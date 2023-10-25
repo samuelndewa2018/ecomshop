@@ -201,7 +201,7 @@ const WithdrawMoney = () => {
                 </div>
                 <div className="flex gap-10 justify-center">
                   <button
-                    disabled={loading || withdrawAmount > 150000}
+                    disabled={loading || withdrawAmount > 250000}
                     type="submit"
                     className="group mt-3 relative h-[40px] flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-100"
                   >

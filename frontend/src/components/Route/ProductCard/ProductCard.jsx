@@ -22,6 +22,7 @@ import { TbArrowsShuffle2 } from "react-icons/tb";
 import { addTocompare } from "../../../redux/actions/compare";
 import { IoIosShareAlt } from "react-icons/io";
 import { AiOutlineDelete } from "react-icons/ai";
+import CustomModal from "../../CustomModal";
 
 const ProductCard = ({ data, isEvent, inRecent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -29,6 +30,7 @@ const ProductCard = ({ data, isEvent, inRecent }) => {
   const { compare } = useSelector((state) => state.compare);
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   ////
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   useEffect(() => {
@@ -163,6 +165,16 @@ const ProductCard = ({ data, isEvent, inRecent }) => {
 
   return (
     <>
+      {modalOpen && (
+        <CustomModal
+          message={"Are you sure you want to remove from compare?"}
+          ok={" Yes, I'm sure"}
+          cancel={"No, cancel"}
+          setModalOpen={setModalOpen}
+          performAction={() => removeFromRecentlyViewed(data._id)}
+          closeModel={() => setModalOpen(false)}
+        />
+      )}
       <div
         className=" md:grid-cols-1 gap-2"
         onClick={() => addToRecentlyViewed(data)}
@@ -372,7 +384,7 @@ const ProductCard = ({ data, isEvent, inRecent }) => {
               <AiOutlineDelete
                 size={25}
                 className="cursor-pointer absolute right-2 top-60"
-                onClick={() => removeFromRecentlyViewed(data._id)}
+                onClick={() => setModalOpen(true)}
               />
             )}
 

@@ -85,6 +85,8 @@ import ComingSoon from "./pages/ComingSoon";
 import Exchange from "./Trial/Exchange";
 import ScrollToTop from "./components/ScroolTop";
 import DynamicLoader from "./components/Layout/DynamicLoader";
+import GuestCheckoutPage from "./pages/GuestCheckout";
+import GuestPaymentPage from "./pages/GuestPaymentPage";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
@@ -140,6 +142,8 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
+        <Route path="/guest-checkout" element={<GuestCheckoutPage />} />
+        <Route path="/guest-payment" element={<GuestPaymentPage />} />
         <Route
           path="/unsubscribe"
           element={
@@ -203,9 +207,9 @@ const App = () => {
         <Route
           path="/checkout"
           element={
-            // <ProtectedRoute>
-            <CheckoutPage />
-            // </ProtectedRoute>
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
           }
         />
         <Route path="/order/success" element={<OrderSuccessPage />} />

@@ -7,7 +7,14 @@ const Order = require("../model/order");
 const Shop = require("../model/shop");
 const Product = require("../model/product");
 const sendMail = require("../utils/sendMail");
+const pdf = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
+const cloudinary = require("cloudinary");
+const puppeteer = require("puppeteer");
+const streamifier = require("streamifier");
 
+// create new order
 router.post(
   "/create-order",
   catchAsyncErrors(async (req, res, next) => {
@@ -16,6 +23,7 @@ router.post(
         cart,
         shippingAddress,
         user,
+        orderNo,
         totalPrice,
         paymentInfo,
         shippingPrice,
@@ -50,12 +58,12 @@ router.post(
           cart: items,
           shippingAddress,
           user,
+          orderNo,
           totalPrice,
           paymentInfo,
           shippingPrice,
           discount,
         });
-
         const subTotals = order?.cart.reduce(
           (acc, item) => acc + item.qty * item.discountPrice,
           0
@@ -69,7 +77,9 @@ router.post(
               console.error(`Shop with ID ${shopId} not found.`);
             } else {
               const amountToAdd = (subTotals * 0.9).toFixed(2);
+              // const amountToAdd2 = (subTotals * 0.1).toFixed(2);
               shop.availableBalance += parseInt(amountToAdd);
+              // user.admin.availableBalance += parseInt(amountToAdd2);
 
               await shop.save();
             }
@@ -104,64 +114,28 @@ router.post(
           orders.push(order);
         }
       }
-
-      const combinedAttachments = [];
-      for (const order of orders) {
-        combinedAttachments.push(
-          ...order.cart.map((item) => ({
-            filename: item.images[0].url,
-            path: item.images[0].url,
-            cid: item.images[0].url,
-          }))
-        );
-      }
-      combinedAttachments.push({
-        filename: "logo.png",
-        path: `https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png`,
-        cid: "logo",
-      });
-
-      // Send a single email to the user with combined order details
-      await sendMail({
-        email: user.email,
-        subject: "Order Confirmation",
-        attachments: combinedAttachments,
-      });
-
-      // Send individual emails to each shop
-      for (const [shopId, shopEmail] of shopEmailsMap.entries()) {
-        const shopAttachments = shopItemsMap.get(shopId).map((item) => ({
-          filename: item.images[0].url,
-          path: item.images[0].url,
-          cid: item.images[0].url,
-        }));
-        shopAttachments.push({
-          filename: "logo.png",
-          path: `https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png`,
-          cid: "logo",
-        });
-
-        await sendMail({
-          email: shopEmail,
-          subject: "Order Confirmation for Your Shop",
-
-          attachments: shopAttachments,
-        });
-      }
+      req.app.locals.createdOrders = orders;
 
       res.status(201).json({
         success: true,
         orders,
       });
+      // await sendMail({
+      //   email: "samuelndewa2018@gmail.com",
+      //   subject: "Order Confirmation",
+      //   html: "hooooedds",
+      //   attachments: attachments,
+      // });
     } catch (error) {
       console.log(error);
       return next(new ErrorHandler(error.message, 500));
     }
   })
 );
-// create new order
+
+// send email order
 // router.post(
-//   "/create-order",
+//   "/sendorderemail",
 //   catchAsyncErrors(async (req, res, next) => {
 //     try {
 //       const {
@@ -265,7 +239,6 @@ router.post(
 //           cid: "logo",
 //         });
 
-//         // console.log(order);
 //         await sendMail({
 //           email: shopEmail,
 //           subject: "Order Confirmation",
@@ -523,12 +496,9 @@ router.post(
 //                                   <table>
 //                                     <thead>
 //                                       <tr>
-//                                       <td width="75%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
-//                                       <strong>Product(s)</strong></td>
-//                                       <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
-//                                       <strong>Quantity</strong></td>
-//                                       <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
-//                                       <strong align="right">Price</strong></td>
+//                                       <td style="padding-right: 5px;"><strong>Product(s)</strong></td>
+//                                       <td style="padding-right: 5px;"><strong>Quantity</strong></td>
+//                                       <td style="text-align: right;"><strong align="right">Price</strong></td>
 //                                       </tr>
 //                                     </thead>
 //                                     <tbody>
@@ -539,7 +509,7 @@ router.post(
 //                                       <td style="display: flex;" align="start">
 //                                       <img src="cid:${item.images[0].url}"
 //                                       style="height: 80px; width: 80px; margin-right: 5px"/>
-//                                       ${item.name} <br/> ${
+//                                       ${item.name}  <br/> ${
 //                                             item.size
 //                                               ? `Size: ${item.size}`
 //                                               : ""
@@ -561,15 +531,13 @@ router.post(
 //                                     <br/>
 //                                     <tfoot>
 //                                       <tr>
-//                                       <td width="75%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
-//                                       Items Price:</td>
-//                                       <td width="25%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
-//                                       Ksh. ${subTotals
-//                                         .toString()
-//                                         .replace(
-//                                           /\B(?=(\d{3})+(?!\d))/g,
-//                                           ","
-//                                         )}</td>
+//                                         <td colspan="2">Items Price:</td>
+//                                         <td align="right">Ksh. ${subTotals
+//                                           .toString()
+//                                           .replace(
+//                                             /\B(?=(\d{3})+(?!\d))/g,
+//                                             ","
+//                                           )}</td>
 //                                       </tr>
 //                                       <tr>
 //                                         <td colspan="2">Shipping Price:</td>
@@ -586,13 +554,14 @@ router.post(
 //                                       <tr>
 //                                         <td colspan="2">Discount: </td>
 //                                         <td align="right">Ksh. ${
-//                                           order?.discount &&
 //                                           order?.discount
-//                                             .toString()
-//                                             .replace(
-//                                               /\B(?=(\d{3})+(?!\d))/g,
-//                                               ","
-//                                             )
+//                                             ? order?.discount
+//                                                 .toString()
+//                                                 .replace(
+//                                                   /\B(?=(\d{3})+(?!\d))/g,
+//                                                   ","
+//                                                 )
+//                                             : 0
 //                                         }</td>
 //                                       </tr>
 //                                       <br/>
@@ -628,16 +597,9 @@ router.post(
 
 //                                   <h2>Shipping address</h2>
 //                                   <p>
-//                                     ${
-//                                       shippingAddress.address1
-//                                         ? shippingAddress.address1
-//                                         : ""
-//                                     },<br />
-//                                     ${
-//                                       shippingAddress.address2
-//                                         ? shippingAddress.address2
-//                                         : ""
-//                                     },<br />
+//                                     ${shippingAddress.address1},<br />
+//                                     ${shippingAddress.address2},<br />
+//                                     ${shippingAddress.zipCode},<br />
 //                                     ${shippingAddress.city},<br />
 //                                     ${shippingAddress.country}<br />
 //                                   </p>
@@ -1017,12 +979,9 @@ router.post(
 //                                   <table>
 //                                     <thead>
 //                                       <tr>
-//                                       <td width="75%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
-//                                       <strong>Product(s)</strong></td>
-//                                       <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
-//                                       <strong>Quantity</strong></td>
-//                                       <td width="25%" align="left" bgcolor="#eeeeee" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px;">
-//                                       <strong align="right">Price</strong></td>
+//                                       <td style="padding-right: 5px;"><strong>Product(s)</strong></td>
+//                                       <td style="padding-right: 5px;"><strong>Quantity</strong></td>
+//                                       <td style="text-align: right;"><strong align="right">Price</strong></td>
 //                                       </tr>
 //                                     </thead>
 //                                     <tbody>
@@ -1033,7 +992,7 @@ router.post(
 //                                       <td style="display: flex;" align="start">
 //                                       <img src="cid:${item.images[0].url}"
 //                                       style="height: 80px; width: 80px; margin-right: 5px"/>
-//                                       ${item.name} <br/> ${
+//                                       ${item.name}  <br/> ${
 //                                             item.size
 //                                               ? `Size: ${item.size}`
 //                                               : ""
@@ -1055,15 +1014,13 @@ router.post(
 //                                     <br/>
 //                                     <tfoot>
 //                                       <tr>
-//                                       <td width="75%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
-//                                       Items Price:</td>
-//                                       <td width="25%" align="left" style="font-family: Open Sans, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 800; line-height: 24px; padding: 10px; border-top: 3px solid #eeeeee; border-bottom: 3px solid #eeeeee;">
-//                                       Ksh. ${subTotals
-//                                         .toString()
-//                                         .replace(
-//                                           /\B(?=(\d{3})+(?!\d))/g,
-//                                           ","
-//                                         )}</td>
+//                                         <td colspan="2">Items Price:</td>
+//                                         <td align="right">Ksh. ${subTotals
+//                                           .toString()
+//                                           .replace(
+//                                             /\B(?=(\d{3})+(?!\d))/g,
+//                                             ","
+//                                           )}</td>
 //                                       </tr>
 //                                       <tr>
 //                                         <td colspan="2">Shipping Price:</td>
@@ -1080,13 +1037,14 @@ router.post(
 //                                       <tr>
 //                                         <td colspan="2">Discount: </td>
 //                                         <td align="right">Ksh. ${
-//                                           order?.discount &&
 //                                           order?.discount
-//                                             .toString()
-//                                             .replace(
-//                                               /\B(?=(\d{3})+(?!\d))/g,
-//                                               ","
-//                                             )
+//                                             ? order?.discount
+//                                                 .toString()
+//                                                 .replace(
+//                                                   /\B(?=(\d{3})+(?!\d))/g,
+//                                                   ","
+//                                                 )
+//                                             : 0
 //                                         }</td>
 //                                       </tr>
 //                                       <br/>
@@ -1122,16 +1080,9 @@ router.post(
 
 //                                   <h2>Shipping address</h2>
 //                                   <p>
-//                                     ${
-//                                       shippingAddress.address1
-//                                         ? shippingAddress.address1
-//                                         : ""
-//                                     },<br />
-//                                     ${
-//                                       shippingAddress.address2
-//                                         ? shippingAddress.address2
-//                                         : ""
-//                                     },<br />
+//                                     ${shippingAddress.address1},<br />
+//                                     ${shippingAddress.address2},<br />
+//                                     ${shippingAddress.zipCode},<br />
 //                                     ${shippingAddress.city},<br />
 //                                     ${shippingAddress.country}<br />
 //                                   </p>
@@ -1251,10 +1202,10 @@ router.post(
 //               </table>
 //             </body>
 //           </html>
-//            `,
+//           `,
 //           attachments: attachments,
 //         });
-//         orders.push(order);
+//         // orders.push(order);
 //       }
 
 //       res.status(201).json({
@@ -1267,6 +1218,116 @@ router.post(
 //     }
 //   })
 // );
+
+//generate recept
+
+router.get(
+  "/generate-receipt/:orderId",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const orderId = req.params.orderId;
+      const pdfFileName = `receipt_${orderId}.pdf`;
+
+      const doc = new pdf();
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${pdfFileName}"`
+      );
+      doc.pipe(res);
+
+      doc.fontSize(12);
+      doc.text("Invoice", { align: "right" });
+      doc.text("Invoice Date: 2023-10-18", { align: "right" });
+      doc.text("Due Date: 2023-11-18", { align: "right" });
+
+      doc.moveDown();
+      doc.text("Bill To:");
+      doc.text("John Doe");
+      doc.text("123 Main Street");
+      doc.text("City, State, ZIP");
+      doc.moveDown(2); // Add more vertical space to separate the address and the table
+
+      // Create the table header row on the same line
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(12)
+        .text("Description", 50, doc.y)
+        .moveUp(1) // Adjust the vertical position
+        .text("Qty", 200, doc.y)
+        .moveUp(1) // Adjust the vertical position
+        .text("Price", 300, doc.y)
+        .moveUp(1) // Adjust the vertical position
+        .text("Total", 400, doc.y);
+
+      doc
+        .font("Helvetica")
+        .fontSize(12)
+        .text("Item 1", 50, doc.y + 30)
+        .moveUp(1)
+        .text("2", 200, doc.y)
+        .moveUp(1)
+        .text("$50", 300, doc.y)
+        .moveUp(1)
+        .text("$100", 400, doc.y)
+
+        .text("Item 2", 50, doc.y + 30)
+        .moveUp(1)
+        .text("1", 200, doc.y)
+        .moveUp(1)
+        .text("$75", 300, doc.y)
+        .moveUp(1)
+        .text("$75", 400, doc.y);
+
+      // Calculate and display the total
+      const total = 100 + 75;
+      doc.text("Total: $" + total, { align: "right" });
+      doc.end();
+
+      // Stream the PDF to Cloudinary
+      const stream = cloudinary.v2.uploader.upload_stream((result) => {
+        if (result && result.secure_url) {
+          // The result variable contains the public URL of the uploaded PDF
+          const pdfUrl = result.secure_url;
+
+          // Send the URL to the client for download
+          res.json({
+            success: true,
+            message: "PDF generated successfully",
+            pdfUrl,
+          });
+
+          if (result.public_id) {
+            // Delete the PDF from Cloudinary after sending the response
+            cloudinary.v2.uploader.destroy(
+              result.public_id,
+              (error, deleteResult) => {
+                if (error) {
+                  console.error("Error deleting PDF from Cloudinary:", error);
+                } else {
+                  console.log(
+                    "PDF deleted from Cloudinary:",
+                    deleteResult.result
+                  );
+                }
+              }
+            );
+          }
+        } else {
+          console.error("Cloudinary upload failed: ", result);
+          res.json({
+            success: false,
+            message: "PDF upload to Cloudinary failed",
+          });
+        }
+      });
+
+      // Pipe the PDF content to Cloudinary
+      doc.pipe(stream);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 // get all orders of user
 router.get(

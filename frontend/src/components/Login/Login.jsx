@@ -91,6 +91,9 @@ const Login = () => {
       setLoading(false);
     },
   });
+  const handleOrderAsGuest = () => {
+    navigate("/guest-checkout");
+  };
 
   return (
     <>
@@ -99,6 +102,14 @@ const Login = () => {
         className="bg-gray-50 flex flex-col justify-center py-1 sm:px-6 lg:px-8 mb-1"
         style={{ margin: "0 20px" }}
       >
+        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+          <button
+            onClick={() => handleOrderAsGuest()}
+            className="w-full h-[40px] flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+          >
+            Continue as Guest
+          </button>
+        </div>
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Login to your account

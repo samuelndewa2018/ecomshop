@@ -124,6 +124,12 @@ const OrderDetails = () => {
           <h4 className=" text-[20px]">{data?.shippingAddress.country}</h4>
           <h4 className=" text-[20px]">{data?.shippingAddress.city}</h4>
           <h4 className=" text-[20px]">{data?.user?.phoneNumber}</h4>
+          <h4 className=" text-[20px]">
+            {data?.user?.name || data?.user?.guestName}
+          </h4>
+          <h4 className=" text-[20px]">
+            {data?.user?.email || data?.user?.guestEmail}
+          </h4>
         </div>
         <div className="w-full 800px:w-[40%]">
           <h4 className="pt-3 text-[20px]">Payment Info:</h4>

@@ -267,8 +267,21 @@ const Checkout = () => {
         city,
       };
 
+      const currentDate = new Date()
+        .toLocaleDateString("en-US", {
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .replace(/\//g, "");
+      const randomPart = Array.from({ length: 5 }, () =>
+        Math.floor(Math.random() * 10)
+      ).join("");
+      const orderNumber = `#N1SCM${currentDate}${randomPart}`;
+
       const orderData = {
         cart,
+        orderNumber,
         totalPrice,
         subTotalPrice,
         shippingPrice,

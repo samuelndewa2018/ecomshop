@@ -14,6 +14,7 @@ import moment from "moment";
 import { BiPhoneCall } from "react-icons/bi";
 import { TbTruckDelivery } from "react-icons/tb";
 import Typed from "react-typed";
+import { FcDownload } from "react-icons/fc";
 
 const UserOrderDetails = () => {
   const { orders } = useSelector((state) => state.order);
@@ -111,6 +112,34 @@ const UserOrderDetails = () => {
     }
   };
 
+  const handleDownloadReceipt = async () => {
+    try {
+      // Make a GET request to the backend route that generates the receipt.
+      const response = await axios.get(
+        `${server}/order/generate-receipt/${id}`,
+        {
+          responseType: "blob", // Set the response type to "blob".
+        }
+      );
+
+      // Create a Blob from the response data.
+      const blob = new Blob([response.data], { type: "application/pdf" });
+
+      // Create a download link and trigger the download.
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `receipt_${id}.pdf`;
+      a.click();
+
+      // Clean up by revoking the Object URL.
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      // Handle any errors, e.g., show a notification.
+      console.error("Error downloading receipt:", error);
+    }
+  };
+
   return (
     <>
       <div className="py-14 px-4 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto">
@@ -120,6 +149,17 @@ const UserOrderDetails = () => {
               <BsFillBagFill size={30} color="crimson" />
               <h1 className="pl-2 text-[25px]">Order Details</h1>
             </div>
+            <a
+              onClick={handleDownloadReceipt}
+              className={`${styles.button} !bg-[#fce1e6] !rounded-[4px] text-[#e94560] font-[600] !h-[45px] text-[18px] cursor-pointer`}
+            >
+              <FcDownload
+                size={30}
+                color="crimson"
+                style={{ marginRight: "5px" }}
+              />{" "}
+              Receipt
+            </a>
           </div>
           <h1 className="text-[20px] dark:text-white lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">
             Order No: {data?._id.replace(/\D/g, "").slice(0, 10)}
