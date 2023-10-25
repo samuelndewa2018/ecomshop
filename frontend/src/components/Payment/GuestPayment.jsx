@@ -60,6 +60,7 @@ const GuestPayment = () => {
 
   const order = {
     cart: orderData?.cart,
+    orderNo: orderData?.orderNumber,
     shippingAddress: orderData?.shippingAddress,
     user: orderData?.user,
     totalPrice: orderData?.totalPrice,

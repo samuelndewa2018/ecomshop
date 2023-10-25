@@ -59,7 +59,7 @@ const Payment = () => {
   const order = {
     cart: orderData?.cart,
     orderNo: orderData?.orderNumber,
-    shippingAddress: orderData?.shippingAddress, //yoo are you following..
+    shippingAddress: orderData?.shippingAddress,
     user: user && user,
     totalPrice: orderData?.totalPrice,
     shippingPrice: orderData.shippingPrice,
