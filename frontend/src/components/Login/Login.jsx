@@ -228,6 +228,7 @@ const Login = () => {
                 <Link to="/sign-up" className="text-blue-600 pl-2">
                   Register
                 </Link>
+                <button onClick={() => {}}>click me to push</button>
               </div>
             </form>
           </div>

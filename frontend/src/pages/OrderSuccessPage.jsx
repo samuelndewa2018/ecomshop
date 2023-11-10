@@ -12,6 +12,7 @@ const OrderSuccessPage = () => {
   // useEffect(() => {
   //   axios.post(`${server}/order/sendorderemail`);
   // }, []);
+
   const defaultOptions = {
     loop: false,
     autoplay: true,

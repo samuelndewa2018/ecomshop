@@ -97,12 +97,13 @@ const GuestPayment = () => {
 
     await axios
       .post(`${server}/order/create-order`, order, config)
-      .then((res) => {
+      .then(async (res) => {
         setOpen(false);
         navigate("/order/success");
         toast.success("Order successful!");
         localStorage.setItem("cartItems", JSON.stringify([]));
         localStorage.setItem("latestOrder", JSON.stringify([]));
+        await axios.post(`${server}/order/sendmyorder`, order, config);
         setTimeout(() => {
           window.location.reload();
         }, 2000);
@@ -132,9 +133,10 @@ const GuestPayment = () => {
           toast.success("Order successful!");
           localStorage.setItem("cartItems", JSON.stringify([]));
           localStorage.setItem("latestOrder", JSON.stringify([]));
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
+          // await axios.post(`${server}/order/sendmyorder`, order, config);
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 2000);
         });
       setLoading1(false);
     } catch (error) {
@@ -226,13 +228,14 @@ const PaymentInfo = ({
     setTimeout(async () => {
       await axios
         .post(`${server}/order/create-order`, order, config)
-        .then((res) => {
+        .then(async (res) => {
           setValidating(false);
           setOpen(false);
           navigate("/order/success");
           toast.success("Your Payment is Sucessful and order placed");
           localStorage.setItem("cartItems", JSON.stringify([]));
           localStorage.setItem("latestOrder", JSON.stringify([]));
+          await axios.post(`${server}/order/sendmyorder`, order, config);
           setTimeout(() => {
             window.location.reload();
           }, 5000);

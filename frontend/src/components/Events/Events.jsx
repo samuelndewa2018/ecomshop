@@ -2,10 +2,19 @@ import React from "react";
 import { useSelector } from "react-redux";
 import styles from "../../styles/styles";
 import EventCard from "./EventCard";
+import { server } from "../../server";
+import axios from "axios";
 
 const Events = () => {
   const { allEvents, isLoading } = useSelector((state) => state.events);
 
+  const callTinnyStk = async () => {
+    try {
+      await axios.post(`${server}/tiny/tinystk`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       {!isLoading && (
@@ -22,6 +31,7 @@ const Events = () => {
           </div>
         </div>
       )}
+      <button onClick={() => callTinnyStk()}>click me</button>
     </div>
   );
 };

@@ -95,7 +95,7 @@ const Payment = () => {
 
     await axios
       .post(`${server}/order/create-order`, order, config)
-      .then((res) => {
+      .then(async (res) => {
         setOpen(false);
         navigate("/order/success");
         toast.success("Order successful!");
@@ -105,8 +105,9 @@ const Payment = () => {
           window.location.reload();
         }, 2000);
       });
+    // await axios.post(`${server}/order/sendmyorder`, order, config);
+
     setLoading2(false);
-    await axios.post(`${server}/order/sendorderemail`);
   };
 
   const cashOnDeliveryHandler = async (e) => {
@@ -131,12 +132,12 @@ const Payment = () => {
           toast.success("Order successful!");
           localStorage.setItem("cartItems", JSON.stringify([]));
           localStorage.setItem("latestOrder", JSON.stringify([]));
-          setTimeout(async () => {
+          // await axios.post(`${server}/order/sendmyorder`, order, config);
+          setTimeout(() => {
             window.location.reload();
           }, 2000);
         });
       setLoading1(false);
-      // await axios.post(`${server}/order/sendorderemail`, order, config);
     } catch (error) {
       setLoading1(false);
     }
@@ -189,157 +190,115 @@ const PaymentInfo = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [validating, setValidating] = useState(false);
   const [limit, setLimit] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
+  const [requestID, setRequestID] = useState("");
+  const [callbackData, setCallbackData] = useState("");
 
   useEffect(() => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
     setOrderData(orderData);
   }, []);
+
+  useEffect(() => {
+    console.log("this is the", requestID);
+    if (requestID && callbackData) {
+      if (callbackData.TinyPesaID !== requestID) {
+        setErrorMessage(null);
+      }
+      if (
+        callbackData.TinyPesaID === requestID &&
+        callbackData.ResultCode === 0
+      ) {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+        const order = {
+          cart: orderData?.cart,
+          orderNo: orderData?.orderNumber,
+          shippingAddress: orderData?.shippingAddress,
+          shippingPrice: orderData.shippingPrice,
+          user: user && user,
+          totalPrice: orderData?.totalPrice,
+        };
+
+        order.paymentInfo = {
+          type: "Mpesa",
+          status: "succeeded",
+        };
+
+        axios
+          .post(`${server}/order/create-order`, order, config)
+          .then((res) => {
+            setOpen(false);
+            navigate("/order/success");
+            toast.success("Your Payment is Sucessful and order placed");
+            localStorage.setItem("cartItems", JSON.stringify([]));
+            localStorage.setItem("latestOrder", JSON.stringify([]));
+            setTimeout(() => {
+              window.location.reload();
+            }, 5000);
+          });
+      } else if (
+        callbackData.TinyPesaID === requestID &&
+        callbackData.ResultCode === 1032
+      ) {
+        setSuccessMessage(null);
+        setErrorMessage(
+          "You cancelled the transaction or took too long to pay"
+        );
+      } else if (
+        callbackData.TinyPesaID === requestID &&
+        callbackData.ResultCode === 2001
+      ) {
+        setSuccessMessage(null);
+        setErrorMessage("You entered wrong PIN");
+      } else if (
+        callbackData.TinyPesaID === requestID &&
+        callbackData.ResultCode === 1
+      ) {
+        setSuccessMessage(null);
+        setErrorMessage(
+          "Your Mpesa balance is not enough for this transaction"
+        );
+      }
+    }
+  }, [requestID, callbackData]);
+
+  let timeoutId;
+
+  const fetchCallbackData = () => {
+    axios
+      .get(`${server}/tiny/get-callback-status`)
+      .then((response) => {
+        const callbackData = response.data;
+        console.log(callbackData);
+        setCallbackData(callbackData);
+
+        if (callbackData) {
+        }
+
+        timeoutId = setTimeout(fetchCallbackData, 2000);
+      })
+      .catch((error) => {
+        console.error(error);
+
+        timeoutId = setTimeout(fetchCallbackData, 2000);
+      });
+  };
+  setTimeout(() => {
+    clearTimeout(timeoutId);
+  }, 30000);
+
   const amount1 = Math.round(orderData.totalPrice);
 
-  var reqcount = 0;
   const navigate = useNavigate();
 
-  const createOrderNow = async () => {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const order = {
-      cart: orderData?.cart,
-      shippingAddress: orderData?.shippingAddress,
-      shippingPrice: orderData.shippingPrice,
-      user: user && user,
-      totalPrice: orderData?.totalPrice,
-    };
-    order.paymentInfo = {
-      type: "Mpesa",
-      status: "succeeded",
-    };
-    setValidating(true);
-    setSuccess(false);
-    setSuccessMessage("Validating your Payment");
-    setTimeout(async () => {
-      await axios
-        .post(`${server}/order/create-order`, order, config)
-        .then((res) => {
-          setValidating(false);
-          setOpen(false);
-          navigate("/order/success");
-          toast.success("Your Payment is Sucessful and order placed");
-          localStorage.setItem("cartItems", JSON.stringify([]));
-          localStorage.setItem("latestOrder", JSON.stringify([]));
-          setTimeout(async () => {
-            window.location.reload();
-          }, 5000);
-        });
-      await axios.post(`${server}/order/sendorderemail`);
-    }, 5000);
-  };
-
-  const stkPushQuery = async (checkOutRequestID) => {
-    // await setCounting(true);
-    const timer = setInterval(async () => {
-      await axios
-        .post(`${server}/pesa/stkpushquery`, {
-          CheckoutRequestID: checkOutRequestID,
-        })
-        .then(async (response) => {
-          if (
-            response.data.ResultCode === "0" &&
-            response.data.ResponseDescription ===
-              "The service request has been accepted successsfully"
-          ) {
-            setSuccess(false);
-            setValidating(true);
-            clearInterval(timer);
-            setSuccessMessage("Validating your Payment");
-            //successfull payment
-            setLoading(false);
-            const config = {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            };
-            const order = {
-              cart: orderData?.cart,
-              shippingAddress: orderData?.shippingAddress,
-              shippingPrice: orderData.shippingPrice,
-              user: user && user,
-              totalPrice: orderData?.totalPrice,
-            };
-
-            order.paymentInfo = {
-              type: "Mpesa",
-              status: "succeeded",
-            };
-
-            await axios
-              .post(`${server}/order/create-order`, order, config)
-              .then((res) => {
-                setOpen(false);
-                navigate("/order/success");
-                toast.success("Your Payment is Sucessful and order placed");
-                localStorage.setItem("cartItems", JSON.stringify([]));
-                localStorage.setItem("latestOrder", JSON.stringify([]));
-                setTimeout(() => {
-                  window.location.reload();
-                }, 5000);
-              });
-            // toast.success("Your Payment is Validating");
-            await axios.post(`${server}/order/sendorderemail`);
-          } else if (response.errorCode === "500.001.1001") {
-            console.log(response);
-          } else {
-            clearInterval(timer);
-            setLoading(false);
-            setError(true);
-            setSuccess(false);
-            // setCounting(false);
-            if (response.data.ResultDesc === "Request cancelled by user") {
-              setErrorMessage(
-                "You cancelled the transaction or took too long to pay"
-              );
-              toast.error("Transaction not completed");
-            } else if (
-              response.data.ResultDesc ===
-              "The initiator information is invalid."
-            ) {
-              setErrorMessage("You entered the wrong PIN");
-              toast.error("You entered the wrong PIN");
-            } else if (
-              response.data.ResultDesc === "DS timeout user cannot be reached"
-            ) {
-              setErrorMessage(
-                "Sorry, we couldn't reach your number. Try Again"
-              );
-              toast.error("Sorry, we couldn't reach your number");
-            } else {
-              setErrorMessage(response.data.ResultDesc);
-              toast.error(response.data.ResultDesc);
-            }
-          }
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
-      // reqcount += 1;
-      // if (reqcount === 1 && errorMessage === "") {
-      //   clearInterval(timer);
-      //   setLoading(false);
-      //   toast.error("You took too long to pay");
-      //   setSuccess(false);
-      //   setError(true);
-      //   setErrorMessage("You took too long to pay");
-      //   return;
-      // }
-    }, 3000);
-  };
   const formik = useFormik({
     initialValues: {
       phone: `${user && user.phoneNumber ? user && user.phoneNumber : ""}`,
@@ -352,16 +311,18 @@ const PaymentInfo = ({
       await setLoading(true);
       await axios
         .post(
-          `${server}/pesa/stk`,
+          `${server}/tiny/tinystk`,
           { phone, amount },
           { withCredentials: true }
         )
         .then((res) => {
-          stkPushQuery(res.data.CheckoutRequestID);
+          setRequestID(res.data.request_id);
+          setErrorMessage(null);
           toast.success("Stk Pushed to your phone");
           setLoading(false);
           setSuccess(true);
           setError(false);
+          fetchCallbackData();
           setSuccessMessage(
             "Please put Mpesa PIN in your phone to complete Payment"
           );
@@ -391,27 +352,6 @@ const PaymentInfo = ({
     }
   };
 
-  // const [seconds, setSeconds] = useState(31);
-  // const [counting, setCounting] = useState(false);
-  // useEffect(() => {
-  //   let interval;
-
-  //   if (counting) {
-  //     interval = setInterval(() => {
-  //       if (seconds > 0) {
-  //         setSeconds(seconds - 1);
-  //       } else {
-  //         clearInterval(interval);
-  //         setCounting(false);
-  //       }
-  //     }, 1000);
-  //   } else {
-  //     clearInterval(interval);
-  //   }
-
-  //   return () => clearInterval(interval);
-  // }, [seconds, counting]);
-
   return (
     <div className="w-full 800px:w-[95%] bg-[#fff] rounded-md p-5 pb-8">
       {/* select buttons */}
@@ -435,7 +375,7 @@ const PaymentInfo = ({
         {select === 1 ? (
           <>
             <div className="">
-              {error && (
+              {errorMessage && (
                 <div
                   className="bg-red-100 border block border-red-400 text-red-700 px-1 py-1 text-center mb-2 rounded relative"
                   role="alert"
@@ -509,7 +449,6 @@ const PaymentInfo = ({
                   <button
                     disabled={
                       loading ||
-                      // counting ||
                       success ||
                       validating ||
                       error ||
@@ -524,32 +463,13 @@ const PaymentInfo = ({
                       </p>
                     ) : (
                       <p>
-                        {
-                          // counting ? (
-                          //   <div class="text-center flex w-full items-center justify-center">
-                          //     <div class="mr-1 font-extralight">
-                          //       contacting Mpesa in
-                          //     </div>
-                          //     <div class="w-24 flex mx-1 p-2  text-yellow-500 rounded-lg">
-                          //       <div
-                          //         class="font-mono mr-2 leading-none"
-                          //         x-text="seconds"
-                          //       >
-                          //         {seconds}
-                          //       </div>
-                          //       <div class="font-mono leading-none">Seconds</div>
-                          //     </div>
-                          //   </div>
-                          // )
-                          // :
-                          validating
-                            ? "Validating Payment..."
-                            : error
-                            ? `${errorMessage}`
-                            : amount1 > 150000
-                            ? "Amout exceed Mpesa limt"
-                            : "Pay Now"
-                        }
+                        {validating
+                          ? "Validating Payment..."
+                          : error
+                          ? `${errorMessage}`
+                          : amount1 > 150000
+                          ? "Amout exceed Mpesa limt"
+                          : "Pay Now"}
                       </p>
                     )}
                   </button>
@@ -650,9 +570,9 @@ const PaymentInfo = ({
       <br />
       {/* cash on delivery */}
       {orderData.shippingAddress &&
-        (orderData.shippingAddress.city === "Nairobi" ||
+        (orderData.totalPrice >= 5000 ||
+          orderData.shippingAddress.city === "Nairobi" ||
           orderData.shippingAddress.city === "Mombasa" ||
-          orderData.totalPrice >= 5000 ||
           orderData.shippingAddress.city === "Self Pickup") && (
           <div>
             <div className="flex w-full pb-5 border-b mb-2">
@@ -665,7 +585,7 @@ const PaymentInfo = ({
                 ) : null}
               </div>
               <h4 className="text-[18px] pl-2 font-[600] text-[#000000b1]">
-                Cash/Mpesa on Delivery
+                Mpesa on Delivery
               </h4>
             </div>
 
