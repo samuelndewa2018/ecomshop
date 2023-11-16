@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -8,20 +8,27 @@ import { useSelector } from "react-redux";
 import { BsQuestionCircle, BsPersonExclamation } from "react-icons/bs";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import { TfiShoppingCartFull } from "react-icons/tfi";
+import CustomModal from "../../CustomModal";
 
 const Hero = () => {
   const { statements } = useSelector((state) => state.statements);
+  const { isAuthenticated } = useSelector((state) => state.user);
+
   const { orders } = useSelector((state) => state.order);
   const [carouselData, setCarouselData] = useState([]);
   const [bestSelling, setBestSelling] = useState([]);
   const [featuredProduct, setFeaturedProduct] = useState([]);
   const [sellers, setSellers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+
   useEffect(() => {
     fetchData();
     fetchData2();
     getSellers();
   }, []);
+
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -67,8 +74,26 @@ const Hero = () => {
     return b.createdAt - a.createdAt;
   });
 
+  const loginNow = () => {
+    navigate("/login");
+  };
+
+  const searchOrder = () => {
+    navigate("/searchorder");
+  };
+
   return (
     <>
+      {modalOpen && (
+        <CustomModal
+          message={"You can login or search order Directly"}
+          ok={"Log In"}
+          cancel={"Search order"}
+          setModalOpen={setModalOpen}
+          performAction={() => loginNow()}
+          closeModel={() => searchOrder()}
+        />
+      )}
       <div className="grid gap-3 lg:grid-cols-2 sm:grid-cols-1 mb-14">
         {loading ? (
           <div className="rounded mt-3">
@@ -440,8 +465,14 @@ const Hero = () => {
                       </a>
                     </li>
                     <li class="relative">
-                      <Link
-                        to="/profile?active=2"
+                      <button
+                        onClick={
+                          isAuthenticated
+                            ? () => {
+                                navigate("/profile?active=2");
+                              }
+                            : () => setModalOpen(true)
+                        }
                         class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
                       >
                         <TfiShoppingCartFull color="#2330db" size={25} />
@@ -449,7 +480,7 @@ const Hero = () => {
                         <span class="flex-1 ml-3 whitespace-nowrap font-light">
                           Order
                         </span>
-                      </Link>
+                      </button>
                       {orders?.length > 0 && (
                         <div class="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full"></div>
                       )}
