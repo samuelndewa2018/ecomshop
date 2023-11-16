@@ -293,7 +293,7 @@ const AllOrders = () => {
 
   const rows = orders?.map((item) => ({
     id: item._id,
-    no: item._id.replace(/\D/g, "").slice(0, 10),
+    no: item.orderNo,
     createdAt: item.createdAt.slice(0, 10),
     items: item.cart.map((i) => i.name),
     image: item.cart.map((i) => i.images[0]),
@@ -447,7 +447,7 @@ const TrackOrder = () => {
 
   const rows = orders?.map((item) => ({
     id: item._id,
-    no: item._id.replace(/\D/g, "").slice(0, 10),
+    no: item.orderNo,
     createdAt: item.createdAt.slice(0, 10),
     items: item.cart.map((i) => i.name).join(","),
     image: item.cart.map((i) => i.images[0]),
@@ -549,7 +549,7 @@ const AllRefundOrders = () => {
 
   const rows = eligibleOrders?.map((item) => ({
     id: item._id,
-    no: item._id.replace(/\D/g, "").slice(0, 10),
+    no: item.orderNo,
     createdAt: item.createdAt.slice(0, 10),
     items: item.cart.map((i) => i.name).join(","),
     image: item.cart.map((i) => i.images[0]),

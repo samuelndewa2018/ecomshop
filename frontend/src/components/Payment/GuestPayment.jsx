@@ -15,7 +15,7 @@ import Spinner from "../Spinner";
 import mpesa1 from "./mpesa1.png";
 
 const GuestPayment = () => {
-  const { cart } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.user);
   const { statements } = useSelector((state) => state.statements);
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -27,15 +27,13 @@ const GuestPayment = () => {
   useEffect(() => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
     setOrderData(orderData);
-    if (cart.length === 0) {
-      navigate("/products");
-    }
   }, []);
 
-  console.log("orderGata", orderData);
-
   const exchangeRate = statements?.map((i) => i.exchangeRate);
-  const paypalTotals = (orderData?.totalPrice / exchangeRate).toFixed(2);
+  const paypalTotals = (
+    (orderData?.totalPrice / exchangeRate) * 1.0349 +
+    0.49
+  ).toFixed(2);
 
   const createOrder = (data, actions) => {
     return actions.order
@@ -62,7 +60,7 @@ const GuestPayment = () => {
     cart: orderData?.cart,
     orderNo: orderData?.orderNumber,
     shippingAddress: orderData?.shippingAddress,
-    user: orderData?.user,
+    user: user && user,
     totalPrice: orderData?.totalPrice,
     shippingPrice: orderData.shippingPrice,
     discount: orderData.discountPrice,
@@ -103,11 +101,12 @@ const GuestPayment = () => {
         toast.success("Order successful!");
         localStorage.setItem("cartItems", JSON.stringify([]));
         localStorage.setItem("latestOrder", JSON.stringify([]));
-        await axios.post(`${server}/order/sendmyorder`, order, config);
         setTimeout(() => {
           window.location.reload();
         }, 2000);
       });
+    // await axios.post(`${server}/order/sendmyorder`, order, config);
+
     setLoading2(false);
   };
 
@@ -134,9 +133,9 @@ const GuestPayment = () => {
           localStorage.setItem("cartItems", JSON.stringify([]));
           localStorage.setItem("latestOrder", JSON.stringify([]));
           // await axios.post(`${server}/order/sendmyorder`, order, config);
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 2000);
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
         });
       setLoading1(false);
     } catch (error) {
@@ -151,7 +150,7 @@ const GuestPayment = () => {
       <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
         <div className="w-full 800px:w-[65%]">
           <PaymentInfo
-            user={orderData?.user}
+            user={user}
             open={open}
             setOpen={setOpen}
             onApprove={onApprove}
@@ -191,108 +190,118 @@ const PaymentInfo = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [validating, setValidating] = useState(false);
   const [limit, setLimit] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
+  const [requestID, setRequestID] = useState("");
+  const [callbackData, setCallbackData] = useState("");
 
   useEffect(() => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
     setOrderData(orderData);
   }, []);
-  const amount1 = Math.round(orderData.totalPrice);
 
-  var reqcount = 0;
-  const navigate = useNavigate();
-
-  const createOrderNow = async () => {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const order = {
-      cart: orderData?.cart,
-      shippingAddress: orderData?.shippingAddress,
-      shippingPrice: orderData.shippingPrice,
-      user: user && user,
-      totalPrice: orderData?.totalPrice,
-    };
-    order.paymentInfo = {
-      type: "Mpesa",
-      status: "succeeded",
-    };
-    setValidating(true);
-    setSuccess(false);
-    setTimeout(async () => {
-      await axios
-        .post(`${server}/order/create-order`, order, config)
-        .then(async (res) => {
-          setValidating(false);
-          setOpen(false);
-          navigate("/order/success");
-          toast.success("Your Payment is Sucessful and order placed");
-          localStorage.setItem("cartItems", JSON.stringify([]));
-          localStorage.setItem("latestOrder", JSON.stringify([]));
-          await axios.post(`${server}/order/sendmyorder`, order, config);
-          setTimeout(() => {
-            window.location.reload();
-          }, 5000);
-        });
-    }, 5000);
-  };
-
-  const stkPushQuery = (checkOutRequestID) => {
-    const timer = setInterval(async () => {
-      reqcount += 1;
-      if (reqcount === 30) {
-        clearInterval(timer);
-        setLoading(false);
-        toast.error("You took too long to pay");
-        setSuccess(false);
-        setError(true);
-        setErrorMessage("You took too long to pay");
-        return;
+  useEffect(() => {
+    console.log("this is the", requestID);
+    if (requestID && callbackData) {
+      if (callbackData.TinyPesaID !== requestID) {
+        setErrorMessage(null);
       }
-      await axios
-        .post(`${server}/pesa/stkpushquery`, {
-          CheckoutRequestID: checkOutRequestID,
-        })
-        .then(async (response) => {
-          if (response.data.ResultCode === "0") {
-            createOrderNow();
-            setSuccess(false);
-            setValidating(true);
-            clearInterval(timer);
-            //successfull payment
-            setLoading(false);
-            // toast.success("Your Payment is Validating");
-          } else if (response.errorCode === "500.001.1001") {
-          } else {
-            clearInterval(timer);
-            setLoading(false);
-            setError(true);
-            setSuccess(false);
-            setErrorMessage(response.data.ResultDesc);
-            toast.error(response.data.ResultDesc);
+      if (
+        callbackData.TinyPesaID === requestID &&
+        callbackData.ResultCode === 0
+      ) {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+        const order = {
+          cart: orderData?.cart,
+          orderNo: orderData?.orderNumber,
+          shippingAddress: orderData?.shippingAddress,
+          shippingPrice: orderData.shippingPrice,
+          user: user && user,
+          totalPrice: orderData?.totalPrice,
+        };
+
+        order.paymentInfo = {
+          type: "Mpesa",
+          status: "succeeded",
+        };
+
+        axios
+          .post(`${server}/order/create-order`, order, config)
+          .then((res) => {
+            setOpen(false);
+            navigate("/order/success");
+            toast.success("Your Payment is Sucessful and order placed");
+            localStorage.setItem("cartItems", JSON.stringify([]));
+            localStorage.setItem("latestOrder", JSON.stringify([]));
             setTimeout(() => {
               window.location.reload();
-            }, 10000);
-          }
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
-    }, 5000);
+            }, 5000);
+          });
+      } else if (
+        callbackData.TinyPesaID === requestID &&
+        callbackData.ResultCode === 1032
+      ) {
+        setSuccessMessage(null);
+        setErrorMessage(
+          "You cancelled the transaction or took too long to pay"
+        );
+      } else if (
+        callbackData.TinyPesaID === requestID &&
+        callbackData.ResultCode === 2001
+      ) {
+        setSuccessMessage(null);
+        setErrorMessage("You entered wrong PIN");
+      } else if (
+        callbackData.TinyPesaID === requestID &&
+        callbackData.ResultCode === 1
+      ) {
+        setSuccessMessage(null);
+        setErrorMessage(
+          "Your Mpesa balance is not enough for this transaction"
+        );
+      }
+    }
+  }, [requestID, callbackData]);
+
+  let timeoutId;
+
+  const fetchCallbackData = () => {
+    axios
+      .get(`${server}/tiny/get-callback-status`)
+      .then((response) => {
+        const callbackData = response.data;
+        console.log(callbackData);
+        setCallbackData(callbackData);
+
+        if (callbackData) {
+        }
+
+        timeoutId = setTimeout(fetchCallbackData, 500);
+      })
+      .catch((error) => {
+        console.error(error);
+
+        timeoutId = setTimeout(fetchCallbackData, 500);
+      });
   };
+  setTimeout(() => {
+    clearTimeout(timeoutId);
+  }, 30000);
+
+  const amount1 = Math.round(orderData.totalPrice);
+
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
-      phone:
-        (user && user.phoneNumber) ||
-        (orderData?.user && orderData.user.phoneNumber) ||
-        "",
+      phone: `${user && user.phoneNumber ? user && user.phoneNumber : ""}`,
     },
 
     validationSchema: mpesaSchema,
@@ -302,16 +311,18 @@ const PaymentInfo = ({
       await setLoading(true);
       await axios
         .post(
-          `${server}/pesa/stk`,
+          `${server}/tiny/tinystk`,
           { phone, amount },
           { withCredentials: true }
         )
         .then((res) => {
-          stkPushQuery(res.data.CheckoutRequestID);
+          setRequestID(res.data.request_id);
+          setErrorMessage(null);
           toast.success("Stk Pushed to your phone");
           setLoading(false);
           setSuccess(true);
           setError(false);
+          fetchCallbackData();
           setSuccessMessage(
             "Please put Mpesa PIN in your phone to complete Payment"
           );
@@ -364,22 +375,30 @@ const PaymentInfo = ({
         {select === 1 ? (
           <>
             <div className="">
-              {error && (
+              {errorMessage && (
                 <div
-                  className="bg-red-100 border border-red-400 text-red-700 px-1 py-1 text-center mb-2 rounded relative"
+                  className="bg-red-100 border block border-red-400 text-red-700 px-1 py-1 text-center mb-2 rounded relative"
                   role="alert"
                 >
                   <p>{errorMessage}</p>
+                  <p className="text-xs text-gray-900 dark:text-white">
+                    If your account has been debited please call or live chat us
+                    0712012113
+                  </p>
+
+                  <p className="text-xs text-gray-900 dark:text-white">
+                    (Refresh this page to send stk push again)
+                  </p>
                 </div>
               )}
-              {/* {success && (
+              {success && (
                 <div
                   className="bg-green-100 border border-green-400 text-green-700 px-1 py-1 text-center mb-2 rounded relative"
                   role="alert"
                 >
                   <p>{successMessage}</p>
                 </div>
-              )} */}
+              )}
             </div>
             <div className=" w-ful lg:flex sm:block border-b appear__smoothly">
               <div className="items-center">
@@ -443,10 +462,8 @@ const PaymentInfo = ({
                         <Spinner /> Processing...
                       </p>
                     ) : (
-                      <p className="">
-                        {success
-                          ? "Put PIN on your Phone"
-                          : validating
+                      <p>
+                        {validating
                           ? "Validating Payment..."
                           : error
                           ? `${errorMessage}`
@@ -462,6 +479,7 @@ const PaymentInfo = ({
           </>
         ) : null}
       </div>
+
       {/* paypal payment */}
       <div>
         <div className="flex w-full pb-5 border-b mb-2">
@@ -548,13 +566,13 @@ const PaymentInfo = ({
           </div>
         ) : null}
       </div>
+
       <br />
       {/* cash on delivery */}
-
       {orderData.shippingAddress &&
-        (orderData.shippingAddress.city === "Nairobi" ||
+        (orderData.totalPrice >= 5000 ||
+          orderData.shippingAddress.city === "Nairobi" ||
           orderData.shippingAddress.city === "Mombasa" ||
-          orderData?.totalPrice >= 5000 ||
           orderData.shippingAddress.city === "Self Pickup") && (
           <div>
             <div className="flex w-full pb-5 border-b mb-2">

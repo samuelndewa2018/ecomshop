@@ -70,9 +70,7 @@ const TrackOrder = () => {
           </div>
           <div className="mb-6 text-center">
             <h2 className="text-xl font-bold mb-2">Order Details:</h2>
-            <p className="text-lg">
-              Order No: {data._id.replace(/\D/g, "").slice(0, 10)}
-            </p>
+            <p className="text-lg">Order No: {data.orderNo}</p>
             <p className="text-lg">Ordered On: {data.createdAt.slice(0, 10)}</p>
           </div>
           <ol className="flex items-center w-full">
@@ -117,9 +115,7 @@ const TrackOrder = () => {
           </div>
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-2">Order Details:</h2>
-            <p className="text-lg">
-              Order No: {data._id.replace(/\D/g, "").slice(0, 10)}
-            </p>
+            <p className="text-lg">Order No: {data.orderNo}</p>
             <p className="text-lg">Ordered On: {data.createdAt.slice(0, 10)}</p>
           </div>
           <ol className="relative ml-[30%] text-gray-500 border-l border-gray-200 dark:border-gray-700 dark:text-gray-400">

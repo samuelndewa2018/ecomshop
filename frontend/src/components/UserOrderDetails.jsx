@@ -162,7 +162,7 @@ const UserOrderDetails = () => {
             </a>
           </div>
           <h1 className="text-[20px] dark:text-white lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">
-            Order No: {data?._id.replace(/\D/g, "").slice(0, 10)}
+            Order No: {data?.orderNo}
           </h1>
           <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
             <p className="dark:text-gray-400 text-gray-300">Placed on: </p>{" "}
@@ -453,7 +453,7 @@ const UserOrderDetails = () => {
               <div className="flex flex-col justify-start items-start flex-shrink-0">
                 <div className="flex w-full md:justify-start items-center space-x-4 py-8 border-b border-gray-200">
                   <img
-                    src={`${user.avatar?.url}`}
+                    src={`${user?.avatar?.url}`}
                     className="w-[60px] h-[60px] rounded-full avatarimg"
                     alt=""
                   />

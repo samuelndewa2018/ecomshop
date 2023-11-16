@@ -283,12 +283,12 @@ const PaymentInfo = ({
         if (callbackData) {
         }
 
-        timeoutId = setTimeout(fetchCallbackData, 2000);
+        timeoutId = setTimeout(fetchCallbackData, 500);
       })
       .catch((error) => {
         console.error(error);
 
-        timeoutId = setTimeout(fetchCallbackData, 2000);
+        timeoutId = setTimeout(fetchCallbackData, 500);
       });
   };
   setTimeout(() => {

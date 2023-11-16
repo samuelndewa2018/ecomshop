@@ -88,6 +88,7 @@ import DynamicLoader from "./components/Layout/DynamicLoader";
 import GuestCheckoutPage from "./pages/GuestCheckout";
 import GuestPaymentPage from "./pages/GuestPaymentPage";
 import PaymentForm from "./pages/PaymentForm";
+import SearchOrder from "./components/SearchOrder.jsx";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
@@ -146,6 +147,7 @@ const App = () => {
         <Route path="/guest-checkout" element={<GuestCheckoutPage />} />
         <Route path="/guest-payment" element={<GuestPaymentPage />} />
         <Route path="/paymentform" element={<PaymentForm />} />
+        <Route path="/searchorder" element={<SearchOrder />} />
         <Route
           path="/unsubscribe"
           element={
