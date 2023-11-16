@@ -78,8 +78,16 @@ const Hero = () => {
     navigate("/login");
   };
 
-  const searchOrder = () => {
+  const searchOrder = (e) => {
+    setModalOpen(false);
     navigate("/searchorder");
+    if (!e) {
+      var e = window.event;
+      e.cancelBubble = true;
+    }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
   };
 
   return (
@@ -92,6 +100,7 @@ const Hero = () => {
           setModalOpen={setModalOpen}
           performAction={() => loginNow()}
           closeModel={() => searchOrder()}
+          secondOptions
         />
       )}
       <div className="grid gap-3 lg:grid-cols-2 sm:grid-cols-1 mb-14">
