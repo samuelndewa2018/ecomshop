@@ -486,8 +486,8 @@ const Hero = () => {
                       >
                         <TfiShoppingCartFull color="#2330db" size={25} />
 
-                        <span class="flex-1 ml-3 whitespace-nowrap font-light">
-                          Order
+                        <span class="flex-1 ml-1 whitespace-nowrap font-light">
+                          Orders
                         </span>
                       </button>
                       {orders?.length > 0 && (

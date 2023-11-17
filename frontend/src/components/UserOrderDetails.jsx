@@ -114,28 +114,23 @@ const UserOrderDetails = () => {
 
   const handleDownloadReceipt = async () => {
     try {
-      // Make a GET request to the backend route that generates the receipt.
       const response = await axios.get(
         `${server}/order/generate-receipt/${id}`,
         {
-          responseType: "blob", // Set the response type to "blob".
+          responseType: "blob",
         }
       );
 
-      // Create a Blob from the response data.
       const blob = new Blob([response.data], { type: "application/pdf" });
 
-      // Create a download link and trigger the download.
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = `receipt_${id}.pdf`;
       a.click();
 
-      // Clean up by revoking the Object URL.
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      // Handle any errors, e.g., show a notification.
       console.error("Error downloading receipt:", error);
     }
   };

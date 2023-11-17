@@ -160,98 +160,104 @@ const SearchOrder = () => {
         </div>
 
         {order && (
-          <div className="hidden lg:block m-5 mb-10">
-            <h1 className="text-3xl font-bold mb-8 text-center">
-              Track Your Order
-            </h1>
-            <div className="mb-6 text-center">
-              <h2 className="text-xl font-bold mb-2">Order Status:</h2>
-              <p className="text-lg">{order.status}</p>
-            </div>
-            <div className="mb-6 text-center">
-              <h2 className="text-xl font-bold mb-2">Order Details:</h2>
-              <p className="text-lg">Order No: {order.orderNo}</p>
-              <p className="text-lg">
-                Ordered On: {order.createdAt.slice(0, 10)}
-              </p>
-            </div>
-            <ol className="flex items-center w-full">
-              {progressSteps.map((step, index) => (
-                <li
-                  key={index}
-                  className={`flex w-full items-center ${
-                    index <= getCurrentStep()
-                      ? "text-green-600 dark:text-green-400 after:content-[''] after:mb-[45px] after:w-full after:h-1 after:border-b after:border-white-100 after:border-4 after:inline-block dark:after:border-white-400"
-                      : "after:content-[''] after:mb-[45px] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700"
-                  }`}
-                >
-                  <Link className="block">
-                    <span
-                      className={`flex ring-4 ring-white items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12  shrink-0`}
-                    >
-                      {step.icon ? (
-                        <span
-                          className={`w-3.5 h-3.5 text-${
-                            index <= getCurrentStep() ? "green" : "gray"
-                          }-600 lg:w-4 lg:h-4 dark:text-${
-                            index <= getCurrentStep() ? "green" : "gray"
-                          }-300`}
-                        >
-                          {step.icon}
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="">{step.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-        {order && (
-          <div className="m-5 block lg:hidden justify-center items-center">
-            <h1 className="text-3xl font-bold mb-8">Track Your Order</h1>
-            <div className="mb-6">
-              <h2 className="text-xl font-bold mb-2">Order Status:</h2>
-              <p className="text-lg">{order.status}</p>
-            </div>
-            <div className="mb-6">
-              <h2 className="text-xl font-bold mb-2">Order Details:</h2>
-              <p className="text-lg">Order No: {order.orderNo}</p>
-              <p className="text-lg">
-                Ordered On: {order.createdAt.slice(0, 10)}
-              </p>
-            </div>
-            <ol className="relative ml-[30%] text-gray-500 border-l border-gray-200 dark:border-gray-700 dark:text-gray-400">
-              {order &&
-                progressSteps.map((step, index) => (
+          <div className="py-14 px-4 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto">
+            <div className="hidden lg:block m-5 mb-10">
+              <h1 className="text-3xl font-bold mb-8 text-center">
+                Track Your Order
+              </h1>
+              <div className="mb-6 text-center">
+                <h2 className="text-xl font-bold mb-2">Order Status:</h2>
+                <p className="text-lg">{order.status}</p>
+              </div>
+              <div className="mb-6 text-center">
+                <h2 className="text-xl font-bold mb-2">Order Details:</h2>
+                <p className="text-lg">Order No: {order.orderNo}</p>
+                <p className="text-lg">
+                  Ordered On: {order.createdAt.slice(0, 10)}
+                </p>
+              </div>
+              <ol className="flex items-center w-full">
+                {progressSteps.map((step, index) => (
                   <li
                     key={index}
-                    className={`mb-10 ml-6 ${
+                    className={`flex w-full items-center ${
                       index <= getCurrentStep()
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-gray-500 dark:text-gray-400"
+                        ? "text-green-600 dark:text-green-400 after:content-[''] after:mb-[45px] after:w-full after:h-1 after:border-b after:border-white-100 after:border-4 after:inline-block dark:after:border-white-400"
+                        : "after:content-[''] after:mb-[45px] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700"
                     }`}
                   >
-                    <Link>
-                      <span className="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -left-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+                    <Link className="block">
+                      <span
+                        className={`flex ring-4 ring-white items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12  shrink-0`}
+                      >
                         {step.icon ? (
-                          <span>
-                            {index <= getCurrentStep() ? (
-                              <span className="w-3.5 h-3.5 text-green-500 dark:text-green-400">
-                                {step.icon}
-                              </span>
-                            ) : (
-                              <span className="w-3.5 h-3.5">{step.icon}</span>
-                            )}
+                          <span
+                            className={`w-3.5 h-3.5 text-${
+                              index <= getCurrentStep() ? "green" : "gray"
+                            }-600 lg:w-4 lg:h-4 dark:text-${
+                              index <= getCurrentStep() ? "green" : "gray"
+                            }-300`}
+                          >
+                            {step.icon}
                           </span>
                         ) : null}
                       </span>
-                      <h3 className="font-medium align-center">{step.label}</h3>
+                      <span className="">{step.label}</span>
                     </Link>
                   </li>
                 ))}
-            </ol>
+              </ol>
+            </div>
+          </div>
+        )}
+        {order && (
+          <div className="flex justify-start item-start space-y-2 flex-col">
+            <div className="m-5 block lg:hidden justify-center items-center">
+              <h1 className="text-3xl font-bold mb-8">Track Your Order</h1>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold mb-2">Order Status:</h2>
+                <p className="text-lg">{order.status}</p>
+              </div>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold mb-2">Order Details:</h2>
+                <p className="text-lg">Order No: {order.orderNo}</p>
+                <p className="text-lg">
+                  Ordered On: {order.createdAt.slice(0, 10)}
+                </p>
+              </div>
+              <ol className="relative ml-[30%] text-gray-500 border-l border-gray-200 dark:border-gray-700 dark:text-gray-400">
+                {order &&
+                  progressSteps.map((step, index) => (
+                    <li
+                      key={index}
+                      className={`mb-10 ml-6 ${
+                        index <= getCurrentStep()
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-gray-500 dark:text-gray-400"
+                      }`}
+                    >
+                      <Link>
+                        <span className="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -left-4 ring-4 ring-white dark:ring-gray-900 dark:bg-gray-700">
+                          {step.icon ? (
+                            <span>
+                              {index <= getCurrentStep() ? (
+                                <span className="w-3.5 h-3.5 text-green-500 dark:text-green-400">
+                                  {step.icon}
+                                </span>
+                              ) : (
+                                <span className="w-3.5 h-3.5">{step.icon}</span>
+                              )}
+                            </span>
+                          ) : null}
+                        </span>
+                        <h3 className="font-medium align-center">
+                          {step.label}
+                        </h3>
+                      </Link>
+                    </li>
+                  ))}
+              </ol>
+            </div>
           </div>
         )}
         {order && (

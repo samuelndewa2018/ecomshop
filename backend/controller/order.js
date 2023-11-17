@@ -1144,68 +1144,277 @@ router.post(
   })
 );
 
+//generate receipt
 router.get(
   "/generate-receipt/:orderId",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const orderId = req.params.orderId;
+      const order = await Order.findById(orderId);
+      const orderTime = order.createdAt.toLocaleTimeString("en-US", {
+        timeStyle: "short",
+      });
+
+      const footerText =
+        "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
+
       const pdfFileName = `receipt_${orderId}.pdf`;
 
-      const doc = new pdf();
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${pdfFileName}"`
-      );
-      doc.pipe(res);
+      const doc = new pdf({
+        size: "A4",
+      });
+      const pageHeight = doc.page.height;
 
-      doc.fontSize(12);
-      doc.text("Invoice", { align: "right" });
-      doc.text("Invoice Date: 2023-10-18", { align: "right" });
-      doc.text("Due Date: 2023-11-18", { align: "right" });
+      const fontSize = 10;
+
+      const yCoordinate = pageHeight - fontSize - 10;
+
+      // Function to convert an image URL to base64
+      function convertImageUrlToBase64(url, callback) {
+        // Create an HTML image element
+        var img = new Image();
+
+        // Set crossOrigin to Anonymous to avoid CORS issues
+        img.crossOrigin = "Anonymous";
+
+        // Set the image source URL
+        img.src = url;
+
+        // Define the onload function to handle the image loading
+        img.onload = function () {
+          // Create a canvas element to draw the image
+          var canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          // Get the 2D context of the canvas
+          var ctx = canvas.getContext("2d");
+
+          // Draw the image on the canvas
+          ctx.drawImage(img, 0, 0);
+
+          // Get the base64 representation of the image
+          var base64Image = canvas.toDataURL("image/png");
+
+          // Execute the callback with the base64 image
+          callback(base64Image);
+        };
+      }
+
+      // Example usage
+      var imageUrl = "https://example.com/image.jpg";
+
+      // Call the function with the image URL and a callback function
+      convertImageUrlToBase64(imageUrl, function (base64Image) {
+        console.log("Base64 image:", base64Image);
+        // You can use the base64 image data as needed
+      });
+
+      // Replace with your image URL
+
+      doc.image(
+        "https://res-console.cloudinary.com/bramuels/media_explorer_thumbnails/2b0096dd71c79be2bc6447188533aec7/detailed",
+        50,
+        20,
+        { width: 90, height: 100 }
+      );
+
+      doc.moveTo(50, 395);
+      doc.dash(3);
+      doc.lineTo(520, 395);
+
+      doc.lineWidth(0.5);
+
+      doc.stroke("#184ca0");
+
+      doc.rect(0, 140, 350, 40).fill("#f3782f");
+      doc.rect(520, 140, 620, 40).fill("#f3782f");
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(18)
+        .fillColor("#1e4598")
+        .text("Payment Receipt", 360, 153);
+
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveDown(2);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(12)
+        .fillColor("#1e4598")
+        .text(`Date: ${order.createdAt.toDateString()}`, { align: "right" });
+      doc.moveUp(1);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Customer Details:", 50, doc.y);
+
+      doc.fill("black").font("Helvetica").fontSize(11);
+      doc.moveDown();
+      doc.font("Helvetica").fontSize(10);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Name:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.fontSize(10).text(`${order.user.name}`, 150, doc.y);
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Email:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.fontSize(10).text(`${order.user.email}`, 150, doc.y);
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Phone No:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.fontSize(10).text(`${order.user.phoneNumber}`, 150, doc.y);
 
       doc.moveDown();
-      doc.text("Bill To:");
-      doc.text("John Doe");
-      doc.text("123 Main Street");
-      doc.text("City, State, ZIP");
-      doc.moveDown(2); // Add more vertical space to separate the address and the table
+      doc.font("Helvetica").fontSize(10);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Payment Method:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.fontSize(10).text(`${order.paymentInfo.type}`, 150, doc.y);
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Payment Status:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.text(
+        `${order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid"}`,
+        150,
+        doc.y
+      );
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Order No:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.text(`${orderTime}`, 150, doc.y);
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Shipping Address: ", 50, doc.y);
+
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.text(
+        `${order.shippingAddress.address1}, ${order.shippingAddress.zipCode}, ${order.shippingAddress.country}`,
+        150,
+        doc.y
+      );
+
+      doc.moveDown(2);
 
       // Create the table header row on the same line
       doc
         .font("Helvetica-Bold")
-        .fontSize(12)
-        .text("Description", 50, doc.y)
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Items", 50, doc.y)
         .moveUp(1) // Adjust the vertical position
-        .text("Qty", 200, doc.y)
+        .text("Qty", 280, doc.y)
         .moveUp(1) // Adjust the vertical position
-        .text("Price", 300, doc.y)
+        .text("Price", 380, doc.y)
         .moveUp(1) // Adjust the vertical position
-        .text("Total", 400, doc.y);
+        .text("Total", 480, doc.y);
 
-      doc
-        .font("Helvetica")
-        .fontSize(12)
-        .text("Item 1", 50, doc.y + 30)
-        .moveUp(1)
-        .text("2", 200, doc.y)
-        .moveUp(1)
-        .text("$50", 300, doc.y)
-        .moveUp(1)
-        .text("$100", 400, doc.y)
-
-        .text("Item 2", 50, doc.y + 30)
-        .moveUp(1)
-        .text("1", 200, doc.y)
-        .moveUp(1)
-        .text("$75", 300, doc.y)
-        .moveUp(1)
-        .text("$75", 400, doc.y);
+      order.cart.forEach((item) => {
+        const truncatedName =
+          item.name.length > 25
+            ? item.name.substring(0, 25) + "..."
+            : item.name;
+        doc
+          .font("Helvetica")
+          .fillColor("black")
+          .fontSize(10)
+          .text(truncatedName, 50, doc.y + 30)
+          .moveUp(1)
+          .text(item.qty, 280, doc.y)
+          .font("Helvetica")
+          .fillColor("black")
+          .fontSize(10)
+          .moveUp(1)
+          .text(item.discountPrice, 380, doc.y)
+          .font("Helvetica")
+          .fillColor("black")
+          .fontSize(10)
+          .moveUp(1)
+          .text(item.discountPrice * item.qty, 480, doc.y)
+          .font("Helvetica")
+          .fillColor("black")
+          .fontSize(10);
+      });
 
       // Calculate and display the total
-      const total = 100 + 75;
-      doc.text("Total: $" + total, { align: "right" });
-      doc.end();
+      const total = order.cart.reduce(
+        (acc, item) => acc + item.discountPrice * item.qty,
+        0
+      );
 
+      doc.moveDown(3);
+      doc
+        .font("Helvetica-Bold")
+        .fillColor("#1e4598")
+        .fontSize(12)
+        .text("Total", 380, doc.y);
+
+      doc.moveUp(1);
+      doc.fontSize(12).text("Ksh " + total, { align: "right" });
+
+      doc.moveDown(1);
+      doc
+        .font("Helvetica-Bold")
+        .fillColor("#1e4598")
+        .fontSize(12)
+        .text("Discount:", 380);
+
+      doc.moveUp(1);
+      doc
+        .fontSize(10)
+        .text(`Ksh ${order.discount === null ? 0 : order.discount}`, {
+          align: "right",
+        });
+
+      // Set the response headers for the PDF
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${pdfFileName}"`
+      );
+      res.setHeader("Content-Type", "application/pdf");
+
+      doc.pipe(res);
+
+      const pageCount = doc.bufferedPageRange().count;
+      for (let i = 0; i < pageCount; i++) {
+        doc.switchToPage(i);
+        doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
+      }
+
+      doc.end();
       // Stream the PDF to Cloudinary
       const stream = cloudinary.v2.uploader.upload_stream((result) => {
         if (result && result.secure_url) {
