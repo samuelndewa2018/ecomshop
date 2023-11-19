@@ -1156,6 +1156,7 @@ router.get(
         timeStyle: "short",
       });
 
+      console.log(order);
       const footerText =
         "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
 
@@ -1170,50 +1171,11 @@ router.get(
 
       const yCoordinate = pageHeight - fontSize - 10;
 
-      // Function to convert an image URL to base64
-      function convertImageUrlToBase64(url, callback) {
-        // Create an HTML image element
-        var img = new Image();
-
-        // Set crossOrigin to Anonymous to avoid CORS issues
-        img.crossOrigin = "Anonymous";
-
-        // Set the image source URL
-        img.src = url;
-
-        // Define the onload function to handle the image loading
-        img.onload = function () {
-          // Create a canvas element to draw the image
-          var canvas = document.createElement("canvas");
-          canvas.width = img.width;
-          canvas.height = img.height;
-
-          // Get the 2D context of the canvas
-          var ctx = canvas.getContext("2d");
-
-          // Draw the image on the canvas
-          ctx.drawImage(img, 0, 0);
-
-          // Get the base64 representation of the image
-          var base64Image = canvas.toDataURL("image/png");
-
-          // Execute the callback with the base64 image
-          callback(base64Image);
-        };
-      }
-
-      // Example usage
-      var imageUrl = "https://example.com/image.jpg";
-
-      // Call the function with the image URL and a callback function
-      convertImageUrlToBase64(imageUrl, function (base64Image) {
-        console.log("Base64 image:", base64Image);
-        // You can use the base64 image data as needed
-      });
+      const logoPath = path.join(__dirname, "logo.png");
 
       // Replace with your image URL
 
-      doc.image(logo, 50, 20, { width: 90, height: 100 });
+      doc.image(logoPath, 50, 20, { width: 150, height: 100 });
 
       doc.moveTo(50, 395);
       doc.dash(3);
@@ -1307,7 +1269,7 @@ router.get(
         .text("Order No:", 50, doc.y);
       doc.fill("black").font("Helvetica").fontSize(10);
       doc.moveUp(1);
-      doc.text(`${orderTime}`, 150, doc.y);
+      doc.text(`${order.orderNo}`, 150, doc.y);
       doc.moveDown();
       doc
         .font("Helvetica-Bold")
