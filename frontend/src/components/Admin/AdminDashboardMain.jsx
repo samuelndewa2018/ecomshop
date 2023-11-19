@@ -88,10 +88,10 @@ const AdminDashboardMain = () => {
     setRefreshing(true);
     try {
       await axios
-        .get(`${server}/pesa/transactions`, { withCredentials: true })
+        .get(`${server}/tiny/get-transactions`, { withCredentials: true })
         .then((res) => {
           setTransactions(res.data);
-          console.log(res.data);
+          console.log("data from get transaction isss", res.data);
         });
       setRefreshing(false);
     } catch (error) {

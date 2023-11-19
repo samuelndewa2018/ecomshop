@@ -106,4 +106,49 @@ router.get("/get-callback-status", async (req, res) => {
   }
 });
 
+// router.get(
+//   "/get-transactions",
+//   catchAsyncErrors(async (req, res) => {
+//     try {
+//       const transactions = await TinyTransaction.find();
+
+//       res.json({
+//         success: true,
+//         message: "Transactions fetched successfully",
+//         data: transactions,
+//       });
+//     } catch (error) {
+//       console.error("Error fetching transactions:", error);
+//       res.status(500).json({
+//         success: false,
+//         message: "Error fetching transactions",
+//         error: error.message,
+//       });
+//     }
+//   })
+// );
+
+//transactions
+router.get("/get-transactions", async (req, res) => {
+  try {
+    const transactions = await TinyTransaction.find({}).sort({ createdAt: -1 });
+
+    console.log("tra", transactions);
+
+    const maskedTransactions = transactions.map((transaction) => {
+      const firstFour = transaction.customer_number.substring(0, 4);
+      const lastTwo = transaction.customer_number.slice(-2);
+      const maskedNumber = `${firstFour}xxxx${lastTwo}`;
+      return {
+        ...transaction.toObject(),
+        customer_number: maskedNumber,
+      };
+    });
+
+    res.status(200).json(maskedTransactions);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 module.exports = router;

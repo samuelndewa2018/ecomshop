@@ -13,6 +13,7 @@ const path = require("path");
 const cloudinary = require("cloudinary");
 const puppeteer = require("puppeteer");
 const streamifier = require("streamifier");
+const logo = "./logo.png";
 
 // create new order
 router.post(
@@ -1212,12 +1213,7 @@ router.get(
 
       // Replace with your image URL
 
-      doc.image(
-        "https://res-console.cloudinary.com/bramuels/media_explorer_thumbnails/2b0096dd71c79be2bc6447188533aec7/detailed",
-        50,
-        20,
-        { width: 90, height: 100 }
-      );
+      doc.image(logo, 50, 20, { width: 90, height: 100 });
 
       doc.moveTo(50, 395);
       doc.dash(3);
