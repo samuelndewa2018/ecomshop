@@ -1170,17 +1170,45 @@ router.get(
       const yCoordinate = pageHeight - fontSize - 10;
 
       // Function to convert an image URL to base64
-      function getBase64Image(img) {
-        var canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);
-        var dataURL = canvas.toDataURL("image/png");
-        return dataURL.replace(/^data:image\/?[A-z]*;base64,/);
+      function convertImageUrlToBase64(url, callback) {
+        // Create an HTML image element
+        var img = new Image();
+
+        // Set crossOrigin to Anonymous to avoid CORS issues
+        img.crossOrigin = "Anonymous";
+
+        // Set the image source URL
+        img.src = url;
+
+        // Define the onload function to handle the image loading
+        img.onload = function () {
+          // Create a canvas element to draw the image
+          var canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          // Get the 2D context of the canvas
+          var ctx = canvas.getContext("2d");
+
+          // Draw the image on the canvas
+          ctx.drawImage(img, 0, 0);
+
+          // Get the base64 representation of the image
+          var base64Image = canvas.toDataURL("image/png");
+
+          // Execute the callback with the base64 image
+          callback(base64Image);
+        };
       }
 
-      var base64 = getBase64Image(document.getElementById("imageid"));
+      // Example usage
+      var imageUrl = "https://example.com/image.jpg";
+
+      // Call the function with the image URL and a callback function
+      convertImageUrlToBase64(imageUrl, function (base64Image) {
+        console.log("Base64 image:", base64Image);
+        // You can use the base64 image data as needed
+      });
 
       // Replace with your image URL
 

@@ -45,16 +45,27 @@ const ProfileSidebar = ({ setActive, active }) => {
           closeModel={() => setModalOpen(false)}
         />
       )}
-      <div className="w-full bg-white shadow-sm rounded-[10px] p-4 pt-8">
+      <div className="w-full bg-white shadow-sm rounded-[10px] 800px:p-4 p-[5px] pt-8">
         <div
           className="flex items-center cursor-pointer w-full mb-8"
           onClick={() => setActive(1)}
         >
-          <RxPerson size={20} color={active === 1 ? "red" : ""} />
+          <RxPerson
+            size={20}
+            color={active === 1 ? "red" : ""}
+            className="800px:block hidden"
+          />
           <span
             className={`pl-3 ${
               active === 1 ? "text-[red]" : ""
             } 800px:block hidden`}
+          >
+            Profile
+          </span>
+          <span
+            className={`pl-0 ${
+              active === 1 ? "text-[red]" : ""
+            } 800px:hidden block text-xs`}
           >
             Profile
           </span>
@@ -66,6 +77,7 @@ const ProfileSidebar = ({ setActive, active }) => {
           <HiOutlineShoppingBag
             size={20}
             color={active === 2 ? "red" : "black"}
+            className="800px:block hidden"
           />
           <span
             className={`pl-3 ${
@@ -74,13 +86,24 @@ const ProfileSidebar = ({ setActive, active }) => {
           >
             Orders
           </span>
+          <span
+            className={`pl-0 ${
+              active === 2 ? "text-[red]" : ""
+            } 800px:hidden block text-xs`}
+          >
+            orders
+          </span>
           <div class="w-[12px] h-[12px] bg-green-400 rounded-full mx-5"></div>
         </div>
         <div
           className="flex items-center cursor-pointer w-full mb-8"
           onClick={() => setActive(3)}
         >
-          <HiOutlineReceiptRefund size={20} color={active === 3 ? "red" : ""} />
+          <HiOutlineReceiptRefund
+            size={20}
+            color={active === 3 ? "red" : ""}
+            className="800px:block hidden"
+          />
           <span
             className={`pl-3 ${
               active === 3 ? "text-[red]" : ""
@@ -88,17 +111,35 @@ const ProfileSidebar = ({ setActive, active }) => {
           >
             Refunds
           </span>
+          <span
+            className={`pl-0 ${
+              active === 3 ? "text-[red]" : ""
+            } 800px:hidden block text-xs`}
+          >
+            refunds
+          </span>
         </div>
 
         <div
           className="flex items-center cursor-pointer w-full mb-8"
           onClick={() => setActive(4) || navigate("/inbox")}
         >
-          <AiOutlineMessage size={20} color={active === 4 ? "red" : ""} />
+          <AiOutlineMessage
+            size={20}
+            color={active === 4 ? "red" : ""}
+            className="800px:block hidden"
+          />
           <span
             className={`pl-3 ${
               active === 4 ? "text-[red]" : ""
             } 800px:block hidden`}
+          >
+            Inbox
+          </span>
+          <span
+            className={`pl-0 ${
+              active === 4 ? "text-[red]" : ""
+            } 800px:hidden block text-xs`}
           >
             Inbox
           </span>
@@ -108,11 +149,22 @@ const ProfileSidebar = ({ setActive, active }) => {
           className="flex items-center cursor-pointer w-full mb-8"
           onClick={() => setActive(5)}
         >
-          <MdOutlineTrackChanges size={20} color={active === 5 ? "red" : ""} />
+          <MdOutlineTrackChanges
+            size={20}
+            color={active === 5 ? "red" : ""}
+            className="800px:block hidden"
+          />
           <span
             className={`pl-3 ${
               active === 5 ? "text-[red]" : ""
             } 800px:block hidden`}
+          >
+            Track Order
+          </span>
+          <span
+            className={`pl-0 ${
+              active === 5 ? "text-[red]" : ""
+            } 800px:hidden block text-xs`}
           >
             Track Order
           </span>
@@ -122,11 +174,22 @@ const ProfileSidebar = ({ setActive, active }) => {
           className="flex items-center cursor-pointer w-full mb-8"
           onClick={() => setActive(6)}
         >
-          <RiLockPasswordLine size={20} color={active === 6 ? "red" : ""} />
+          <RiLockPasswordLine
+            size={20}
+            color={active === 6 ? "red" : ""}
+            className="800px:block hidden"
+          />
           <span
             className={`pl-3 ${
               active === 6 ? "text-[red]" : ""
             } 800px:block hidden`}
+          >
+            Change Password
+          </span>
+          <span
+            className={`pl-0 ${
+              active === 6 ? "text-[red]" : ""
+            } 800px:hidden block text-xs`}
           >
             Change Password
           </span>
@@ -136,11 +199,22 @@ const ProfileSidebar = ({ setActive, active }) => {
           className="flex items-center cursor-pointer w-full mb-8"
           onClick={() => setActive(7)}
         >
-          <TbAddressBook size={20} color={active === 7 ? "red" : ""} />
+          <TbAddressBook
+            size={20}
+            color={active === 7 ? "red" : ""}
+            className="800px:block hidden"
+          />
           <span
             className={`pl-3 ${
               active === 7 ? "text-[red]" : ""
             } 800px:block hidden`}
+          >
+            Address
+          </span>
+          <span
+            className={`pl-0 ${
+              active === 7 ? "text-[red]" : ""
+            } 800px:hidden block text-xs`}
           >
             Address
           </span>
@@ -155,6 +229,7 @@ const ProfileSidebar = ({ setActive, active }) => {
               <MdOutlineAdminPanelSettings
                 size={20}
                 color={active === 7 ? "red" : ""}
+                className="800px:block hidden"
               />
               <span
                 className={`pl-3 ${
@@ -162,6 +237,13 @@ const ProfileSidebar = ({ setActive, active }) => {
                 } 800px:block hidden`}
               >
                 Admin Dashboard
+              </span>
+              <span
+                className={`pl-0 ${
+                  active === 8 ? "text-[red]" : ""
+                } 800px:hidden block text-xs`}
+              >
+                Admin
               </span>
             </div>
           </Link>
@@ -172,13 +254,24 @@ const ProfileSidebar = ({ setActive, active }) => {
               className="flex items-center cursor-pointer w-full mb-8"
               onClick={() => setActive(8)}
             >
-              <RxDashboard size={20} color={active === 8 ? "red" : ""} />
+              <RxDashboard
+                size={20}
+                color={active === 8 ? "red" : ""}
+                className="800px:block hidden"
+              />
               <span
                 className={`pl-3 ${
                   active === 8 ? "text-[red]" : ""
                 } 800px:block hidden`}
               >
                 Shop Dashboard
+              </span>
+              <span
+                className={`pl-0 ${
+                  active === 8 ? "text-[red]" : ""
+                } 800px:hidden block text-xs`}
+              >
+                Shop
               </span>
             </div>
           </Link>
@@ -187,11 +280,22 @@ const ProfileSidebar = ({ setActive, active }) => {
           className="single_item flex items-center cursor-pointer w-full mb-8"
           onClick={() => setModalOpen(true)}
         >
-          <AiOutlineLogin size={20} color={active === 9 ? "red" : ""} />
+          <AiOutlineLogin
+            size={20}
+            color={active === 9 ? "red" : ""}
+            className="800px:block hidden"
+          />
           <span
             className={`pl-3 ${
               active === 9 ? "text-[red]" : ""
             } 800px:block hidden`}
+          >
+            Log out
+          </span>
+          <span
+            className={`pl-0 ${
+              active === 9 ? "text-[red]" : ""
+            } 800px:hidden block text-xs`}
           >
             Log out
           </span>

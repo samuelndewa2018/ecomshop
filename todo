@@ -1,57 +1,9 @@
 // TODO LIST...
 
 //== preorder if its out of stock
-
-//=== if create 2 products consecutively... it does not capture created at
-//== can each shop receive its products order only --- i will confirm
-
-// == category edit
-//>> updated user order details page
-
-/// how to insert image in product description
-///profile dropdrown
-///unsubscribe page
-///checkout to go with phone number to payment page
-///cash payment loading
-///let admin see order is from which shop
-
-// usereshop@outlook.com
-
-///add for location
-///remove stripe
-//put sponsers images on local disc
-///profiles dropdown
-// address not responsive
-//buy again in order details page
-
-// cancel order
-//create product button has no loading effect
-
-/**user
-//**create user--- done */
-//**delete user--- done */
-//**update user--- pending */
-
-/**shop
-//**create shop--- done */
-//**delete shop--- pending... */
-//**update shop--- pending... */
-
-/**user avatar
-//**create user avatar--- done */
-//**delete user avatar--- pending... */
-//**update user avatar--- pending... */
-//**remove user avatar--- pending... */
-
-/**product
-//**create product--- done */
-//**delete product--- done */
-//**update product--- done */
-
-/**categories
-//**create categories--- done */
-//**delete categories--- done */
-
-/**carousel
-//**create carousel--- done */
-//**delete carousel--- done */
+//== add for location
+//== buy again button in order details page when delivered
+//== cancel order button in order details page
+//== disaable updating email in users profile
+//== profile's ui in small pages
+//== small devices does not display delete address

@@ -14,8 +14,7 @@ import * as yup from "yup";
 import Spinner from "../Spinner";
 import mpesa1 from "./mpesa1.png";
 
-const GuestPayment = () => {
-  const { user } = useSelector((state) => state.user);
+const Payment = () => {
   const { statements } = useSelector((state) => state.statements);
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -60,7 +59,7 @@ const GuestPayment = () => {
     cart: orderData?.cart,
     orderNo: orderData?.orderNumber,
     shippingAddress: orderData?.shippingAddress,
-    user: user && user,
+    user: orderData?.user,
     totalPrice: orderData?.totalPrice,
     shippingPrice: orderData.shippingPrice,
     discount: orderData.discountPrice,
@@ -150,7 +149,6 @@ const GuestPayment = () => {
       <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
         <div className="w-full 800px:w-[65%]">
           <PaymentInfo
-            user={user}
             open={open}
             setOpen={setOpen}
             onApprove={onApprove}
@@ -223,7 +221,7 @@ const PaymentInfo = ({
           orderNo: orderData?.orderNumber,
           shippingAddress: orderData?.shippingAddress,
           shippingPrice: orderData.shippingPrice,
-          user: user && user,
+          user: orderData?.user,
           totalPrice: orderData?.totalPrice,
         };
 
@@ -301,7 +299,7 @@ const PaymentInfo = ({
 
   const formik = useFormik({
     initialValues: {
-      phone: `${user && user.phoneNumber ? user && user.phoneNumber : ""}`,
+      phone: `${user?.phoneNumber ? user?.phoneNumber : ""}`,
     },
 
     validationSchema: mpesaSchema,
@@ -675,4 +673,4 @@ const CartData = ({ orderData }) => {
   );
 };
 
-export default GuestPayment;
+export default Payment;
