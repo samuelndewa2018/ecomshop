@@ -14,7 +14,7 @@ import * as yup from "yup";
 import Spinner from "../Spinner";
 import mpesa1 from "./mpesa1.png";
 
-const Payment = () => {
+const GuestPayment = () => {
   const { statements } = useSelector((state) => state.statements);
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -149,6 +149,7 @@ const Payment = () => {
       <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
         <div className="w-full 800px:w-[65%]">
           <PaymentInfo
+            user={orderData?.user}
             open={open}
             setOpen={setOpen}
             onApprove={onApprove}
@@ -673,4 +674,4 @@ const CartData = ({ orderData }) => {
   );
 };
 
-export default Payment;
+export default GuestPayment;
