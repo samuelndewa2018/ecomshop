@@ -713,3 +713,48 @@ input[type="number"] {
 .buttons a {
   color: #fcba7f;
 }
+
+/* download buttton */
+/* DownloadButton.css */
+.download-container {
+  text-align: center;
+}
+
+.hide {
+  opacity: 0;
+}
+
+#download.clicked #list {
+  opacity: 0;
+}
+
+#template {
+  /* Styles for #template */
+}
+
+#list {
+  /* Styles for #list */
+}
+
+#downloadarrow {
+  /* Styles for #downloadarrow */
+}
+
+#downloadtray {
+  /* Styles for #downloadtray */
+}
+
+#tick {
+  /* Styles for #tick */
+}
+
+.text {
+  font-size: calc(100% + 20px);
+  font-family: "Stardos Stencil";
+  margin: 50px 0px 0px 0px;
+}
+
+.Color {
+  color: lime;
+  transition: 1000ms all 1.6s linear;
+}
