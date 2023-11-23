@@ -9,11 +9,8 @@ const Product = require("../model/product");
 const sendMail = require("../utils/sendMail");
 const pdf = require("pdfkit");
 const fs = require("fs");
-const path = require("path");
+const path = require("path"); //
 const cloudinary = require("cloudinary");
-const puppeteer = require("puppeteer");
-const streamifier = require("streamifier");
-const logo = "./logo.png";
 
 // create new order
 router.post(
@@ -115,12 +112,11 @@ router.post(
           orders.push(order);
         }
       }
-      res.orders = orders;
-      next();
-      // res.status(201).json({
-      //   success: true,
-      //   orders,
-      // });
+
+      res.status(201).json({
+        success: true,
+        orders,
+      });
     } catch (error) {
       console.log(error);
       return next(new ErrorHandler(error.message, 500));
@@ -128,10 +124,10 @@ router.post(
   })
 );
 
-// send email
+//send emails
 router.post(
   "/sendmyorder",
-  catchAsyncErrors(async (req, res) => {
+  catchAsyncErrors(async (req, res, next) => {
     try {
       const {
         cart,
@@ -142,10 +138,6 @@ router.post(
         shippingPrice,
         discount,
       } = req.body;
-
-      const orders = res.orders;
-
-      console.log("orders from  response", orders);
 
       const shopItemsMap = new Map();
       const shopEmailsMap = new Map();
@@ -1145,6 +1137,46 @@ router.post(
   })
 );
 
+//get all orders
+router.get(
+  "/get-all-orders/:userId",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const orders = await Order.find({ "user._id": req.params.userId }).sort({
+        createdAt: -1,
+      });
+
+      res.status(200).json({
+        success: true,
+        orders,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// get all orders of seller
+router.get(
+  "/get-seller-all-orders/:shopId",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const orders = await Order.find({
+        "cart.shopId": req.params.shopId,
+      }).sort({
+        createdAt: -1,
+      });
+
+      res.status(200).json({
+        success: true,
+        orders,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 //generate receipt
 router.get(
   "/generate-receipt/:orderId",
@@ -1309,7 +1341,6 @@ router.get(
               "...\n" +
               item.name.substring(80, 120)
             : item.name;
-
         doc
           .font("Helvetica")
           .fillColor("black")
@@ -1372,7 +1403,7 @@ router.get(
       doc.pipe(res);
 
       const pageCount = doc.bufferedPageRange().count;
-      for (let i = 0; i < pageCount; i++) {
+      for (let i = 1; i <= pageCount; i++) {
         doc.switchToPage(i);
         doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
       }
@@ -1423,51 +1454,10 @@ router.get(
     }
   })
 );
-
-// get all orders of user
-router.get(
-  "/get-all-orders/:userId",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const orders = await Order.find({ "user._id": req.params.userId }).sort({
-        createdAt: -1,
-      });
-
-      res.status(200).json({
-        success: true,
-        orders,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-
-// get all orders of seller
-router.get(
-  "/get-seller-all-orders/:shopId",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const orders = await Order.find({
-        "cart.shopId": req.params.shopId,
-      }).sort({
-        createdAt: -1,
-      });
-
-      res.status(200).json({
-        success: true,
-        orders,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-
 // update order status for seller
 router.put(
   "/update-order-status/:id",
-  isSeller,
+
   catchAsyncErrors(async (req, res, next) => {
     try {
       const order = await Order.findById(req.params.id);
@@ -1492,11 +1482,14 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         if (order.paymentInfo.status !== "succeeded") {
-          const seller = await Shop.findById(req.seller.id);
+          const seller = await Shop.findById(req.body.sellerId);
 
-          const realTotalPrice = order.totalPrice - order.shippingPrice;
+          const realTotalPrice = parseFloat(req.body.totalPricee);
+
           const amountToAdd = (realTotalPrice * 0.9).toFixed(2);
-          seller.availableBalance += parseInt(amountToAdd);
+
+          seller.availableBalance += parseFloat(amountToAdd);
+
           await seller.save();
         }
         order.paymentInfo.status = "succeeded";
@@ -1626,6 +1619,23 @@ router.get(
   })
 );
 
+//admin orderdetails
+router.get(
+  "/get-order-details/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    const orderId = req.params.id;
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return next(new ErrorHandler("Order not found with this ID", 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      order,
+    });
+  })
+);
 // Get a specific order by order number
 router.get(
   "/specific-order",
