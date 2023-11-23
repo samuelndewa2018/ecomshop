@@ -112,6 +112,27 @@ router.post(
           orders.push(order);
         }
       }
+      // send email starts here
+      const attachments = cart.map((item) => ({
+        filename: item.images[0].url,
+        path: item.images[0].url,
+        cid: item.images[0].url,
+      }));
+
+      attachments.push({
+        filename: "logo.png",
+        path: `https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png`,
+        cid: "logo",
+      });
+      await sendMail({
+        email: user.email || user.guestEmail,
+        subject: "Order Confirmation",
+        html: `Hello ${
+          user.name || user.guestName
+        }, <br/> Your order number is ${orderNo} <br/> Use it to track order.......... advance email coming soon`,
+        attachments: attachments,
+      });
+      // send email ends here
 
       res.status(201).json({
         success: true,
