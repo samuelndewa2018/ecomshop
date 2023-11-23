@@ -7,11 +7,12 @@ import Meta from "../components/Meta";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { server } from "../server";
+import { useSelector } from "react-redux";
 
 const OrderSuccessPage = () => {
-  // useEffect(() => {
-  //   axios.post(`${server}/order/sendorderemail`);
-  // }, []);
+  const user = useSelector((state) => state.user);
+
+  console.log("user", user.isAuthenticated);
 
   const defaultOptions = {
     loop: false,
@@ -24,7 +25,11 @@ const OrderSuccessPage = () => {
   const navigate = useNavigate();
 
   const goToProfilePage = () => {
-    navigate("/profile?active=2");
+    if (user.isAuthenticated === false) {
+      navigate("/searchorder");
+    } else if (user.isAuthenticated === true) {
+      navigate("/profile?active=2");
+    }
   };
 
   return (

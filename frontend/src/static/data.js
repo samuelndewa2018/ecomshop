@@ -17,8 +17,8 @@ export const navItems = [
     url: "/compare-products",
   },
   {
-    title: "Events",
-    url: "/events",
+    title: "Track Order",
+    url: "/searchorder",
   },
 ];
 

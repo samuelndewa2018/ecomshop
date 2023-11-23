@@ -136,7 +136,7 @@ const SearchOrder = () => {
 
   return (
     <>
-      <Header />
+      <Header activeHeading={5} />
       <div className="my-[50px] ml-10 justify-center">
         <div className="relative flex h-10 w-full min-w-[200px] max-w-[24rem]">
           <input
