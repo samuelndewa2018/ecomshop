@@ -8,6 +8,7 @@ import ProductCard from "../components/Route/ProductCard/ProductCard";
 import styles from "../styles/styles";
 import Meta from "../components/Meta";
 import { server } from "../server";
+import Footer from "../components/Layout/Footer";
 
 const BestSellingPage = () => {
   const [data, setData] = useState([]);
@@ -93,6 +94,7 @@ const BestSellingPage = () => {
                 data.map((i, index) => <ProductCard data={i} key={index} />)}
             </div>
           </div>
+          <Footer />
         </div>
       )}
     </>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.ninetyone.co.ke/best-selling</loc>
+    <changefreq>Best Selling Products</changefreq>
+    <priority>0.8</priority>
+    <description>Explore our curated selection of customer favorites - the 'Best Selling Products' that have captured the hearts of our discerning shoppers. Dive into a collection of tried-and-true items that consistently exceed expectations. From must-have essentials to popular trends, discover why these products are topping the charts. Elevate your shopping experience with our best sellers and join the community of satisfied customers.</description>
+  </url>
+  <url>
+    <loc>https://www.ninetyone.co.ke/products</loc>
+    <changefreq>Latest Products</changefreq>
+    <priority>0.8</priority>
+    <description>Discover the freshest additions to our collection with our 'Latest Products' showcase. Stay ahead of the curve and explore our newest arrivals, ranging from cutting-edge technology to stylish trends. Elevate your shopping experience by browsing our handpicked selection of the latest and most sought-after products. Embrace innovation and style with our continually updated lineup.</description>
+  </url>
+  <url>
+    <loc>https://www.ninetyone.co.ke/searchorder</loc>
+    <changefreq>Track your Order.</changefreq>
+    <priority>0.8</priority>
+    <description>Experience real-time visibility into your purchase journey with our 'Track your Order' service. Stay informed and in control as you monitor the status and location of your package from the moment it's dispatched until it reaches your doorstep. Effortlessly track your order, receive timely updates, and ensure a seamless and transparent shopping experience with us.</description>
+  </url>
+  <url>
+    <loc>https://www.ninetyone.co.ke/compare-products</loc>
+    <changefreq>Compare Different Products</changefreq>
+    <priority>0.8</priority>
+    <description>Make informed decisions with our 'Compare Products Now' feature. Effortlessly assess the specifications, features, and prices of multiple items side by side. Whether you're narrowing down options or seeking the best value, our comparison tool empowers you to choose products that align perfectly with your needs. Enhance your shopping experience – compare products now and find the perfect fit for you.</description>
+  </url>
+  <url>
+    <loc>https://www.ninetyone.co.ke/sign-up</loc>
+    <changefreq>Register An Account</changefreq>
+    <priority>0.8</priority>
+    <description>Unlock a personalized experience by signing in now. Access exclusive features, save your preferences, and streamline your journey on our platform. Seamlessly manage your account, track orders, and enjoy a tailored shopping experience designed just for you. Join our community and make the most of your online interactions—sign in now and embark on a journey of convenience and customization.</description>
+  </url>
+  <url>
+    <loc>https://www.ninetyone.co.ke/shop-login</loc>
+    <changefreq>Become a Seller</changefreq>
+    <priority>0.8</priority>
+    <description>Embark on your journey as a seller and unlock new possibilities. Join our platform and become a valued contributor to our vibrant marketplace. Enjoy the freedom to showcase your products, connect with a diverse audience, and take control of your online business. Start your seller's journey today and tap into a world of opportunities. Empower your brand, reach a broader audience, and thrive as a seller on our platform.</description>
+  </url>
+</urlset>

@@ -104,7 +104,12 @@ const GuestPayment = () => {
           window.location.reload();
         }, 2000);
       });
-    // await axios.post(`${server}/order/sendmyorder`, order, config);
+    try {
+      await axios.post(`${server}/order/sendmyorder`, order, config);
+    } catch (error) {
+      loading1(false);
+      console.log(error);
+    }
 
     setLoading2(false);
   };
@@ -136,6 +141,12 @@ const GuestPayment = () => {
             window.location.reload();
           }, 2000);
         });
+      try {
+        await axios.post(`${server}/order/sendmyorder`, order, config);
+      } catch (error) {
+        loading1(false);
+        console.log(error);
+      }
       setLoading1(false);
     } catch (error) {
       setLoading1(false);
@@ -243,6 +254,12 @@ const PaymentInfo = ({
               window.location.reload();
             }, 5000);
           });
+        try {
+          axios.post(`${server}/order/sendmyorder`, order, config);
+        } catch (error) {
+          loading1(false);
+          console.log(error);
+        }
       } else if (
         callbackData.TinyPesaID === requestID &&
         callbackData.ResultCode === 1032
