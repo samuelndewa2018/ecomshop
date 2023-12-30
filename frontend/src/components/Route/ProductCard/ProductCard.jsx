@@ -347,17 +347,23 @@ const ProductCard = ({ data, isEvent, inRecent }) => {
               color="#333"
               title="Quick view"
             />
-            <AiOutlineShoppingCart
-              size={25}
-              className="cursor-pointer absolute right-2 top-24"
-              onClick={() => addToCartHandler(data._id)}
-              color="#444"
-              title="Add to cart"
-            />
+            {!inRecent && (
+              <AiOutlineShoppingCart
+                size={25}
+                className="cursor-pointer absolute right-2 top-24"
+                onClick={() => addToCartHandler(data._id)}
+                color="#444"
+                title="Add to cart"
+              />
+            )}
+
             <IoIosShareAlt
               size={25}
-              className="cursor-pointer absolute right-2 top-36
-            "
+              className={`${
+                inRecent
+                  ? "cursor-pointer absolute right-2 top-24"
+                  : "cursor-pointer absolute right-2 top-36"
+              }`}
               // onClick={() => {
               //   copyToClipboard(window.location.href);
               // }}
@@ -375,7 +381,11 @@ const ProductCard = ({ data, isEvent, inRecent }) => {
             />
             <TbArrowsShuffle2
               size={25}
-              className="cursor-pointer absolute right-2 top-48"
+              className={`${
+                inRecent
+                  ? "cursor-pointer absolute right-2 top-36"
+                  : "cursor-pointer absolute right-2 top-48"
+              }`}
               onClick={() => addToCompareHandler(data._id)}
               color="#444"
               title="Compare Products"
@@ -383,7 +393,7 @@ const ProductCard = ({ data, isEvent, inRecent }) => {
             {inRecent && (
               <AiOutlineDelete
                 size={25}
-                className="cursor-pointer absolute right-2 top-60"
+                className="cursor-pointer absolute right-2 top-48"
                 onClick={() => setModalOpen(true)}
               />
             )}
