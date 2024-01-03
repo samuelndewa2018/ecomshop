@@ -89,6 +89,7 @@ import GuestCheckoutPage from "./pages/GuestCheckout";
 import GuestPaymentPage from "./pages/GuestPaymentPage";
 import PaymentForm from "./pages/PaymentForm";
 import SearchOrder from "./components/SearchOrder.jsx";
+import Whatsapp from "./components/Whatsaap/Whatsapp.js";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
@@ -148,6 +149,8 @@ const App = () => {
         <Route path="/guest-payment" element={<GuestPaymentPage />} />
         <Route path="/paymentform" element={<PaymentForm />} />
         <Route path="/searchorder" element={<SearchOrder />} />
+        {/* <Route path="/searchorder" element={<SearchOrder />} /> */}
+
         <Route
           path="/unsubscribe"
           element={
@@ -373,6 +376,14 @@ const App = () => {
           element={
             <ProtectedAdminRoute>
               <AdminDashboardPage />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin/announcements"
+          element={
+            <ProtectedAdminRoute>
+              <Whatsapp />
             </ProtectedAdminRoute>
           }
         />
